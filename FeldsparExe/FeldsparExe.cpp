@@ -1,6 +1,6 @@
 #include <iostream>
 
-import bitboard;
+import game;
 
 int main()
 {
