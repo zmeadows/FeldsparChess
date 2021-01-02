@@ -1,9 +1,14 @@
 #include <iostream>
 
-import game;
+import prelude;
+import bitboard;
+import board;
 
 int main()
 {
-    std::cout << "Hello World!\n";
-}
 
+    for (auto i = 0; i < BOARD_SIZE; i++) {
+        const Bitboard bb = NEW_BOARD[i];
+        print_bitboard(bb);
+    }
+}

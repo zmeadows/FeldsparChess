@@ -136,6 +136,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -181,6 +182,7 @@
     <ClCompile Include="..\..\feldspar_first_try\feldspar_lib\board.ixx" />
     <ClCompile Include="..\..\feldspar_first_try\feldspar_lib\game.ixx" />
     <ClCompile Include="..\..\feldspar_first_try\feldspar_lib\prelude.ixx" />
+    <ClCompile Include="core.ixx" />
     <ClCompile Include="FeldsparLib.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
