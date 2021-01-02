@@ -1,8 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="bitboard_test.ixx" />
-    <ClCompile Include="game_test.ixx" />
+    <ClCompile Include="core_test.cpp">
+      <Filter>unstd</Filter>
+    </ClCompile>
+    <ClCompile Include="bitboard_test.cpp" />
+    <ClCompile Include="game_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

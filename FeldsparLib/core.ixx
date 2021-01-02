@@ -13,11 +13,11 @@ export using S32 = int32_t;
 export using S16 = int16_t;
 export using S8 = int8_t;
 
+// For any enum class that defines a LAST member, this allows us to loop over the enum
+// easily in a range-based for loop: for (const auto x : EnumRange<T>()).
+// Luckily optimizes out to be equivalent to incrementing a single integer (on MSVC).
 export template <class T>
 struct EnumRange {
-    // For any enum class that defines a LAST member, this allows us to loop over the enum
-    // easily in a range-based for loop: for (const auto x : EnumRange<T>()).
-    // Luckily optimizes out to be equivalent to incrementing a single integer (on MSVC).
     struct Iterator {
         explicit inline constexpr Iterator(int v) : value(v) {}
         inline void operator++() { ++value; }

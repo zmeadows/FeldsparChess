@@ -33,8 +33,9 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
-    <ClCompile Include="bitboard_test.ixx" />
-    <ClCompile Include="game_test.ixx" />
+    <ClCompile Include="bitboard_test.cpp" />
+    <ClCompile Include="core_test.cpp" />
+    <ClCompile Include="game_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FeldsparLib\FeldsparLib.vcxproj">
