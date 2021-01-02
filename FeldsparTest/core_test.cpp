@@ -1,3 +1,4 @@
+#define _HAS_EXCEPTIONS 0
 #include "gtest/gtest.h"
 
 import unstd.core;

@@ -137,6 +137,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -168,6 +169,7 @@
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>
