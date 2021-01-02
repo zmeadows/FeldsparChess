@@ -5,6 +5,7 @@ import prelude;
 import bitboard;
 import board;
 import game;
+
 TEST(Game, Initialization)
 {
     { // default 'empty' game state
@@ -26,5 +27,9 @@ TEST(Game, Initialization)
     }
 
     { // starting position
+        const Optional<Game> start_game =
+            build_game_from_fen_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+
+        EXPECT_TRUE(start_game.has_value());
     }
 }

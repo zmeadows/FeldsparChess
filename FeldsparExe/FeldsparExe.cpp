@@ -1,11 +1,9 @@
-import prelude;
-import bitboard;
-import board;
+import game;
 
 int main()
 {
-    // for (auto i = 0; i < BOARD_SIZE; i++) {
-    //     const Bitboard bb = NEW_BOARD[i];
-    //     print_bitboard(bb);
-    // }
+    auto bg = build_game_from_fen_string("123");
+
+    // return (*bg).board[3];
+    return 0;
 }

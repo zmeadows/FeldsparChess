@@ -180,12 +180,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\feldspar_first_try\feldspar_lib\bitboard.ixx" />
-    <ClCompile Include="..\..\feldspar_first_try\feldspar_lib\board.ixx" />
-    <ClCompile Include="..\..\feldspar_first_try\feldspar_lib\game.ixx" />
-    <ClCompile Include="..\..\feldspar_first_try\feldspar_lib\prelude.ixx" />
+    <ClCompile Include="bitboard.ixx" />
+    <ClCompile Include="board.ixx" />
     <ClCompile Include="core.ixx" />
     <ClCompile Include="FeldsparLib.cpp" />
+    <ClCompile Include="game.ixx" />
+    <ClCompile Include="logger.h" />
+    <ClCompile Include="prelude.ixx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

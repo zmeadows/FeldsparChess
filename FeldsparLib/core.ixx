@@ -39,7 +39,7 @@ class alignas(alignof(T)) [[nodiscard]] Optional {
     inline T* cast_data(void) { return reinterpret_cast<T*>(&m_data); }
 
 public:
-    [[nodiscard]] inline bool has_value() { return m_filled; }
+    [[nodiscard]] inline bool has_value() const { return m_filled; }
 
     inline void clear() { m_filled = false; }
 
@@ -49,9 +49,23 @@ public:
         return *cast_data();
     }
 
-    inline constexpr Optional(void) : m_data(nullptr), m_filled(false) {}
+    inline constexpr Optional(void) : m_filled(false) {}
     inline constexpr Optional(const T& value) { new (cast_data()) T(value); }
     inline constexpr Optional(T&& value) { new (cast_data()) T(std::move(value)); }
+
+    inline constexpr Optional(const Optional<T>& other)
+    {
+        if (m_filled = other.m_filled) {
+            new (cast_data()) T(*other);
+        }
+    }
+
+    inline constexpr Optional(Optional<T>&& other)
+    {
+        if (m_filled = other.m_filled) {
+            new (cast_data()) T(std::move(*other));
+        }
+    }
 
     inline Optional& operator=(const Optional& other)
     {
@@ -89,12 +103,16 @@ public:
     }
 
     inline constexpr Maybe(void) : m_data(SENTINEL) {}
-    inline constexpr Maybe(const T& value) : m_data(value) {}
-    inline constexpr Maybe(T&& value) : m_data(std::move(value)) {}
 
-    inline Maybe operator=(Maybe other)
+    inline explicit constexpr Maybe(const T& value) : m_data(value) {}
+    inline explicit constexpr Maybe(T&& value) : m_data(std::move(value)) {}
+
+    inline constexpr Maybe(const Maybe<T, SENTINEL>& other) : m_data(other.m_data) {}
+    inline constexpr Maybe(Maybe<T, SENTINEL>&& other) : m_data(std::move(other.m_data)) {}
+
+    inline Maybe operator=(const Maybe& other)
     {
-        std::swap(m_data, other.m_data);
+        m_data = other.m_data;
         return *this;
     }
 

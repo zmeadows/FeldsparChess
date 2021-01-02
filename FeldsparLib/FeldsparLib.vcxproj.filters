@@ -21,19 +21,22 @@
     <ClCompile Include="FeldsparLib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\feldspar_first_try\feldspar_lib\bitboard.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\feldspar_first_try\feldspar_lib\board.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\feldspar_first_try\feldspar_lib\game.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\feldspar_first_try\feldspar_lib\prelude.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="core.ixx">
+      <Filter>Source Files\unstd</Filter>
+    </ClCompile>
+    <ClCompile Include="bitboard.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="board.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="game.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="prelude.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="logger.h">
       <Filter>Source Files\unstd</Filter>
     </ClCompile>
   </ItemGroup>
