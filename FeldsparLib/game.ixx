@@ -9,6 +9,11 @@ import<cstdio>;
 import<cstring>;
 import<cctype>;
 
+import<string_view>;
+import<vector>;
+import<charconv>;
+import<system_error>;
+
 export struct Game {
     Board board = {BITBOARD_EMPTY};
     MaybeSquare ep_square = {};
@@ -16,20 +21,50 @@ export struct Game {
     U16 fullmoves = 0;
     U8 halfmove_clock = 0;
     CastlingRights castling_rights = NO_CASTLING_RIGHTS;
+
+    static Optional<Game> create(std::string_view);
 };
 
-export Optional<Game> build_game_from_fen_string(const char* fen)
+// https://www.bfilipek.com/2018/07/string-view-perf-followup.html
+std::vector<std::string_view> split_string(std::string_view strv, std::string_view delims = " ")
 {
-    if (fen == nullptr) {
-        WARN("Nullptr passed as FEN string!");
+    std::vector<std::string_view> output;
+    size_t first = 0;
+
+    while (first < strv.size()) {
+        const auto second = strv.find_first_of(delims, first);
+
+        if (first != second) output.emplace_back(strv.substr(first, second - first));
+
+        if (second == std::string_view::npos) break;
+
+        first = second + 1;
+    }
+
+    return output;
+}
+
+Optional<int> string_view_to_int(std::string_view sv)
+{
+    int number;
+    auto result = std::from_chars(sv.data(), sv.data() + sv.size(), number);
+    if (result.ec == std::errc()) {
+        return number;
+    }
+    else {
+        return {};
+    }
+}
+
+export Optional<Game> Game::create(std::string_view fen)
+{
+    if (fen.size() == 0) {
         return {};
     }
 
-    constexpr auto MAX_FEN_LENGTH = 91;
-
-    const auto N = strnlen(fen, MAX_FEN_LENGTH + 1);
-    if (N > MAX_FEN_LENGTH) {
-        WARN("FEN string too long!");
+    const auto fen_pieces = split_string(fen);
+    if (fen_pieces.size() != 6) {
+        WARN("Invalid FEN string with number of whitespaces != 6");
         return {};
     }
 
@@ -54,11 +89,8 @@ export Optional<Game> build_game_from_fen_string(const char* fen)
 
     using enum PieceType;
 
-    size_t idx = 0;
-
-    for (; idx <= MAX_FEN_LENGTH; idx++) {
-        const char ch = fen[idx];
-
+    // Piece Locations
+    for (const char ch : fen_pieces[0]) {
         if (isalpha(ch)) {
             const Color col = isupper(ch) ? Color::White : Color::Black;
             switch (tolower(ch)) {
@@ -89,29 +121,25 @@ export Optional<Game> build_game_from_fen_string(const char* fen)
             }
         }
         else if (isdigit(ch)) {
-            decrement_square(static_cast<Square>(ch - '0'));
+            decrement_square(static_cast<Square>(ch) - static_cast<Square>('0'));
         }
         else if (ch == '/') {
             continue;
         }
         else {
-            break;
+            WARN("Invalid character encountered in FEN board representation.");
+            return {};
         }
     }
 
-    if (idx > MAX_FEN_LENGTH) {
-        WARN("Invalid FEN string!");
+    auto fen_color = fen_pieces[1];
+
+    if (fen_color.size() != 1) {
+        WARN("Invalid FEN color string length (should be 1).");
         return {};
     }
 
-    if (fen[idx] != ' ') {
-        WARN("Invalid FEN string!");
-        return {};
-    }
-
-    idx++;
-
-    switch (fen[idx]) {
+    switch (fen_color[0]) {
         case 'w': {
             game.to_move = Color::White;
             break;
@@ -121,43 +149,69 @@ export Optional<Game> build_game_from_fen_string(const char* fen)
             break;
         }
         default: {
-            WARN("Invalid FEN string!");
+            WARN("Invalid FEN color string value (should be w or b).");
             return {};
         }
     }
 
-    idx++;
-    if (fen[idx] != ' ') {
-        WARN("Invalid FEN string!");
-        return {};
+    auto fen_castle = fen_pieces[2];
+
+    if (fen_castle == "-") {
+        game.castling_rights = NO_CASTLING_RIGHTS;
     }
-    idx++;
-
-    const size_t max_castle_idx = idx + 3;
-
-    while (fen[idx] != ' ' && idx < max_castle_idx) {
-        switch (fen[idx]) {
-            case 'K': {
-                game.castling_rights |= WHITE_KINGSIDE;
-                break;
-            }
-            case 'Q': {
-                game.castling_rights |= WHITE_QUEENSIDE;
-                break;
-            }
-            case 'k': {
-                game.castling_rights |= BLACK_KINGSIDE;
-                break;
-            }
-            case 'q': {
-                game.castling_rights |= BLACK_QUEENSIDE;
-                break;
-            }
-            default: {
-                WARN("Invalid FEN string!");
-                return {};
+    else {
+        for (const char ch : fen_castle) {
+            switch (ch) {
+                case 'K': {
+                    game.castling_rights |= WHITE_KINGSIDE;
+                    break;
+                }
+                case 'Q': {
+                    game.castling_rights |= WHITE_QUEENSIDE;
+                    break;
+                }
+                case 'k': {
+                    game.castling_rights |= BLACK_KINGSIDE;
+                    break;
+                }
+                case 'q': {
+                    game.castling_rights |= BLACK_QUEENSIDE;
+                    break;
+                }
+                default: {
+                    WARN("Invalid FEN castling rights string (should be combination of K,Q,k,q "
+                         "characters).");
+                    return {};
+                }
             }
         }
+    }
+
+    auto fen_ep = fen_pieces[3];
+
+    if (fen_ep != "-") {
+        if (fen_ep.size() != 2) {
+            WARN("Invalid FEN en passant target square string.");
+            return {};
+        }
+
+        if (MaybeSquare sq = from_algebraic(fen_ep[0], fen_ep[1]); sq.has_value()) {
+            game.ep_square = sq;
+        }
+        else {
+            WARN("Couldn't convert En Passant target square from algebraic notation.");
+            return {};
+        }
+    }
+
+    auto fen_halfmove = fen_pieces[4];
+    if (auto count = string_view_to_int(fen_halfmove); count.has_value()) {
+        game.halfmove_clock = *count;
+    }
+
+    auto fen_fullmoves = fen_pieces[5];
+    if (auto count = string_view_to_int(fen_fullmoves); count.has_value()) {
+        game.fullmoves = *count;
     }
 
     return game;

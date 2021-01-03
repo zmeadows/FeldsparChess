@@ -19,7 +19,6 @@ TEST(Game, Initialization)
         }
 
         EXPECT_FALSE(g.ep_square.has_value());
-
         EXPECT_EQ(g.to_move, Color::White);
         EXPECT_EQ(g.fullmoves, 0);
         EXPECT_EQ(g.halfmove_clock, 0);
@@ -28,8 +27,13 @@ TEST(Game, Initialization)
 
     { // starting position
         const Optional<Game> start_game =
-            build_game_from_fen_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+            Game::create("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
         EXPECT_TRUE(start_game.has_value());
+    }
+
+    { // invalid FEN strings
+        EXPECT_FALSE(Game::create("").has_value());
+        EXPECT_FALSE(Game::create("asdf").has_value());
     }
 }

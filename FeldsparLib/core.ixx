@@ -45,7 +45,7 @@ public:
 
     [[nodiscard]] inline T& operator*()
     {
-        assert(!m_filled);
+        assert(m_filled);
         return *cast_data();
     }
 

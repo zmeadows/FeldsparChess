@@ -29,29 +29,29 @@ export inline constexpr Board NEW_BOARD = {
 
 export inline void board_reset_to_zero(Board& board) { (void)memset(&board, 0, sizeof(Board)); }
 
-export constexpr Bitboard get_pieces(const Board& board, const PieceType p, const Color c)
+export inline constexpr Bitboard get_pieces(const Board& board, const PieceType p, const Color c)
 {
     const size_t idx = 2 * static_cast<size_t>(p) + static_cast<size_t>(c);
     return board[idx];
 }
 
-export constexpr Bitboard& get_pieces_mut(Board& board, const PieceType p, const Color c)
+export inline constexpr Bitboard& get_pieces_mut(Board& board, const PieceType p, const Color c)
 {
     const size_t idx = 2 * static_cast<size_t>(p) + static_cast<size_t>(c);
     return board[idx];
 }
 
-export constexpr Bitboard get_occupied(const Board& board, const Color c)
+export inline constexpr Bitboard get_occupied(const Board& board, const Color c)
 {
     return board[12 + static_cast<size_t>(c)];
 }
 
-export constexpr Bitboard& get_occupied_mut(Board& board, const Color c)
+export inline constexpr Bitboard& get_occupied_mut(Board& board, const Color c)
 {
     return board[12 + static_cast<size_t>(c)];
 }
 
-export constexpr Bitboard get_occupied(const Board& board)
+export inline constexpr Bitboard get_occupied(const Board& board)
 {
     return get_occupied(board, Color::White) || get_occupied(board, Color::Black);
 }

@@ -7,28 +7,7 @@ export using Bitboard = U64;
 export using Square = S64;
 export using MaybeSquare = Maybe<Square, -1>;
 
-MaybeSquare square_from_algebraic(char file, char rank)
-{
-    let mut it : Chars = alg.chars();
-
-    let file_idx = match it.next(){
-        Some('h') = > Some(0), Some('g') = > Some(1), Some('f') = > Some(2), Some('e') = > Some(3),
-        Some('d') = > Some(4), Some('c') = > Some(5), Some('b') = > Some(6), Some('a') = > Some(7),
-        Some(_) = > None,      None = > None};
-
-    let rank_idx : Option<u32> = match it.next(){Some(x) = > x.to_digit(10), None = > None};
-
-    match file_idx
-    {
-        None = > return None, Some(fid) = >
-        {
-            match rank_idx
-            {
-                None = > return None, Some(rid) = > return Square::from_rank_file(rid, fid)
-            }
-        }
-    }
-}
+export MaybeSquare from_algebraic(char file, char rank) { return {}; }
 
 export enum class Direction {
     North,
