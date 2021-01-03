@@ -37,6 +37,7 @@ class alignas(alignof(T)) [[nodiscard]] Optional {
     bool m_filled;
 
     inline T* cast_data(void) { return reinterpret_cast<T*>(&m_data); }
+    inline const T* cast_data(void) const { return reinterpret_cast<const T*>(&m_data); }
 
 public:
     [[nodiscard]] inline bool has_value() const { return m_filled; }
@@ -47,6 +48,13 @@ public:
     {
         assert(m_filled);
         return *cast_data();
+    }
+
+    [[nodiscard]] inline const T& operator*() const
+    {
+        assert(m_filled);
+        const T* data = cast_data();
+        return *data;
     }
 
     inline constexpr Optional(void) : m_filled(false) {}
@@ -92,7 +100,7 @@ class alignas(alignof(T)) [[nodiscard]] Maybe {
     T m_data;
 
 public:
-    [[nodiscard]] inline bool has_value() { return m_data != SENTINEL; }
+    [[nodiscard]] inline bool has_value() const { return m_data != SENTINEL; }
 
     inline void clear() { m_data = SENTINEL; }
 
