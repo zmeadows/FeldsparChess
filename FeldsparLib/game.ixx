@@ -22,7 +22,7 @@ export struct Game {
     U8 halfmove_clock = 0;
     CastlingRights castling_rights = NO_CASTLING_RIGHTS;
 
-    static Optional<Game> create(std::string_view);
+    static Optional<Game> create(const char*);
 };
 
 // https://www.bfilipek.com/2018/07/string-view-perf-followup.html
@@ -56,7 +56,7 @@ Optional<int> string_view_to_int(std::string_view sv)
     }
 }
 
-export Optional<Game> Game::create(std::string_view fen)
+Optional<Game> create_game_internal(std::string_view fen)
 {
     if (fen.size() == 0) {
         return {};
@@ -215,6 +215,21 @@ export Optional<Game> Game::create(std::string_view fen)
     }
 
     return game;
+}
+
+export Optional<Game> Game::create(const char* fen)
+{
+    if (fen == nullptr) {
+        WARN("Passed nullptr to Game::create.");
+        return {};
+    }
+    else if (strnlen(fen, 100) == 100) {
+        WARN("Passed invalid FEN string that was too long to Game::create.");
+        return {};
+    }
+    else {
+        return create_game_internal(fen);
+    }
 }
 
 // export inline const Game START_POSITION_GAME =
