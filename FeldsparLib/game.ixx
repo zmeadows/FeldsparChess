@@ -25,46 +25,41 @@ export struct Game {
     static Optional<Game> create(const char*);
 };
 
-// https://www.bfilipek.com/2018/07/string-view-perf-followup.html
-std::vector<std::string_view> split_string(std::string_view strv, std::string_view delims = " ")
-{
-    std::vector<std::string_view> output;
-    size_t first = 0;
-
-    while (first < strv.size()) {
-        const auto second = strv.find_first_of(delims, first);
-
-        if (first != second) output.emplace_back(strv.substr(first, second - first));
-
-        if (second == std::string_view::npos) break;
-
-        first = second + 1;
-    }
-
-    return output;
-}
-
-Optional<int> string_view_to_int(std::string_view sv)
-{
-    int number;
-    auto result = std::from_chars(sv.data(), sv.data() + sv.size(), number);
-    if (result.ec == std::errc()) {
-        return number;
-    }
-    else {
-        return {};
-    }
-}
-
 Optional<Game> create_game_internal(std::string_view fen)
 {
     if (fen.size() == 0) {
         return {};
     }
 
+    // clang-format off
+    // https://www.bfilipek.com/2018/07/string-view-perf-followup.html
+    constexpr auto split_string = [](
+        std::string_view strv,
+        std::string_view delims = " "
+        ) -> std::vector<std::string_view>
+    {
+        std::vector<std::string_view> output;
+        size_t first = 0;
+
+        while (first < strv.size()) {
+            const auto second = strv.find_first_of(delims, first);
+
+            if (first != second) output.emplace_back(strv.substr(first, second - first));
+
+            if (second == std::string_view::npos) break;
+
+            first = second + 1;
+        }
+
+        return output;
+    };
+    // clang-format on
+
     const auto fen_pieces = split_string(fen);
-    if (fen_pieces.size() != 6) {
-        WARN("Invalid FEN string with number of whitespaces != 6");
+    // We consider a FEN string valid even if it doesn't specify half and/or full move counts,
+    // in which case they are set to 0 and 1 respectively, as at the start of a game.
+    if (fen_pieces.size() != 4 && fen_pieces.size() != 6) {
+        WARN("Invalid FEN string with wrong number of whitespaces");
         return {};
     }
 
@@ -204,14 +199,43 @@ Optional<Game> create_game_internal(std::string_view fen)
         }
     }
 
-    auto fen_halfmove = fen_pieces[4];
-    if (auto count = string_view_to_int(fen_halfmove); count.has_value()) {
-        game.halfmove_clock = *count;
+    constexpr auto string_view_to_int = [](std::string_view sv) -> Optional<int> {
+        int number;
+        auto result = std::from_chars(sv.data(), sv.data() + sv.size(), number);
+        if (result.ec == std::errc()) {
+            return number;
+        }
+        else {
+            return {};
+        }
+    };
+
+    if (fen_pieces.size() >= 5) {
+        auto fen_halfmove = fen_pieces[4];
+        if (auto count = string_view_to_int(fen_halfmove); count.has_value()) {
+            game.halfmove_clock = *count;
+        }
+        else {
+            WARN("Invalid half-moves value in FEN string.");
+            return {};
+        }
+    }
+    else {
+        game.halfmove_clock = 0;
     }
 
-    auto fen_fullmoves = fen_pieces[5];
-    if (auto count = string_view_to_int(fen_fullmoves); count.has_value()) {
-        game.fullmoves = *count;
+    if (fen_pieces.size() >= 6) {
+        auto fen_fullmoves = fen_pieces[5];
+        if (auto count = string_view_to_int(fen_fullmoves); count.has_value()) {
+            game.fullmoves = *count;
+        }
+        else {
+            WARN("Invalid full move count value in FEN string.");
+            return {};
+        }
+    }
+    else {
+        game.fullmoves = 1;
     }
 
     return game;

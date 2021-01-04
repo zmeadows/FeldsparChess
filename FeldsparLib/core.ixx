@@ -90,6 +90,17 @@ public:
         }
         return *this;
     }
+
+    inline bool operator==(const Optional<T>& other) const
+    {
+        if (m_filled != other.m_filled) {
+            return false;
+        }
+
+        if (!m_filled) return true;
+
+        return m_data == other.m_data;
+    }
 };
 
 // Same behavior as Optional<T>, but for small types where one can easily define a
@@ -129,4 +140,6 @@ public:
         m_data = std::move(other.m_data);
         return *this;
     }
+
+    inline bool operator==(const Maybe<T, SENTINEL>& other) const { return m_data == other.m_data; }
 };
