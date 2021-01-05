@@ -7,7 +7,22 @@ export using Bitboard = U64;
 export using Square = S64;
 export using MaybeSquare = Maybe<Square, -1>;
 
-export MaybeSquare from_algebraic(char file, char rank) { return {}; }
+export using Move = U32;
+
+export using CastlingRights = U8;
+export inline constexpr U8 WHITE_KINGSIDE = 0b0001;
+export inline constexpr U8 WHITE_QUEENSIDE = 0b0010;
+export inline constexpr U8 BLACK_KINGSIDE = 0b0100;
+export inline constexpr U8 BLACK_QUEENSIDE = 0b1000;
+export inline constexpr U8 FULL_CASTLING_RIGHTS = 0b1111;
+export inline constexpr U8 NO_CASTLING_RIGHTS = 0b0000;
+
+export enum class Color { White = 0, Black = 1, LAST = Black };
+
+export constexpr Color operator!(Color c)
+{
+    return (c == Color::White) ? Color::Black : Color::White;
+}
 
 export enum class Direction {
     North,
@@ -20,13 +35,6 @@ export enum class Direction {
     SouthWest,
     LAST = SouthWest
 };
-
-export enum class Color { White = 0, Black = 1, LAST = Black };
-
-export constexpr Color operator!(Color c)
-{
-    return (c == Color::White) ? Color::Black : Color::White;
-}
 
 export enum class PieceType { Pawn = 0, Knight, Bishop, Rook, Queen, King, LAST = King };
 
@@ -52,26 +60,4 @@ export struct Piece {
     constexpr Piece(Color c, PieceType p) : color(c), type(p){};
 };
 
-export using CastlingRights = U8;
-export inline constexpr U8 WHITE_KINGSIDE = 0b0001;
-export inline constexpr U8 WHITE_QUEENSIDE = 0b0010;
-export inline constexpr U8 BLACK_KINGSIDE = 0b0100;
-export inline constexpr U8 BLACK_QUEENSIDE = 0b1000;
-export inline constexpr U8 FULL_CASTLING_RIGHTS = 0b1111;
-export inline constexpr U8 NO_CASTLING_RIGHTS = 0b0000;
-
-using Move = U32;
-export inline constexpr U32 QUIET_FLAG = 0b0000;
-export inline constexpr U32 DOUBLE_PAWN_PUSH_FLAG = 0b0001;
-export inline constexpr U32 KING_CASTLE_FLAG = 0b0010;
-export inline constexpr U32 QUEEN_CASTLE_FLAG = 0b0011;
-export inline constexpr U32 CAPTURE_FLAG = 0b0100;
-export inline constexpr U32 EP_CAPTURE_FLAG = 0b0101;
-export inline constexpr U32 KNIGHT_PROMO_FLAG = 0b1000;
-export inline constexpr U32 BISHOP_PROMO_FLAG = 0b1001;
-export inline constexpr U32 ROOK_PROMO_FLAG = 0b1010;
-export inline constexpr U32 QUEEN_PROMO_FLAG = 0b1011;
-export inline constexpr U32 KNIGHT_PROMO_CAPTURE_FLAG = 0b1100;
-export inline constexpr U32 BISHOP_PROMO_CAPTURE_FLAG = 0b1101;
-export inline constexpr U32 ROOK_PROMO_CAPTURE_FLAG = 0b1110;
-export inline constexpr U32 QUEEN_PROMO_CAPTURE_FLAG = 0b1111;
+export MaybeSquare from_algebraic(char file, char rank) { return {}; }

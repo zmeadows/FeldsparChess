@@ -39,5 +39,8 @@
     <ClCompile Include="logger.h">
       <Filter>Source Files\unstd</Filter>
     </ClCompile>
+    <ClCompile Include="move.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
