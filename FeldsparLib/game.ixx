@@ -27,6 +27,7 @@ export struct Game {
     static Optional<Game> create(const char*);
 };
 
+// TODO: switch to using basic const char* and C functions
 Optional<Game> create_game_internal(std::string_view fen)
 {
     if (fen.size() == 0) {
@@ -201,26 +202,9 @@ Optional<Game> create_game_internal(std::string_view fen)
         }
     }
 
-    constexpr auto string_view_to_int = [](std::string_view sv) -> Optional<int> {
-        int number;
-        auto result = std::from_chars(sv.data(), sv.data() + sv.size(), number);
-        if (result.ec == std::errc()) {
-            return number;
-        }
-        else {
-            return {};
-        }
-    };
-
     if (fen_pieces.size() >= 5) {
         auto fen_halfmove = fen_pieces[4];
-        if (auto count = string_view_to_int(fen_halfmove); count.has_value()) {
-            game.halfmove_clock = *count;
-        }
-        else {
-            WARN("Invalid half-moves value in FEN string.");
-            return {};
-        }
+        game.halfmove_clock = atoi(std::string(fen_halfmove).c_str());
     }
     else {
         game.halfmove_clock = 0;
@@ -228,13 +212,7 @@ Optional<Game> create_game_internal(std::string_view fen)
 
     if (fen_pieces.size() >= 6) {
         auto fen_fullmoves = fen_pieces[5];
-        if (auto count = string_view_to_int(fen_fullmoves); count.has_value()) {
-            game.fullmoves = *count;
-        }
-        else {
-            WARN("Invalid full move count value in FEN string.");
-            return {};
-        }
+        game.fullmoves = atoi(std::string(fen_fullmoves).c_str());
     }
     else {
         game.fullmoves = 1;

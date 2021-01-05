@@ -3,6 +3,7 @@ export module unstd.array;
 import unstd.core;
 import<utility>;
 
+// TODO: big five for both Array and DynArray
 export template <typename T, U64 N>
 class Array {
     T m_data[N];
