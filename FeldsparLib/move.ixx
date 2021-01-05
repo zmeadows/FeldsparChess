@@ -21,18 +21,30 @@ export inline constexpr U32 QUEEN_PROMO_CAPTURE_FLAG = 0b1111;
 
 export inline constexpr Move NULL_MOVE = 0x0;
 
-static_assert(std::is_same<Move, U32>::value, "ALERT! Move type changed!");
+static_assert(std::is_same<Move, U32>::value, "ALERT! Move underlying type changed!");
 
+// TODO: check if these const intermediate variables are stored in registers or optimized out
 export __forceinline constexpr Move create_quiet_move(Square from, Square to, U32 flag,
                                                       PieceType moved_ptype)
 {
-    return (static_cast<U32>(moved_ptype) << 16) | (flag << 12) | (from << 6) | to;
+    const U32 to_bits = static_cast<U32>(to);
+    const U32 from_bits = (static_cast<U32>(from) << 6);
+    const U32 flag_bits = flag << 12;
+    const U32 ptype_bits = static_cast<U32>(moved_ptype) << 16;
+
+    return ptype_bits | flag_bits | from_bits | to_bits;
 }
 
 export __forceinline constexpr Move create_capture_move(Square from, Square to, U32 flag,
                                                         PieceType moved_ptype,
                                                         PieceType captured_ptype)
 {
-    return (static_cast<U32>(captured_ptype) << 19) | (static_cast<U32>(moved_ptype) << 16) |
-           (flag << 12) | (from << 6) | to;
+
+    const U32 to_bits = static_cast<U32>(to);
+    const U32 from_bits = (static_cast<U32>(from) << 6);
+    const U32 flag_bits = flag << 12;
+    const U32 moved_ptype_bits = static_cast<U32>(moved_ptype) << 16;
+    const U32 captured_ptype_bits = static_cast<U32>(captured_ptype) << 19;
+
+    return captured_ptype_bits | moved_ptype_bits | flag_bits | from_bits | to_bits;
 }
