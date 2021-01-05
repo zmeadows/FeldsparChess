@@ -480,3 +480,73 @@ TEST(Bitboard, Serialization)
     //     EXPECT_EQ(squares, std::vector<Square>({0, 9, 18, 27, 36, 45, 54, 63}));
     // }
 }
+
+TEST(Bitboard, RankMask)
+{
+    for (Square sq = 0; sq < 8; sq++) {
+        EXPECT_EQ(rank_mask(sq), FIRST_RANK);
+    }
+
+    for (Square sq = 8; sq < 16; sq++) {
+        EXPECT_EQ(rank_mask(sq), SECOND_RANK);
+    }
+
+    for (Square sq = 16; sq < 24; sq++) {
+        EXPECT_EQ(rank_mask(sq), THIRD_RANK);
+    }
+
+    for (Square sq = 24; sq < 32; sq++) {
+        EXPECT_EQ(rank_mask(sq), FOURTH_RANK);
+    }
+
+    for (Square sq = 32; sq < 40; sq++) {
+        EXPECT_EQ(rank_mask(sq), FIFTH_RANK);
+    }
+
+    for (Square sq = 40; sq < 48; sq++) {
+        EXPECT_EQ(rank_mask(sq), SIXTH_RANK);
+    }
+
+    for (Square sq = 48; sq < 56; sq++) {
+        EXPECT_EQ(rank_mask(sq), SEVENTH_RANK);
+    }
+
+    for (Square sq = 56; sq < 64; sq++) {
+        EXPECT_EQ(rank_mask(sq), EIGTH_RANK);
+    }
+}
+
+TEST(Bitboard, FileMask)
+{
+    for (Square sq = 0; sq < 64; sq += 8) {
+        EXPECT_EQ(file_mask(sq), H_FILE);
+    }
+
+    for (Square sq = 1; sq < 64; sq += 8) {
+        EXPECT_EQ(file_mask(sq), G_FILE);
+    }
+
+    for (Square sq = 2; sq < 64; sq += 8) {
+        EXPECT_EQ(file_mask(sq), F_FILE);
+    }
+
+    for (Square sq = 3; sq < 64; sq += 8) {
+        EXPECT_EQ(file_mask(sq), E_FILE);
+    }
+
+    for (Square sq = 4; sq < 64; sq += 8) {
+        EXPECT_EQ(file_mask(sq), D_FILE);
+    }
+
+    for (Square sq = 5; sq < 64; sq += 8) {
+        EXPECT_EQ(file_mask(sq), C_FILE);
+    }
+
+    for (Square sq = 6; sq < 64; sq += 8) {
+        EXPECT_EQ(file_mask(sq), B_FILE);
+    }
+
+    for (Square sq = 7; sq < 64; sq += 8) {
+        EXPECT_EQ(file_mask(sq), A_FILE);
+    }
+}

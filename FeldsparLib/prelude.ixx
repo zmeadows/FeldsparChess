@@ -38,6 +38,8 @@ export enum class Direction {
 
 export enum class PieceType { Pawn = 0, Knight, Bishop, Rook, Queen, King, LAST = King };
 
+using MaybePieceType = Maybe<PieceType, PieceType::LAST>;
+
 export constexpr bool is_slider(const PieceType ptype)
 {
     switch (ptype) {
