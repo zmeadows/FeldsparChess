@@ -123,8 +123,8 @@ public:
 
     inline constexpr Maybe(void) : m_data(SENTINEL) {}
 
-    inline explicit constexpr Maybe(const T& value) : m_data(value) {}
-    inline explicit constexpr Maybe(T&& value) : m_data(std::move(value)) {}
+    inline constexpr Maybe(const T& value) : m_data(value) {}
+    inline constexpr Maybe(T&& value) : m_data(std::move(value)) {}
 
     inline constexpr Maybe(const Maybe<T, SENTINEL>& other) : m_data(other.m_data) {}
     inline constexpr Maybe(Maybe<T, SENTINEL>&& other) : m_data(std::move(other.m_data)) {}
