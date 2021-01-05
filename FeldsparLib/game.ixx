@@ -22,6 +22,8 @@ export struct Game {
     U8 halfmove_clock = 0;
     CastlingRights castling_rights = NO_CASTLING_RIGHTS;
 
+    bool operator==(const Game&) const = default;
+
     static Optional<Game> create(const char*);
 };
 

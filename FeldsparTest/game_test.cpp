@@ -39,8 +39,11 @@ TEST(Game, FENToGame)
         const Optional<Game> og_nomoves =
             Game::create("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -");
 
-        EXPECT_TRUE(og_nomoves.has_value());
-        EXPECT_EQ(*og_nomoves, g);
+        ASSERT_TRUE(og_nomoves.has_value());
+
+        const Game g_nomoves = *og_nomoves;
+
+        EXPECT_EQ(g_nomoves, g);
 
         const Optional<Game> og_only_halfmoves =
             Game::create("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0");

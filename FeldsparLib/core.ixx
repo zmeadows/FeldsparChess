@@ -93,13 +93,13 @@ public:
 
     inline bool operator==(const Optional<T>& other) const
     {
-        if (m_filled != other.m_filled) {
+        if (this->m_filled != other.m_filled) {
             return false;
         }
 
-        if (!m_filled) return true;
+        if (!this->m_filled) return true;
 
-        return m_data == other.m_data;
+        return this->m_data == other.m_data;
     }
 };
 
@@ -141,5 +141,8 @@ public:
         return *this;
     }
 
-    inline bool operator==(const Maybe<T, SENTINEL>& other) const { return m_data == other.m_data; }
+    inline bool operator==(const Maybe<T, SENTINEL>& other) const
+    {
+        return this->m_data == other.m_data;
+    }
 };
