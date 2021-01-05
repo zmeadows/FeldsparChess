@@ -6,6 +6,10 @@
     </ClCompile>
     <ClCompile Include="bitboard_test.cpp" />
     <ClCompile Include="game_test.cpp" />
+    <ClCompile Include="array_test.cpp">
+      <Filter>unstd</Filter>
+    </ClCompile>
+    <ClCompile Include="rays_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
