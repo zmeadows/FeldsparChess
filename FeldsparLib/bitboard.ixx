@@ -4,6 +4,7 @@ import prelude;
 
 import<cassert>;
 import<intrin.h>;
+import<iostream>;
 
 template <size_t N, size_t I>
 constexpr Bitboard BB_helper(const char* input)
@@ -33,26 +34,78 @@ constexpr Bitboard BB(const char (&input)[N])
 
 export constexpr Bitboard square_bitrep(Square sq) { return static_cast<Bitboard>(1) << sq; }
 
-export inline constexpr Bitboard BITBOARD_FULL = 0xFFFFFFFFFFFFFFFF;
-export inline constexpr Bitboard BITBOARD_EMPTY = 0x0;
+export inline constexpr const Bitboard BITBOARD_FULL = 0xFFFFFFFFFFFFFFFF;
+export inline constexpr const Bitboard BITBOARD_EMPTY = 0x0;
 
-export inline constexpr Bitboard NOT_A_FILE = BB("01111111"
-                                                 "01111111"
-                                                 "01111111"
-                                                 "01111111"
-                                                 "01111111"
-                                                 "01111111"
-                                                 "01111111"
-                                                 "01111111");
+export inline constexpr const Bitboard H_FILE = BB("00000001"
+                                                   "00000001"
+                                                   "00000001"
+                                                   "00000001"
+                                                   "00000001"
+                                                   "00000001"
+                                                   "00000001"
+                                                   "00000001");
 
-export inline constexpr Bitboard NOT_H_FILE = BB("11111110"
-                                                 "11111110"
-                                                 "11111110"
-                                                 "11111110"
-                                                 "11111110"
-                                                 "11111110"
-                                                 "11111110"
-                                                 "11111110");
+export inline constexpr const Bitboard G_FILE = H_FILE << 1;
+export inline constexpr const Bitboard F_FILE = H_FILE << 2;
+export inline constexpr const Bitboard E_FILE = H_FILE << 3;
+export inline constexpr const Bitboard D_FILE = H_FILE << 4;
+export inline constexpr const Bitboard C_FILE = H_FILE << 5;
+export inline constexpr const Bitboard B_FILE = H_FILE << 6;
+export inline constexpr const Bitboard A_FILE = H_FILE << 7;
+
+export inline constexpr const Bitboard NOT_A_FILE = ~A_FILE;
+export inline constexpr const Bitboard NOT_B_FILE = ~B_FILE;
+export inline constexpr const Bitboard NOT_C_FILE = ~C_FILE;
+export inline constexpr const Bitboard NOT_D_FILE = ~D_FILE;
+export inline constexpr const Bitboard NOT_E_FILE = ~E_FILE;
+export inline constexpr const Bitboard NOT_F_FILE = ~F_FILE;
+export inline constexpr const Bitboard NOT_G_FILE = ~G_FILE;
+export inline constexpr const Bitboard NOT_H_FILE = ~H_FILE;
+
+export inline constexpr const Bitboard FIRST_RANK = BB("00000000"
+                                                       "00000000"
+                                                       "00000000"
+                                                       "00000000"
+                                                       "00000000"
+                                                       "00000000"
+                                                       "00000000"
+                                                       "11111111");
+
+export inline constexpr const Bitboard SECOND_RANK = FIRST_RANK << 8 * 1;
+export inline constexpr const Bitboard THIRD_RANK = FIRST_RANK << 8 * 2;
+export inline constexpr const Bitboard FOURTH_RANK = FIRST_RANK << 8 * 3;
+export inline constexpr const Bitboard FIFTH_RANK = FIRST_RANK << 8 * 4;
+export inline constexpr const Bitboard SIXTH_RANK = FIRST_RANK << 8 * 5;
+export inline constexpr const Bitboard SEVENTH_RANK = FIRST_RANK << 8 * 6;
+export inline constexpr const Bitboard EIGTH_RANK = FIRST_RANK << 8 * 7;
+
+export inline constexpr const Bitboard NOT_FIRST_RANK = ~FIRST_RANK;
+export inline constexpr const Bitboard NOT_SECOND_RANK = ~SECOND_RANK;
+export inline constexpr const Bitboard NOT_THIRD_RANK = ~THIRD_RANK;
+export inline constexpr const Bitboard NOT_FOURTH_RANK = ~FOURTH_RANK;
+export inline constexpr const Bitboard NOT_FIFTH_RANK = ~FIFTH_RANK;
+export inline constexpr const Bitboard NOT_SIXTH_RANK = ~SIXTH_RANK;
+export inline constexpr const Bitboard NOT_SEVENTH_RANK = ~SEVENTH_RANK;
+export inline constexpr const Bitboard NOT_EIGTH_RANK = ~EIGTH_RANK;
+
+export inline constexpr const Bitboard MAIN_DIAGONAL = BB("00000001"
+                                                          "00000010"
+                                                          "00000100"
+                                                          "00001000"
+                                                          "00010000"
+                                                          "00100000"
+                                                          "01000000"
+                                                          "10000000");
+
+export inline constexpr const Bitboard MAIN_ANTIDIAGONAL = BB("10000000"
+                                                              "01000000"
+                                                              "00100000"
+                                                              "00010000"
+                                                              "00001000"
+                                                              "00000100"
+                                                              "00000010"
+                                                              "00000001");
 
 export constexpr bool bitboard_is_empty(const Bitboard bb) { return bb == BITBOARD_EMPTY; }
 export constexpr bool bitboard_is_occupied(const Bitboard bb) { return bb != BITBOARD_EMPTY; }
@@ -132,17 +185,65 @@ export constexpr Bitboard bitboard_shifted(const Bitboard bb, const Direction di
     }
 }
 
-// export void print_bitboard(Bitboard bb, std::ostream& stream = std::cout)
-// {
-// 	bool bits[64] = { 0 };
-// 	bitboard_iter_squares(bb, [&](Square sq) { bits[63 - sq] = true; });
-//
-// 	for (size_t i = 0; i < 8; i++) {
-// 		for (size_t j = 0; j < 8; j++) {
-// 			const size_t idx = 8 * i + j;
-// 			stream << (bits[idx] ? '1' : '0');
-// 		}
-// 		stream << ' ' << std::endl;
-// 	}
-// 	stream << std::endl;
-// }
+export void print_bitboard(Bitboard bb, std::ostream& stream = std::cout)
+{
+    bool bits[64] = {0};
+    bitboard_iter_squares(bb, [&](Square sq) { bits[63 - sq] = true; });
+
+    for (size_t i = 0; i < 8; i++) {
+        for (size_t j = 0; j < 8; j++) {
+            const size_t idx = 8 * i + j;
+            stream << (bits[idx] ? '1' : '0');
+        }
+        stream << ' ' << std::endl;
+    }
+    stream << std::endl;
+}
+
+export inline constexpr Bitboard rank_mask(Square sq) { return FIRST_RANK << (sq & 56); }
+export inline constexpr Bitboard file_mask(Square sq) { return H_FILE << (sq & 7); }
+
+export inline constexpr Bitboard rank_mask_ex(Square sq)
+{
+    return square_bitrep(sq) ^ rank_mask(sq);
+}
+
+export inline constexpr Bitboard file_mask_ex(Square sq)
+{
+    return square_bitrep(sq) ^ file_mask(sq);
+}
+
+// TODO: use algebra of boolean operators to simplify
+export inline constexpr Bitboard diag_mask(Square sq)
+{
+    sq = (sq & 56) + 7 - (sq & 7);
+    const S64 diag = 8 * (sq & 7) - (sq & 56);
+    const S64 nort = -diag & (diag >> 31);
+    const S64 sout = diag & (-diag >> 31);
+    return (MAIN_DIAGONAL >> sout) << nort;
+}
+
+// TODO: use algebra of boolean operators to simplify
+export inline constexpr Bitboard antidiag_mask(Square sq)
+{
+    sq = (sq & 56) + 7 - (sq & 7);
+    const S64 diag = 56 - 8 * (sq & 7) - (sq & 56);
+    const S64 nort = -diag & (diag >> 31);
+    const S64 sout = diag & (-diag >> 31);
+    return (MAIN_ANTIDIAGONAL >> sout) << nort;
+}
+
+export inline constexpr Bitboard diag_mask_ex(Square sq)
+{
+    return square_bitrep(sq) ^ diag_mask(sq);
+}
+
+export inline constexpr Bitboard antidiag_mask_ex(Square sq)
+{
+    return square_bitrep(sq) ^ antidiag_mask(sq);
+}
+
+export inline constexpr Bitboard bishop_mask_ex(Square sq)
+{
+    return diag_mask_ex(sq) | antidiag_mask_ex(sq);
+}
