@@ -26,6 +26,47 @@ TEST(Game, Initialization)
     EXPECT_EQ(g.castling_rights, NO_CASTLING_RIGHTS);
 }
 
+TEST(Game, ComparisonOperator)
+{
+    Game g1;
+
+    {
+        Game g2;
+        EXPECT_EQ(g1, g2);
+    }
+
+    {
+        Game g2;
+        g2.board[11] = 0x2048;
+        EXPECT_NE(g1, g2);
+    }
+
+    {
+        Game g2;
+        g2.ep_square = 11;
+        EXPECT_NE(g1, g2);
+    }
+
+    {
+        Game g2;
+        g2.to_move = !g2.to_move;
+        EXPECT_NE(g1, g2);
+    }
+
+    {
+        Game g2;
+        g2.fullmoves += 10;
+        EXPECT_NE(g1, g2);
+        g2.fullmoves -= 10;
+        EXPECT_EQ(g1, g2);
+    }
+
+    {
+        Game g2;
+        g2.halfmove_clock += 10;
+        EXPECT_NE(g1, g2);
+    }
+}
 TEST(Game, FENToGame)
 {
     { // starting position
