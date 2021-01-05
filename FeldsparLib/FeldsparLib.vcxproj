@@ -180,13 +180,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="array.ixx" />
     <ClCompile Include="bitboard.ixx" />
     <ClCompile Include="board.ixx" />
     <ClCompile Include="core.ixx" />
     <ClCompile Include="FeldsparLib.cpp" />
     <ClCompile Include="game.ixx" />
+    <ClCompile Include="rays.ixx" />
+    <ClCompile Include="magic.ixx" />
     <ClCompile Include="logger.h" />
     <ClCompile Include="move.ixx" />
+    <ClCompile Include="movegen.ixx" />
     <ClCompile Include="prelude.ixx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
