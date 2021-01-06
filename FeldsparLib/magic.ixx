@@ -5,6 +5,7 @@ import unstd.array;
 
 import prelude;
 import bitboard;
+import rays;
 
 constexpr const Bitboard INNER_SQUARES = BB("00000000"
                                             "01111110"
@@ -27,6 +28,16 @@ struct MagicSquare {
     U64 magic = 0;
     S64 shift = 0;
 };
+
+// TODO: this is just a stub, implement the real permutations
+export template <typename Callable>
+inline void for_each_mask_permutation(Bitboard mask, Callable&& f)
+{
+    while (mask != 0) {
+        f(mask);
+        mask &= (mask - 1);
+    }
+}
 
 constexpr Array<MagicSquare, 64> generate_bishop_magics()
 {
