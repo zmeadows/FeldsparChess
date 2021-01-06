@@ -111,6 +111,24 @@ export constexpr bool bitboard_is_empty(const Bitboard bb) { return bb == BITBOA
 export constexpr bool bitboard_is_occupied(const Bitboard bb) { return bb != BITBOARD_EMPTY; }
 export constexpr bool bitboard_is_full(const Bitboard bb) { return bb == BITBOARD_FULL; }
 
+// TODO: make tests for these
+export inline constexpr Bitboard set_bit(Bitboard bb, Square sq)
+{
+    return bb | (Bitboard(1) << sq);
+}
+export inline constexpr Bitboard clear_bit(Bitboard bb, Square sq)
+{
+    return bb & ~(Bitboard(1) << sq);
+}
+export inline constexpr Bitboard toggle_bit(Bitboard bb, Square sq)
+{
+    return bb ^ (Bitboard(1) << sq);
+}
+export inline constexpr bool check_bit(Bitboard bb, Square sq)
+{
+    return ((bb >> sq) & Bitboard(1)) > 0;
+}
+
 export constexpr Bitboard bitboard_flipped(Bitboard bb) { return ~bb; }
 
 export inline Square bitboard_bsf(Bitboard bb)
