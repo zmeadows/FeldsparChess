@@ -1,6 +1,9 @@
 export module board;
 
 import prelude;
+import bitboard;
+import rays;
+import tables;
 
 import<cstring>;
 
@@ -54,4 +57,25 @@ export inline constexpr Bitboard& get_occupied_mut(Board& board, const Color c)
 export inline constexpr Bitboard get_occupied(const Board& board)
 {
     return get_occupied(board, Color::White) || get_occupied(board, Color::Black);
+}
+
+export inline constexpr Bitboard attackers(const Board& board, Color color, Square sq)
+{
+    using enum PieceType;
+
+    Bitboard attackers = BITBOARD_EMPTY;
+
+    attackers |= get_pawn_attacks(sq, !color) & get_pieces(board, Pawn, color);
+    attackers |= get_knight_attacks(sq) & get_pieces(board, Knight, color);
+    attackers |= get_king_attacks(sq) & get_pieces(board, King, color);
+
+    const Bitboard occupied = get_occupied(board);
+
+    const Bitboard BQ = get_pieces(board, Queen, color) | get_pieces(board, Bishop, color);
+    attackers |= get_bishop_attacks(sq, occupied) & BQ;
+
+    const Bitboard RQ = get_pieces(board, Queen, color) | get_pieces(board, Rook, color);
+    attackers |= get_rook_attacks(sq, occupied) & RQ;
+
+    return attackers;
 }
