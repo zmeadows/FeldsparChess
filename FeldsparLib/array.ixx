@@ -21,18 +21,18 @@ public:
         }
     }
 
-    inline U64 capacity() const { return N; }
+    inline constexpr U64 capacity() const { return N; }
 
-    const T& operator[](U64 idx) const { return m_data[idx]; }
-    T& operator[](U64 idx) { return m_data[idx]; }
+    constexpr const T& operator[](U64 idx) const { return m_data[idx]; }
+    constexpr T& operator[](U64 idx) { return m_data[idx]; }
 
-    T* begin() { return m_data; }
-    T* end() { return m_data + N; }
+    constexpr T* begin() { return m_data; }
+    constexpr T* end() { return m_data + N; }
 };
 
 export template <typename T, U64 STACK_SIZE>
 class DynArray {
-    alignas(alignof(T)) U8 m_data[sizeof(T) * STACK_SIZE];
+    T m_data[STACK_SIZE];
     T* m_ptr;
 
     U64 m_length;
@@ -63,11 +63,7 @@ class DynArray {
     }
 
 public:
-    DynArray(void)
-        : m_length(0), m_capacity(STACK_SIZE), m_on_stack(true),
-          m_ptr(reinterpret_cast<T*>(&m_data))
-    {
-    }
+    DynArray(void) : m_length(0), m_capacity(STACK_SIZE), m_on_stack(true), m_ptr(&m_data[0]) {}
 
     template <typename... Args>
     void append(Args&&... args)
@@ -78,17 +74,16 @@ public:
         m_length++;
     }
 
-    inline U64 capacity() const { return m_capacity; }
+    constexpr inline U64 capacity() const { return m_capacity; }
 
-    inline U64 length() const { return m_length; }
+    constexpr inline U64 length() const { return m_length; }
 
-    inline const T& operator[](U64 idx) const { return m_ptr[idx]; }
-    inline T& operator[](U64 idx) { return m_ptr[idx]; }
+    constexpr inline const T& operator[](U64 idx) const { return m_ptr[idx]; }
+    constexpr inline T& operator[](U64 idx) { return m_ptr[idx]; }
+    constexpr inline T* begin() { return m_ptr; }
+    constexpr inline T* end() { return m_ptr + m_length; }
 
-    inline T* begin() { return m_ptr; }
-    inline T* end() { return m_ptr + m_length; }
-
-    inline bool on_stack() const { return m_on_stack; }
+    constexpr inline bool on_stack() const { return m_on_stack; }
 
     void clear()
     {
@@ -100,7 +95,7 @@ public:
 
         m_length = 0;
         m_capacity = STACK_SIZE;
-        m_ptr = reinterpret_cast<T*>(&m_data);
+        m_ptr = &m_data[0];
         m_on_stack = true;
     }
 };
