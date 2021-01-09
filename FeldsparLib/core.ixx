@@ -13,6 +13,9 @@ export using S32 = int32_t;
 export using S16 = int16_t;
 export using S8 = int8_t;
 
+export using F32 = float;
+export using F64 = double;
+
 // For any enum class that defines a LAST member, this allows us to loop over the enum
 // easily in a range-based for loop: for (const auto x : EnumRange<T>()).
 // Luckily optimizes out to be equivalent to incrementing a single integer (on MSVC).
