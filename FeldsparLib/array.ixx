@@ -56,6 +56,7 @@ class DynArray {
         for (U64 i = 0; i < m_length; i++) {
             new (new_ptr + i) T(std::move(m_ptr[i]));
         }
+
         free(m_ptr);
         m_ptr = new_ptr;
         m_capacity = new_capacity;
@@ -81,13 +82,13 @@ public:
 
     inline U64 length() const { return m_length; }
 
-    const T& operator[](U64 idx) const { return m_ptr[idx]; }
-    T& operator[](U64 idx) { return m_ptr[idx]; }
+    inline const T& operator[](U64 idx) const { return m_ptr[idx]; }
+    inline T& operator[](U64 idx) { return m_ptr[idx]; }
 
-    T* begin() { return m_ptr; }
-    T* end() { return m_ptr + m_length; }
+    inline T* begin() { return m_ptr; }
+    inline T* end() { return m_ptr + m_length; }
 
-    bool on_stack() const { return m_on_stack; }
+    inline bool on_stack() const { return m_on_stack; }
 
     void clear()
     {
