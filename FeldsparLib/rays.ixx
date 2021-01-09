@@ -554,7 +554,7 @@ inline constexpr bool is_positive_direction(Direction dir)
 }
 
 template <Direction DIR>
-constexpr inline Bitboard get_ray_attacks(Square sq, Bitboard occupied)
+inline constexpr Bitboard get_ray_attacks(Square sq, Bitboard occupied)
 {
     constexpr S64 DIR_IDX = 64 * static_cast<S64>(DIR);
 
@@ -596,4 +596,48 @@ export constexpr inline Bitboard get_rook_attacks(Square sq, Bitboard occupied)
 export constexpr inline Bitboard get_queen_attacks(Square sq, Bitboard occupied)
 {
     return get_bishop_attacks(sq, occupied) | get_rook_attacks(sq, occupied);
+}
+
+export constexpr inline Bitboard xray_rook_attacks(Bitboard occ, Bitboard blockers,
+                                                   Square rook_square)
+{
+    Bitboard attacks = get_rook_attacks(rook_square, occ);
+    blockers &= attacks;
+    return attacks ^ get_rook_attacks(rook_square, occ ^ blockers);
+}
+
+export constexpr inline Bitboard xray_bishop_attacks(Bitboard occ, Bitboard blockers,
+                                                     Square bishop_square)
+{
+    Bitboard attacks = get_bishop_attacks(bishop_square, occ);
+    blockers &= attacks;
+    return attacks ^ get_bishop_attacks(bishop_square, occ ^ blockers);
+}
+
+Array<Bitboard, 64 * 64> compute_rays_between_squares()
+{
+    Array<Bitboard, 64 * 64> rays;
+
+    U64 idx = 0;
+
+    for (Square sq_a = 0; sq_a < 64; sq_a++) {
+        for (Square sq_b = 0; sq_b < 64; sq_b++) {
+            const Bitboard sqb_bit = square_bitrep(sq_b);
+
+            const Bitboard ray = get_ray_attacks<Direction::North>(sq_a, sqb_bit);
+            if (bitboard_is_occupied(ray & sqb_bit)) {
+                rays[idx] = ray;
+                idx++;
+            }
+        }
+    }
+
+    return rays;
+}
+
+const Array<Bitboard, 64 * 64> RAYS_BETWEEN_SQUARES = compute_rays_between_squares();
+
+export inline Bitboard get_ray_between_squares(Square a, Square b)
+{
+    return RAYS_BETWEEN_SQUARES[a * 64 + b];
 }
