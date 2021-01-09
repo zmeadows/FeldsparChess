@@ -7,7 +7,7 @@ import unstd.array;
 // These 'classical' ray methods are primarily used as a way of producing valid attack tables
 // for use in other methods such as magic bitboards.
 
-constexpr const Array<Bitboard, 8 * 64> RAY_TABLE({
+inline constexpr Array<Bitboard, 8 * 64> RAY_TABLE({
     /* NORTH */
     72340172838076672,
     144680345676153344,
@@ -553,6 +553,7 @@ inline constexpr bool is_positive_direction(Direction dir)
     }
 }
 
+// TODO: East/West seem to be reversed here?
 template <Direction DIR>
 inline constexpr Bitboard get_ray_attacks(Square sq, Bitboard occupied)
 {
@@ -575,6 +576,31 @@ inline constexpr Bitboard get_ray_attacks(Square sq, Bitboard occupied)
     }
 
     return attacks;
+}
+
+inline Bitboard get_ray_attacks(Square sq, Bitboard occupied, Direction dir)
+{
+    using enum Direction;
+    switch (dir) {
+        case North:
+            return get_ray_attacks<North>(sq, occupied);
+        case South:
+            return get_ray_attacks<South>(sq, occupied);
+        case East:
+            return get_ray_attacks<East>(sq, occupied);
+        case West:
+            return get_ray_attacks<West>(sq, occupied);
+        case NorthEast:
+            return get_ray_attacks<NorthEast>(sq, occupied);
+        case NorthWest:
+            return get_ray_attacks<NorthWest>(sq, occupied);
+        case SouthEast:
+            return get_ray_attacks<SouthEast>(sq, occupied);
+        case SouthWest:
+            return get_ray_attacks<SouthWest>(sq, occupied);
+        default:
+            return BITBOARD_EMPTY;
+    }
 }
 
 export constexpr inline Bitboard get_bishop_attacks(Square sq, Bitboard occupied)
@@ -614,8 +640,7 @@ export constexpr inline Bitboard xray_bishop_attacks(Bitboard occ, Bitboard bloc
     return attacks ^ get_bishop_attacks(bishop_square, occ ^ blockers);
 }
 
-Array<Bitboard, 64 * 64> compute_rays_between_squares()
-{
+const Array<Bitboard, 64 * 64> RAYS_BETWEEN_SQUARES = []() {
     Array<Bitboard, 64 * 64> rays;
 
     U64 idx = 0;
@@ -623,19 +648,19 @@ Array<Bitboard, 64 * 64> compute_rays_between_squares()
     for (Square sq_a = 0; sq_a < 64; sq_a++) {
         for (Square sq_b = 0; sq_b < 64; sq_b++) {
             const Bitboard sqb_bit = square_bitrep(sq_b);
-
-            const Bitboard ray = get_ray_attacks<Direction::North>(sq_a, sqb_bit);
-            if (bitboard_is_occupied(ray & sqb_bit)) {
-                rays[idx] = ray;
-                idx++;
+            for (Direction dir : EnumRange<Direction>()) {
+                const Bitboard ray = get_ray_attacks(sq_a, sqb_bit, dir);
+                if (bitboard_is_occupied(ray & sqb_bit)) {
+                    rays[idx] = ray;
+                    break;
+                }
             }
+            idx++;
         }
     }
 
     return rays;
-}
-
-const Array<Bitboard, 64 * 64> RAYS_BETWEEN_SQUARES = compute_rays_between_squares();
+}();
 
 export inline Bitboard get_ray_between_squares(Square a, Square b)
 {
