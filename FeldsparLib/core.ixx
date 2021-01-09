@@ -23,9 +23,9 @@ export template <class T>
 struct EnumRange {
     struct Iterator {
         explicit inline constexpr Iterator(int v) : value(v) {}
-        inline void operator++() { ++value; }
-        inline bool operator!=(Iterator rhs) { return value != rhs.value; }
-        inline T operator*() const { return static_cast<T>(value); }
+        inline constexpr void operator++() { ++value; }
+        inline constexpr bool operator!=(Iterator rhs) { return value != rhs.value; }
+        inline constexpr T operator*() const { return static_cast<T>(value); }
 
         int value = 0;
     };
