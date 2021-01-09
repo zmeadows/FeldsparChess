@@ -57,5 +57,11 @@
     <ClCompile Include="hashtable.ixx">
       <Filter>Source Files\unstd</Filter>
     </ClCompile>
+    <ClCompile Include="pins.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tables.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
