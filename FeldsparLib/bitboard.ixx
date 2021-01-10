@@ -112,40 +112,40 @@ export constexpr bool bitboard_is_occupied(const Bitboard bb) { return bb != BIT
 export constexpr bool bitboard_is_full(const Bitboard bb) { return bb == BITBOARD_FULL; }
 
 // TODO: make tests for these
-export inline constexpr Bitboard set_bit(Bitboard bb, Square sq)
+export __forceinline constexpr Bitboard set_bit(Bitboard bb, Square sq)
 {
     return bb | (Bitboard(1) << sq);
 }
-export inline constexpr Bitboard clear_bit(Bitboard bb, Square sq)
+export __forceinline constexpr Bitboard clear_bit(Bitboard bb, Square sq)
 {
     return bb & ~(Bitboard(1) << sq);
 }
-export inline constexpr Bitboard toggle_bit(Bitboard bb, Square sq)
+export __forceinline constexpr Bitboard toggle_bit(Bitboard bb, Square sq)
 {
     return bb ^ (Bitboard(1) << sq);
 }
-export inline constexpr bool check_bit(Bitboard bb, Square sq)
+export __forceinline constexpr bool check_bit(Bitboard bb, Square sq)
 {
     return ((bb >> sq) & Bitboard(1)) > 0;
 }
 
-export constexpr Bitboard bitboard_flipped(Bitboard bb) { return ~bb; }
+export __forceinline constexpr Bitboard bitboard_flipped(Bitboard bb) { return ~bb; }
 
-export inline Square bitboard_bsf(Bitboard bb)
+export __forceinline Square bitboard_bsf(Bitboard bb)
 {
     unsigned long idx = 0;
     _BitScanForward64(&idx, bb);
     return static_cast<Square>(idx);
 }
 
-export inline Square bitboard_bsr(Bitboard bb)
+export __forceinline Square bitboard_bsr(Bitboard bb)
 {
     unsigned long idx = 0;
     _BitScanReverse64(&idx, bb);
     return static_cast<Square>(idx);
 }
 
-export U64 bitboard_popcount(Bitboard bb) { return __popcnt64(bb); }
+export __forceinline U64 bitboard_popcount(Bitboard bb) { return __popcnt64(bb); }
 
 export template <typename Callable>
 inline void bitboard_iter_squares(Bitboard bb, Callable&& f)
