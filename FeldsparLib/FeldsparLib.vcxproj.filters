@@ -63,5 +63,8 @@
     <ClCompile Include="tables.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="quad.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

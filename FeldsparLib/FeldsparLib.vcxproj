@@ -187,6 +187,7 @@
     <ClCompile Include="game.ixx" />
     <ClCompile Include="hashtable.ixx" />
     <ClCompile Include="pins.ixx" />
+    <ClCompile Include="quad.ixx" />
     <ClCompile Include="random.ixx" />
     <ClCompile Include="rays.ixx" />
     <ClCompile Include="magic.ixx" />
