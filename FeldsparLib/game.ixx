@@ -30,7 +30,7 @@ export struct Game {
 // TODO: switch to using basic const char* and C functions
 Optional<Game> create_game_internal(std::string_view fen)
 {
-    if (fen.size() == 0) {
+    if (fen.size() == 0) [[unlikely]] {
         return {};
     }
 
@@ -61,7 +61,7 @@ Optional<Game> create_game_internal(std::string_view fen)
     const auto fen_pieces = split_string(fen);
     // We consider a FEN string valid even if it doesn't specify half and/or full move counts,
     // in which case they are set to 0 and 1 respectively, as at the start of a game.
-    if (fen_pieces.size() != 4 && fen_pieces.size() != 6) {
+    if (fen_pieces.size() != 4 && fen_pieces.size() != 6) [[unlikely]] {
         WARN("Invalid FEN string with wrong number of whitespaces");
         return {};
     }
@@ -70,10 +70,10 @@ Optional<Game> create_game_internal(std::string_view fen)
 
     Square current_square = 63;
     constexpr auto decrement_square = [&](Square n) -> void {
-        if (current_square >= n) {
+        if (current_square >= n) [[likely]] {
             current_square -= n;
         }
-        else {
+        else [[unlikely]] {
             current_square = 0;
         }
     };
@@ -124,7 +124,7 @@ Optional<Game> create_game_internal(std::string_view fen)
         else if (ch == '/') {
             continue;
         }
-        else {
+        else [[unlikely]] {
             WARN("Invalid character encountered in FEN board representation.");
             return {};
         }
@@ -132,7 +132,7 @@ Optional<Game> create_game_internal(std::string_view fen)
 
     auto fen_color = fen_pieces[1];
 
-    if (fen_color.size() != 1) {
+    if (fen_color.size() != 1) [[unlikely]] {
         WARN("Invalid FEN color string length (should be 1).");
         return {};
     }
@@ -146,10 +146,12 @@ Optional<Game> create_game_internal(std::string_view fen)
             game.to_move = Color::Black;
             break;
         }
-        default: {
-            WARN("Invalid FEN color string value (should be w or b).");
-            return {};
-        }
+        default:
+            [[unlikely]]
+            {
+                WARN("Invalid FEN color string value (should be w or b).");
+                return {};
+            }
     }
 
     auto fen_castle = fen_pieces[2];
@@ -176,18 +178,20 @@ Optional<Game> create_game_internal(std::string_view fen)
                     game.castling_rights |= BLACK_QUEENSIDE;
                     break;
                 }
-                default: {
-                    WARN("Invalid FEN castling rights string (should be combination of K,Q,k,q "
-                         "characters).");
-                    return {};
-                }
+                default:
+                    [[unlikely]]
+                    {
+                        WARN("Invalid FEN castling rights string (should be combination of K,Q,k,q "
+                             "characters).");
+                        return {};
+                    }
             }
         }
     }
 
     auto fen_ep = fen_pieces[3];
 
-    if (fen_ep != "-") {
+    if (fen_ep != "-") [[unlikely]] {
         if (fen_ep.size() != 2) {
             WARN("Invalid FEN en passant target square string.");
             return {};
@@ -202,19 +206,19 @@ Optional<Game> create_game_internal(std::string_view fen)
         }
     }
 
-    if (fen_pieces.size() >= 5) {
+    if (fen_pieces.size() >= 5) [[likely]] {
         auto fen_halfmove = fen_pieces[4];
         game.halfmove_clock = atoi(std::string(fen_halfmove).c_str());
     }
-    else {
+    else [[unlikely]] {
         game.halfmove_clock = 0;
     }
 
-    if (fen_pieces.size() >= 6) {
+    if (fen_pieces.size() >= 6) [[likely]] {
         auto fen_fullmoves = fen_pieces[5];
         game.fullmoves = atoi(std::string(fen_fullmoves).c_str());
     }
-    else {
+    else [[unlikely]] {
         game.fullmoves = 1;
     }
 
@@ -223,15 +227,15 @@ Optional<Game> create_game_internal(std::string_view fen)
 
 export Optional<Game> Game::create(const char* fen)
 {
-    if (fen == nullptr) {
+    if (fen == nullptr) [[unlikely]] {
         WARN("Passed nullptr to Game::create.");
         return {};
     }
-    else if (strnlen(fen, 100) == 100) {
+    else if (strnlen(fen, 100) == 100) [[unlikely]] {
         WARN("Passed invalid FEN string that was too long to Game::create.");
         return {};
     }
-    else {
+    else [[likely]] {
         return create_game_internal(fen);
     }
 }
