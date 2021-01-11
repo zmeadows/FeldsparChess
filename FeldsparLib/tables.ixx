@@ -71,7 +71,7 @@ constexpr inline Array<Bitboard, 64> KNIGHT_ATTACKS(
      4679521487814656,
      9077567998918656});
 
-export constexpr inline Bitboard get_knight_attacks(Square sq) { return KNIGHT_ATTACKS[sq]; }
+export constexpr inline Bitboard get_knight_moves(Square sq) { return KNIGHT_ATTACKS[sq]; }
 
 constexpr inline Array<Bitboard, 64> KING_ATTACKS(
     //
@@ -140,7 +140,7 @@ constexpr inline Array<Bitboard, 64> KING_ATTACKS(
      11592265440851656704,
      4665729213955833856});
 
-export constexpr inline Bitboard get_king_attacks(Square sq) { return KING_ATTACKS[sq]; }
+export constexpr inline Bitboard get_king_moves(Square sq) { return KING_ATTACKS[sq]; }
 
 constexpr inline Array<Bitboard, 64 * 2> PAWN_ATTACKS(
     //
