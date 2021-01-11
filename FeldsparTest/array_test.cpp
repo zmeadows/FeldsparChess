@@ -15,9 +15,16 @@ TEST(DynArray, Append)
     for (auto i = 0; i < 32; i++) {
         EXPECT_EQ(arr[i], i * i);
     }
-    EXPECT_TRUE(arr.on_stack());
 
+    EXPECT_TRUE(arr.on_stack());
     arr.append(0);
     EXPECT_FALSE(arr.on_stack());
+
     EXPECT_EQ(arr.capacity(), 64);
+
+    for (auto i = 0; i < 32; i++) {
+        EXPECT_EQ(arr[i], i * i);
+    }
+
+    EXPECT_EQ(arr[32], 0);
 }

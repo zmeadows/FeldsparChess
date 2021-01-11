@@ -456,13 +456,13 @@ TEST(Bitboard, Serialization)
                                "00000000"
                                "00000001");
         U64 count = 0;
-        bitboard_iter_squares(bb, [&](Square sq) -> void { count++; });
+        serialize(bb, [&](Square sq) -> void { count++; });
         EXPECT_TRUE(count == 8);
     }
 
     {
         U64 count = 0;
-        bitboard_iter_squares(BITBOARD_EMPTY, [&](Square sq) -> void { count++; });
+        serialize(BITBOARD_EMPTY, [&](Square sq) -> void { count++; });
         EXPECT_TRUE(count == 0);
     }
 
@@ -476,7 +476,7 @@ TEST(Bitboard, Serialization)
     //                            "00000010"
     //                            "00000001");
     //     std::vector<Square> squares;
-    //     bitboard_iter_squares(bb, [&](Square sq) -> void { squares.push_back(sq); });
+    //     serialize(bb, [&](Square sq) -> void { squares.push_back(sq); });
     //     EXPECT_EQ(squares, std::vector<Square>({0, 9, 18, 27, 36, 45, 54, 63}));
     // }
 }

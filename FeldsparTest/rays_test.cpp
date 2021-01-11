@@ -369,7 +369,7 @@ TEST(Rays, QueenAttackRays)
 TEST(Rays, RayBetweenSquares)
 {
     {
-        const Bitboard ray = get_ray_between_squares(0, 7);
+        const Bitboard ray = ray_between_squares(0, 7);
 
         constexpr Bitboard bb = BB("00000000"
                                    "00000000"
@@ -384,7 +384,7 @@ TEST(Rays, RayBetweenSquares)
     }
 
     {
-        const Bitboard ray = get_ray_between_squares(0, 56);
+        const Bitboard ray = ray_between_squares(0, 56);
 
         constexpr Bitboard bb = BB("00000001"
                                    "00000001"
@@ -399,7 +399,7 @@ TEST(Rays, RayBetweenSquares)
     }
 
     {
-        const Bitboard ray = get_ray_between_squares(0, 63);
+        const Bitboard ray = ray_between_squares(0, 63);
 
         constexpr Bitboard bb = BB("10000000"
                                    "01000000"
@@ -414,7 +414,7 @@ TEST(Rays, RayBetweenSquares)
     }
 
     {
-        const Bitboard ray = get_ray_between_squares(9, 54);
+        const Bitboard ray = ray_between_squares(9, 54);
 
         constexpr Bitboard bb = BB("00000000"
                                    "01000000"
