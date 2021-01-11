@@ -81,7 +81,7 @@ export inline constexpr Bitboard attackers(const Board& board, Color color, Squa
 
 // TODO: Use AVX2 flood fills to compute this faster
 export template <bool REMOVE_KING>
-Bitboard attacked(const Board& board, Color attacking_color)
+inline Bitboard attacked(const Board& board, Color attacking_color)
 {
     using enum PieceType;
 

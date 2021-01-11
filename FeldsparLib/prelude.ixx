@@ -12,8 +12,10 @@ export using Move = U32;
 export using CastlingRights = U8;
 export inline constexpr U8 WHITE_KINGSIDE = 0b0001;
 export inline constexpr U8 WHITE_QUEENSIDE = 0b0010;
+export inline constexpr U8 WHITE_CASTLE_MASK = 0b0011;
 export inline constexpr U8 BLACK_KINGSIDE = 0b0100;
 export inline constexpr U8 BLACK_QUEENSIDE = 0b1000;
+export inline constexpr U8 BLACK_CASTLE_MASK = 0b1100;
 export inline constexpr U8 FULL_CASTLING_RIGHTS = 0b1111;
 export inline constexpr U8 NO_CASTLING_RIGHTS = 0b0000;
 

@@ -72,8 +72,7 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
     if (check_multiplicity > 1) [[unlikely]] {
         return;
     }
-
-    if (check_multiplicity == 1) [[unlikely]] {
+    else if (check_multiplicity == 1) [[unlikely]] {
         capture_mask = king_attackers;
         const Square checker_square = bitboard_bsf(king_attackers);
 
@@ -165,7 +164,7 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
 
     const Bitboard friendly_pawns = get_pieces(board, Pawn, friendly_color);
 
-    Bitboard singly_advanced_pawns, doubly_advanced_pawns;
+    Bitboard singly_advanced_pawns, doubly_advanced_pawns, attacking_pawns_mask;
     Square pawn_move_delta;
     S64 promotion_rank;
 
@@ -181,6 +180,14 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
                                     FOURTH_RANK;
 
             promotion_rank = 8;
+
+            attacking_pawns_mask = bitboard_shifted(
+                bitboard_shifted(friendly_pawns, Direction::NorthEast) & capture_mask,
+                Direction::SouthWest);
+
+            attacking_pawns_mask |= bitboard_shifted(
+                bitboard_shifted(friendly_pawns, Direction::NorthWest) & capture_mask,
+                Direction::SouthEast);
         }
         else {
             pawn_move_delta = -8;
@@ -192,6 +199,14 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
                 quiet_mask & bitboard_shifted(singly_advanced_pawns, Direction::South) & FIFTH_RANK;
 
             promotion_rank = 1;
+
+            attacking_pawns_mask = bitboard_shifted(
+                bitboard_shifted(friendly_pawns, Direction::SouthEast) & capture_mask,
+                Direction::NorthWest);
+
+            attacking_pawns_mask |= bitboard_shifted(
+                bitboard_shifted(friendly_pawns, Direction::SouthWest) & capture_mask,
+                Direction::NorthEast);
         }
 
         serialize(singly_advanced_pawns, [&](Square to) {
@@ -265,7 +280,11 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
     };
 
     { // fully unpinned pawn attacks
-        const Bitboard pawns_that_can_capture = friendly_pawns & unpinned;
+        const Bitboard pawns_that_can_capture = friendly_pawns & unpinned & attacking_pawns_mask;
+
+        // TODO: optimize by applying a mask to pawns_that_can_capture to check
+        // that there even is an opposing piece there.
+        // In many cases this will remove most/all pawns from the serialization step below
 
         serialize(pawns_that_can_capture, [&](Square from) {
             const Bitboard pawn_attack_pattern = get_pawn_attacks(from, friendly_color);
@@ -275,7 +294,8 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
     }
 
     { // diagonally pinned pawn attacks
-        const Bitboard pawns_that_can_capture = friendly_pawns & pinned_only_diagonally;
+        const Bitboard pawns_that_can_capture =
+            friendly_pawns & pinned_only_diagonally & attacking_pawns_mask;
 
         serialize(pawns_that_can_capture, [&](Square from) {
             const Bitboard pawn_attack_pattern = get_pawn_attacks(from, friendly_color);
@@ -294,7 +314,12 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
 
     // Castle Moves
     if constexpr (!CAPTURES_ONLY) {
-        if (check_multiplicity == 0) [[likely]] {
+        const bool castle_possible =
+            check_multiplicity == 0 &&
+            ((game.to_move == Color::White) ? (game.castling_rights & WHITE_CASTLE_MASK)
+                                            : (game.castling_rights & BLACK_CASTLE_MASK));
+
+        if (castle_possible) [[unlikely]] {
             bool can_kingside_castle;
             bool can_queenside_castle;
             Square king_castle_square, queen_castle_square;
@@ -328,12 +353,12 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
                 queen_castle_square = 61;
             }
 
-            if (can_kingside_castle) {
+            if (can_kingside_castle) [[unlikely]] {
                 moves.append(
                     create_quiet_move(king_square, king_castle_square, KING_CASTLE_FLAG, King));
             }
 
-            if (can_queenside_castle) {
+            if (can_queenside_castle) [[unlikely]] {
                 moves.append(
                     create_quiet_move(king_square, queen_castle_square, QUEEN_CASTLE_FLAG, King));
             }

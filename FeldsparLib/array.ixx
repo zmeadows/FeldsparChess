@@ -66,6 +66,7 @@ public:
     {
         if (m_length >= m_capacity) [[unlikely]]
             grow();
+
         new (m_ptr + m_length) T(std::forward<Args>(args)...);
         m_length++;
     }
