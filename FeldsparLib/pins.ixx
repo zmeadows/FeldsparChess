@@ -14,10 +14,10 @@ export struct Pins {
     Bitboard diagonal_constraints[64];
     Bitboard nondiagonal_constraints[64];
 
-    static Pins create(const Board& board, const Color friendly_color);
+    static __forceinline Pins create(const Board& board, const Color friendly_color);
 };
 
-export Pins Pins::create(const Board& board, const Color friendly_color)
+export __forceinline Pins Pins::create(const Board& board, const Color friendly_color)
 {
     using enum PieceType;
 
@@ -36,8 +36,8 @@ export Pins Pins::create(const Board& board, const Color friendly_color)
         const Bitboard pinners =
             xray_rook_attacks(occupied_squares, friendly_pieces, king_square) & op_rq;
 
-        bitboard_iter_squares(pinners, [&](Square pinner_square) {
-            const Bitboard connecting_bits = get_ray_between_squares(king_square, pinner_square);
+        serialize(pinners, [&](Square pinner_square) {
+            const Bitboard connecting_bits = ray_between_squares(king_square, pinner_square);
             const Bitboard pinned_bit = connecting_bits & friendly_pieces;
             assert(bitboard_popcount(pinned_bit) == 1);
             pins.nondiagonal_constraints[bitboard_bsf(pinned_bit)] = connecting_bits;
@@ -52,8 +52,8 @@ export Pins Pins::create(const Board& board, const Color friendly_color)
         const Bitboard pinners =
             xray_bishop_attacks(occupied_squares, friendly_pieces, king_square) & op_bq;
 
-        bitboard_iter_squares(pinners, [&](Square pinner_square) {
-            const Bitboard connecting_bits = get_ray_between_squares(king_square, pinner_square);
+        serialize(pinners, [&](Square pinner_square) {
+            const Bitboard connecting_bits = ray_between_squares(king_square, pinner_square);
             const Bitboard pinned_bit = connecting_bits & friendly_pieces;
             assert(bitboard_popcount(pinned_bit) == 1);
             pins.diagonal_constraints[bitboard_bsf(pinned_bit)] = connecting_bits;
