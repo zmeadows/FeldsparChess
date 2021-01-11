@@ -23,11 +23,10 @@ public:
 
     inline constexpr U64 capacity() const { return N; }
 
-    constexpr const T& operator[](U64 idx) const { return m_data[idx]; }
-    constexpr T& operator[](U64 idx) { return m_data[idx]; }
-
-    constexpr T* begin() { return m_data; }
-    constexpr T* end() { return m_data + N; }
+    constexpr inline const T& operator[](U64 idx) const { return m_data[idx]; }
+    constexpr inline T& operator[](U64 idx) { return m_data[idx]; }
+    constexpr inline T* begin() { return m_data; }
+    constexpr inline T* end() { return m_data + N; }
 };
 
 export template <typename T, U64 STACK_SIZE>
@@ -39,25 +38,22 @@ class DynArray {
     U64 m_capacity;
     bool m_on_stack;
 
-    void grow_if_needed()
+    void grow()
     {
-        if (m_length < m_capacity) return;
-
         const U64 new_capacity = m_capacity * 2;
-
-        if (m_on_stack) {
-            m_ptr = static_cast<T*>(malloc(sizeof(T) * new_capacity));
-            m_on_stack = false;
-            m_capacity = new_capacity;
-            return;
-        }
 
         T* new_ptr = static_cast<T*>(malloc(sizeof(T) * new_capacity));
         for (U64 i = 0; i < m_length; i++) {
             new (new_ptr + i) T(std::move(m_ptr[i]));
         }
 
-        free(m_ptr);
+        if (m_on_stack) {
+            m_on_stack = false;
+        }
+        else {
+            free(m_ptr);
+        }
+
         m_ptr = new_ptr;
         m_capacity = new_capacity;
     }
@@ -66,11 +62,20 @@ public:
     DynArray(void) : m_length(0), m_capacity(STACK_SIZE), m_on_stack(true), m_ptr(&m_data[0]) {}
 
     template <typename... Args>
-    void append(Args&&... args)
+    inline void append_move(Args&&... args)
     {
-        grow_if_needed();
-
+        if (m_length >= m_capacity) [[unlikely]]
+            grow();
         new (m_ptr + m_length) T(std::forward<Args>(args)...);
+        m_length++;
+    }
+
+    inline void append(const T& val)
+    {
+        if (m_length >= m_capacity) [[unlikely]]
+            grow();
+
+        new (m_ptr + m_length) T(val);
         m_length++;
     }
 
