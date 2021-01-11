@@ -4,7 +4,7 @@ import prelude;
 
 import<cassert>;
 import<intrin.h>;
-import<iostream>;
+import<iostream>; // TODO: remove
 
 template <size_t N, size_t I>
 constexpr Bitboard BB_helper(const char* input)
@@ -148,7 +148,7 @@ export __forceinline Square bitboard_bsr(Bitboard bb)
 export __forceinline U64 bitboard_popcount(Bitboard bb) { return __popcnt64(bb); }
 
 export template <typename Callable>
-inline void bitboard_iter_squares(Bitboard bb, Callable&& f)
+inline void serialize(Bitboard bb, Callable&& f)
 {
     while (bb != 0) {
         f(bitboard_bsf(bb));
@@ -184,7 +184,7 @@ export constexpr Bitboard bitboard_shifted(const Bitboard bb, const Direction di
 export void print_bitboard(Bitboard bb, std::ostream& stream = std::cout)
 {
     bool bits[64] = {0};
-    bitboard_iter_squares(bb, [&](Square sq) { bits[63 - sq] = true; });
+    serialize(bb, [&](Square sq) { bits[63 - sq] = true; });
 
     for (size_t i = 0; i < 8; i++) {
         for (size_t j = 0; j < 8; j++) {
@@ -196,8 +196,10 @@ export void print_bitboard(Bitboard bb, std::ostream& stream = std::cout)
     stream << std::endl;
 }
 
-export inline constexpr Bitboard rank_mask(Square sq) { return FIRST_RANK << (sq & 56); }
-export inline constexpr Bitboard file_mask(Square sq) { return H_FILE << (sq & 7); }
+export __forceinline constexpr Bitboard rank_mask(Square sq) { return FIRST_RANK << (sq & 56); }
+export __forceinline constexpr Bitboard file_mask(Square sq) { return H_FILE << (sq & 7); }
+export __forceinline constexpr S64 rank_of(Square sq) { return 1 + sq & 56; }
+export __forceinline constexpr S64 file_of(Square sq) { return 8 - sq & 7; }
 
 export inline constexpr Bitboard rank_mask_ex(Square sq)
 {
@@ -250,13 +252,15 @@ export inline constexpr Bitboard bishop_mask_ex(Square sq)
  *         Harald Prokop
  *         Keith H. Randall
  */
-export constexpr Square bitboard_bsf_comptime(Bitboard bb)
-{
-    constexpr Square index64[64] = {0,  1,  48, 2,  57, 49, 28, 3,  61, 58, 50, 42, 38, 29, 17, 4,
-                                    62, 55, 59, 36, 53, 51, 43, 22, 45, 39, 33, 30, 24, 18, 12, 5,
-                                    63, 47, 56, 27, 60, 41, 37, 16, 54, 35, 52, 21, 44, 32, 23, 11,
-                                    46, 26, 40, 15, 34, 20, 31, 10, 25, 14, 19, 9,  13, 8,  7,  6};
-
-    constexpr Bitboard debruijn64 = 0x03f79d71b4cb0a89;
-    return index64[((bb & -bb) * debruijn64) >> 58];
-}
+// export constexpr Square bitboard_bsf_comptime(Bitboard bb)
+// {
+//     constexpr Square index64[64] = {0,  1,  48, 2,  57, 49, 28, 3,  61, 58, 50, 42, 38, 29, 17,
+//     4,
+//                                     62, 55, 59, 36, 53, 51, 43, 22, 45, 39, 33, 30, 24, 18, 12,
+//                                     5, 63, 47, 56, 27, 60, 41, 37, 16, 54, 35, 52, 21, 44, 32,
+//                                     23, 11, 46, 26, 40, 15, 34, 20, 31, 10, 25, 14, 19, 9,  13,
+//                                     8,  7,  6};
+//
+//     constexpr Bitboard debruijn64 = 0x03f79d71b4cb0a89;
+//     return index64[((bb & -bb) * debruijn64) >> 58];
+// }
