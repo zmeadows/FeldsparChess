@@ -1,6 +1,7 @@
 export module move;
 
 import prelude;
+import unstd.array;
 
 import<type_traits>;
 
@@ -48,3 +49,19 @@ export __forceinline constexpr Move create_capture_move(Square from, Square to, 
 
     return captured_ptype_bits | moved_ptype_bits | flag_bits | from_bits | to_bits;
 }
+
+export class MoveBuffer {
+    Array<Move, 220> moves;
+    U64 m_count = 0;
+
+public:
+    __forceinline U64 length() const { return m_count; }
+
+    __forceinline void clear() { m_count = 0; }
+
+    __forceinline void append(Move m)
+    {
+        moves[m_count] = m;
+        m_count++;
+    }
+};
