@@ -1,11 +1,14 @@
 import game;
 import move;
 import movegen;
+import zobrist;
 
 import<cstdio>;
 
 int main()
 {
+    init_zobrist_hashing();
+
     const Game og = *Game::create("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
     MoveBuffer moves;

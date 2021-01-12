@@ -196,6 +196,7 @@
     <ClCompile Include="movegen.ixx" />
     <ClCompile Include="prelude.ixx" />
     <ClCompile Include="tables.ixx" />
+    <ClCompile Include="zobrist.ixx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

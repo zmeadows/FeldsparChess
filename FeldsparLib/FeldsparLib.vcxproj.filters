@@ -66,5 +66,8 @@
     <ClCompile Include="quad.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="zobrist.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
