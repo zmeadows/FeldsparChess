@@ -38,7 +38,7 @@ int main()
                               "11111111");
 
     const QuadBitboard attacks = east_nort_noWe_noEa_Attacks(pack(rq, rq, bq, bq), empty);
-    Bitboard bbs[4];
+    alignas(32) Bitboard bbs[4];
     unpack(attacks, bbs);
 
     const Bitboard attacked = bbs[0] | bbs[1] | bbs[2] | bbs[3];
