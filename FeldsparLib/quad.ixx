@@ -97,8 +97,8 @@ __forceinline Bitboard quad_attacked(const Board& board, Color attacking_color)
     const Bitboard bq = q | get_pieces(board, Bishop, attacking_color);
     const QuadBitboard sliders = pack(rq, rq, bq, bq);
 
-    const QuadBitboard attacks1 = east_nort_noWe_noEa_Attacks(sliders, empty);
-    const QuadBitboard attacks2 = west_sout_soEa_soWe_Attacks(sliders, empty);
+    const QuadBitboard attacks = east_nort_noWe_noEa_Attacks(sliders, empty);
+    attacks |= west_sout_soEa_soWe_Attacks(sliders, empty);
 
-    return reduceOR(attacks1) | reduceOR(attacks2);
+    return reduceOR(attacks);
 }
