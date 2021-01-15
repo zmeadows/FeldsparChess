@@ -30,3 +30,16 @@ U64 rand<U64>(void)
 
     return result;
 }
+
+export template <typename T>
+T rand(const T min, const T max)
+{
+    static_assert(false, "unstd.rand(min,max) not implemented for type.");
+    return T();
+}
+
+template <>
+U64 rand<U64>(const U64 min, const U64 max)
+{
+    return min + (rand<U64>() % (max - min + 1));
+}

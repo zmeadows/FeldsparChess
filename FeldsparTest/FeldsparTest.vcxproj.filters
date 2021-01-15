@@ -10,6 +10,7 @@
       <Filter>unstd</Filter>
     </ClCompile>
     <ClCompile Include="rays_test.cpp" />
+    <ClCompile Include="quad_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
