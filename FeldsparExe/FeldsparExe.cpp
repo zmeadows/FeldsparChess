@@ -7,9 +7,14 @@ import bitboard;
 import prelude;
 
 import<cstdio>;
+#include <cstddef>
 
 int main()
 {
+    printf("%llu\n", alignof(QuadBitboard));
+    printf("%llu\n", alignof(std::max_align_t));
+    printf("%llu\n", sizeof(size_t));
+
     const Bitboard rq = BB("00000000"
                            "00000000"
                            "00000000"
@@ -38,22 +43,25 @@ int main()
                               "11111111");
 
     const QuadBitboard attacks = east_nort_noWe_noEa_Attacks(pack(rq, rq, bq, bq), empty);
-    alignas(32) Bitboard bbs[4];
+    alignas(QuadBitboard) Bitboard bbs[4];
     unpack(attacks, bbs);
 
-    const Bitboard attacked = bbs[0] | bbs[1] | bbs[2] | bbs[3];
+    const Bitboard attacked = reduceOR(attacks);
     print_bitboard(attacked);
 
     init_zobrist_hashing();
 
     const Game og = *Game::create("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
+    size_t i = 0;
     MoveBuffer moves;
-    while (true) {
+    while (i < 1e7) {
         generate_moves<false, false>(og, moves);
+        i++;
     }
 
     printf("%llu\n", moves.length());
+    printf("%llu\n", i);
 
     return 0;
 }

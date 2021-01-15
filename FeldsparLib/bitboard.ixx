@@ -148,7 +148,7 @@ export __forceinline Square bitboard_bsr(Bitboard bb)
 export __forceinline U64 bitboard_popcount(Bitboard bb) { return __popcnt64(bb); }
 
 export template <typename Callable>
-inline void serialize(Bitboard bb, Callable&& f)
+__forceinline void serialize(Bitboard bb, Callable&& f)
 {
     while (bb != 0) {
         f(bitboard_bsf(bb));

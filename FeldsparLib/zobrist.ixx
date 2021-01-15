@@ -34,22 +34,21 @@ export void init_zobrist_hashing()
     BLACK_TO_MOVE_KEY = rand<U64>();
 }
 
-// export GameHash hash_game(const Game& game) { return 0; }
-//
-// export __forceinline void hash_update_piece_square(GameHash& hash, PieceType ptype, Square sq)
-// {
-//     hash ^= PIECE_KEYS[2 * static_cast<S64>(ptype) + sq];
-// }
-//
-// export __forceinline void hash_update_black_to_move(GameHash& hash) { hash ^= BLACK_TO_MOVE_KEY;
-// }
-//
-// export __forceinline void hash_update_castling_rights(GameHash& hash, CastlingRights rights)
-// {
-//     hash ^= CASTLE_KEYS[rights];
-// }
-//
-// export __forceinline void hash_update_ep_square(GameHash& hash, Square epsq)
-// {
-//     hash ^= EN_PASSANT_KEYS[file_of(epsq)];
-// }
+export GameHash hash_game(const Game& game) { return 0; }
+
+export __forceinline void hash_update_piece_square(GameHash& hash, PieceType ptype, Square sq)
+{
+    hash ^= PIECE_KEYS[2 * static_cast<S64>(ptype) + sq];
+}
+
+export __forceinline void hash_update_castling_rights(GameHash& hash, CastlingRights rights)
+{
+    hash ^= CASTLE_KEYS[rights];
+}
+
+export __forceinline void hash_update_ep_square(GameHash& hash, Square epsq)
+{
+    hash ^= EN_PASSANT_KEYS[file_of(epsq)];
+}
+
+export __forceinline void hash_update_black_to_move(GameHash& hash) { hash ^= BLACK_TO_MOVE_KEY; }

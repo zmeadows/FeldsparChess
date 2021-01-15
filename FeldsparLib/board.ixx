@@ -58,6 +58,10 @@ export __forceinline constexpr Bitboard get_occupied(const Board& board)
     return get_occupied(board, Color::White) || get_occupied(board, Color::Black);
 }
 
+export __forceinline constexpr Bitboard get_unoccupied(const Board& board) {
+    return ~get_occupied(board);
+}
+
 export inline constexpr Bitboard attackers(const Board& board, Color color, Square sq)
 {
     using enum PieceType;
@@ -81,7 +85,7 @@ export inline constexpr Bitboard attackers(const Board& board, Color color, Squa
 
 // TODO: Use AVX2 flood fills to compute this faster
 export template <bool REMOVE_KING>
-inline Bitboard attacked(const Board& board, Color attacking_color)
+__forceinline Bitboard attacked(const Board& board, Color attacking_color)
 {
     using enum PieceType;
 

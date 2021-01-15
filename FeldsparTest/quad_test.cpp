@@ -12,7 +12,7 @@ TEST(QuadBitboard, PackUnpack)
     QuadBitboard qbb =
         pack(0, 1, std::numeric_limits<U64>::max(), (U64)std::numeric_limits<S64>::max() + 1);
 
-    Bitboard bbs[4];
+    alignas(QuadBitboard) Bitboard bbs[4];
     unpack(qbb, bbs);
 
     EXPECT_EQ(bbs[0], 0);
@@ -28,7 +28,8 @@ TEST(QuadBitboard, PackUnpack)
 
         QuadBitboard qbb = pack(b1, b2, b3, b4);
 
-        Bitboard* bbs = unpack(qbb);
+        alignas(QuadBitboard) Bitboard bbs[4];
+        unpack(qbb, bbs);
 
         EXPECT_EQ(bbs[0], b1);
         EXPECT_EQ(bbs[1], b2);
@@ -54,7 +55,8 @@ TEST(QuadBitboard, OperatorOREquals)
         QuadBitboard qbb2 = pack(b5, b6, b7, b8);
         qbb1 |= qbb2;
 
-        Bitboard* bbs = unpack(qbb1);
+        alignas(QuadBitboard) Bitboard bbs[4];
+        unpack(qbb1, bbs);
 
         EXPECT_EQ(bbs[0], b1 | b5);
         EXPECT_EQ(bbs[1], b2 | b6);
@@ -80,7 +82,8 @@ TEST(QuadBitboard, OperatorAND)
         QuadBitboard qbb2 = pack(b5, b6, b7, b8);
         const QuadBitboard qbb3 = qbb1 & qbb2;
 
-        const Bitboard* bbs = unpack(qbb3);
+        alignas(QuadBitboard) Bitboard bbs[4];
+        unpack(qbb3, bbs);
 
         EXPECT_EQ(bbs[0], b1 & b5);
         EXPECT_EQ(bbs[1], b2 & b6);
@@ -106,7 +109,8 @@ TEST(QuadBitboard, LeftShift)
         const QuadBitboard qbb2 = pack(b5, b6, b7, b8);
         const QuadBitboard qbb3 = qbb1 << qbb2;
 
-        const Bitboard* bbs = unpack(qbb3);
+        alignas(QuadBitboard) Bitboard bbs[4];
+        unpack(qbb3, bbs);
 
         EXPECT_EQ(bbs[0], b1 << b5);
         EXPECT_EQ(bbs[1], b2 << b6);

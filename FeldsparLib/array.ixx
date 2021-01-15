@@ -64,8 +64,9 @@ public:
     template <typename... Args>
     inline void append_move(Args&&... args)
     {
-        if (m_length >= m_capacity) [[unlikely]]
+        if (m_length >= m_capacity) [[unlikely]] {
             grow();
+        }
 
         new (m_ptr + m_length) T(std::forward<Args>(args)...);
         m_length++;
@@ -73,8 +74,9 @@ public:
 
     inline void append(const T& val)
     {
-        if (m_length >= m_capacity) [[unlikely]]
+        if (m_length >= m_capacity) [[unlikely]] {
             grow();
+        }
 
         new (m_ptr + m_length) T(val);
         m_length++;

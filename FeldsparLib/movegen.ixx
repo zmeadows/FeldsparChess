@@ -8,10 +8,26 @@ import pins;
 import prelude;
 import rays;
 import tables;
+import quad;
 
 import unstd.array;
 
 import<cassert>;
+
+using enum PieceType;
+
+template <PieceType P>
+Bitboard pseudolegal_move_mask(Square sq, Bitboard occupied)
+{
+    static_assert(false, "get_pseudolegal_moves called for unimplemented piece type!");
+    return BITBOARD_EMPTY;
+}
+
+template <>
+__forceinline Bitboard pseudolegal_move_mask<Knight>(Square sq, Bitboard)
+{
+    return get_knight_moves(sq);
+}
 
 export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
 [[msvc::forceinline_calls]] void generate_moves(const Game& game, MoveBuffer& moves)
@@ -48,25 +64,22 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
     Bitboard capture_mask = opponent_pieces;
     Bitboard quiet_mask = empty_squares;
 
-    const auto append_quiet_moves = [&](Square from, Bitboard to_mask, PieceType moved_ptype) {
+    const auto build_moves = [&](Square from, Bitboard to_mask, PieceType moved_ptype) {
         if constexpr (!CAPTURES_ONLY) {
             serialize(to_mask & quiet_mask, [&](Square to) {
                 moves.append(create_quiet_move(from, to, QUIET_FLAG, moved_ptype));
             });
         }
-    };
 
-    const auto append_capture_moves = [&](Square from, Bitboard to_mask, PieceType moved_ptype) {
         serialize(to_mask & capture_mask, [&](Square to) {
             moves.append(create_capture_move(from, to, CAPTURE_FLAG, moved_ptype,
                                              opponent_piece_type_at(to)));
         });
     };
 
-    const Bitboard king_danger_squares = attacked<true>(board, opponent_color);
+    const Bitboard king_danger_squares = quad_attacked<true>(board, opponent_color);
     const Bitboard safe_king_moves = get_king_moves(king_square) & ~king_danger_squares;
-    append_quiet_moves(king_square, safe_king_moves, King);
-    append_capture_moves(king_square, safe_king_moves, King);
+    build_moves(king_square, safe_king_moves, King);
 
     // If the king is in double+ check, the only legal moves are king moves, so return early.
     if (check_multiplicity > 1) [[unlikely]] {
@@ -103,8 +116,7 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
 
     serialize(friendly_knights & unpinned, [&](Square from) {
         const Bitboard knight_moves = get_knight_moves(from);
-        append_quiet_moves(from, knight_moves, Knight);
-        append_capture_moves(from, knight_moves, Knight);
+        build_moves(from, knight_moves, Knight);
     });
 
     // Bishops
@@ -112,15 +124,13 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
 
     serialize(friendly_bishops & unpinned, [&](Square from) {
         const Bitboard bishop_moves = get_bishop_attacks(from, occupied_squares);
-        append_quiet_moves(from, bishop_moves, Bishop);
-        append_capture_moves(from, bishop_moves, Bishop);
+        build_moves(from, bishop_moves, Bishop);
     });
 
     serialize(friendly_bishops & pins.diagonal, [&](Square from) {
         const Bitboard bishop_moves =
             get_bishop_attacks(from, occupied_squares) & pins.diagonal_constraints[from];
-        append_quiet_moves(from, bishop_moves, Bishop);
-        append_capture_moves(from, bishop_moves, Bishop);
+        build_moves(from, bishop_moves, Bishop);
     });
 
     // Rooks
@@ -128,15 +138,13 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
 
     serialize(friendly_rooks & unpinned, [&](Square from) {
         const Bitboard rook_moves = get_rook_attacks(from, occupied_squares);
-        append_quiet_moves(from, rook_moves, Rook);
-        append_capture_moves(from, rook_moves, Rook);
+        build_moves(from, rook_moves, Rook);
     });
 
     serialize(friendly_rooks & pins.nondiagonal, [&](Square from) {
         const Bitboard rook_moves =
             get_rook_attacks(from, occupied_squares) & pins.nondiagonal_constraints[from];
-        append_quiet_moves(from, rook_moves, Rook);
-        append_capture_moves(from, rook_moves, Rook);
+        build_moves(from, rook_moves, Rook);
     });
 
     // Queens
@@ -144,22 +152,19 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
 
     serialize(friendly_queens & unpinned, [&](Square from) {
         const Bitboard queen_moves = get_queen_attacks(from, occupied_squares);
-        append_quiet_moves(from, queen_moves, Queen);
-        append_capture_moves(from, queen_moves, Queen);
+        build_moves(from, queen_moves, Queen);
     });
 
     serialize(friendly_queens & pinned_only_diagonally, [&](Square from) {
         const Bitboard queen_moves =
             get_queen_attacks(from, occupied_squares) & pins.diagonal_constraints[from];
-        append_quiet_moves(from, queen_moves, Queen);
-        append_capture_moves(from, queen_moves, Queen);
+        build_moves(from, queen_moves, Queen);
     });
 
     serialize(friendly_queens & pinned_only_nondiagonally, [&](Square from) {
         const Bitboard queen_moves =
             get_queen_attacks(from, occupied_squares) & pins.nondiagonal_constraints[from];
-        append_quiet_moves(from, queen_moves, Queen);
-        append_capture_moves(from, queen_moves, Queen);
+        build_moves(from, queen_moves, Queen);
     });
 
     const Bitboard friendly_pawns = get_pieces(board, Pawn, friendly_color);
