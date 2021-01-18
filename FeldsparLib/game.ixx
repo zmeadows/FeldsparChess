@@ -3,6 +3,7 @@ export module game;
 import prelude;
 import bitboard;
 import board;
+import zobrist;
 
 #include "logger.h"
 import<cstdio>;
@@ -16,6 +17,7 @@ import<system_error>;
 
 export struct Game {
     Board board = {BITBOARD_EMPTY};
+    GameHash hash = 0;
     MaybeSquare ep_square = {};
     Color to_move = Color::White;
     U16 fullmoves = 0;
@@ -26,6 +28,16 @@ export struct Game {
 
     static Optional<Game> create(const char*);
 };
+
+export GameHash create_game_hash(const Game& game)
+{
+    GameHash hash = 0;
+
+    for (Color color : EnumRange<Color>()) {
+    }
+
+    return hash;
+}
 
 // TODO: switch to using basic const char* and C functions
 Optional<Game> create_game_internal(std::string_view fen)
@@ -221,6 +233,8 @@ Optional<Game> create_game_internal(std::string_view fen)
     else [[unlikely]] {
         game.fullmoves = 1;
     }
+
+    game.hash = create_game_hash(game);
 
     return game;
 }

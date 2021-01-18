@@ -625,7 +625,7 @@ export constexpr __forceinline Bitboard get_queen_attacks(Square sq, Bitboard oc
 }
 
 export constexpr __forceinline Bitboard xray_rook_attacks(Bitboard occ, Bitboard blockers,
-                                                   Square rook_square)
+                                                          Square rook_square)
 {
     Bitboard attacks = get_rook_attacks(rook_square, occ);
     blockers &= attacks;
@@ -633,7 +633,7 @@ export constexpr __forceinline Bitboard xray_rook_attacks(Bitboard occ, Bitboard
 }
 
 export constexpr __forceinline Bitboard xray_bishop_attacks(Bitboard occ, Bitboard blockers,
-                                                     Square bishop_square)
+                                                            Square bishop_square)
 {
     Bitboard attacks = get_bishop_attacks(bishop_square, occ);
     blockers &= attacks;
@@ -648,6 +648,7 @@ const Array<Bitboard, 64 * 64> RAYS_BETWEEN_SQUARES = []() {
     for (Square sq_a = 0; sq_a < 64; sq_a++) {
         for (Square sq_b = 0; sq_b < 64; sq_b++) {
             const Bitboard sqb_bit = square_bitrep(sq_b);
+            rays[idx] = 0;
             for (Direction dir : EnumRange<Direction>()) {
                 const Bitboard ray = get_ray_attacks(sq_a, sqb_bit, dir);
                 if (bitboard_is_occupied(ray & sqb_bit)) {

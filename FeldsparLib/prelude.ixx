@@ -24,7 +24,6 @@ export inline constexpr Bitboard WHITE_KINGSIDE_CASTLE_PATH = 1ULL << 1 | 1ULL <
 export inline constexpr Bitboard BLACK_KINGSIDE_CASTLE_PATH = 1ULL << 57 | 1ULL << 58;
 export inline constexpr Bitboard BLACK_QUEENSIDE_CASTLE_PATH = 1ULL << 62 | 1ULL << 61 | 1ULL << 60;
 export inline constexpr Bitboard WHITE_QUEENSIDE_CASTLE_PATH = 1ULL << 4 | 1ULL << 5 | 1ULL << 6;
-
 export inline constexpr Bitboard BLACK_QUEENSIDE_CASTLE_SAFETY_REQ = 1ULL << 61 | 1ULL << 60;
 export inline constexpr Bitboard WHITE_QUEENSIDE_CASTLE_SAFETY_REQ = 1ULL << 4 | 1ULL << 5;
 
@@ -65,12 +64,12 @@ export constexpr bool is_slider(const PieceType ptype)
     }
 }
 
-export struct Piece {
-    Color color;
-    PieceType type;
-
-    Piece() = delete;
-    constexpr Piece(Color c, PieceType p) : color(c), type(p){};
-};
+// export struct Piece {
+//     Color color;
+//     PieceType type;
+//
+//     Piece() = delete;
+//     constexpr Piece(Color c, PieceType p) : color(c), type(p){};
+// };
 
 export MaybeSquare from_algebraic(char file, char rank) { return {}; }

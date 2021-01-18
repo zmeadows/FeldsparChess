@@ -49,8 +49,6 @@ int main()
     const Bitboard attacked = reduceOR(attacks);
     print_bitboard(attacked);
 
-    init_zobrist_hashing();
-
     const Game og = *Game::create("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
     size_t i = 0;
