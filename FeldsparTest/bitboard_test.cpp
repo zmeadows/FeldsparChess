@@ -3,7 +3,8 @@
 
 import prelude;
 import bitboard;
-// #include <vector>
+
+import unstd.array;
 TEST(Bitboard, StringToBitboardConversion)
 {
     EXPECT_EQ(BITBOARD_EMPTY, BB("00000000"
@@ -466,19 +467,20 @@ TEST(Bitboard, Serialization)
         EXPECT_TRUE(count == 0);
     }
 
-    // {
-    //     const Bitboard bb = BB("10000000"
-    //                            "01000000"
-    //                            "00100000"
-    //                            "00010000"
-    //                            "00001000"
-    //                            "00000100"
-    //                            "00000010"
-    //                            "00000001");
-    //     std::vector<Square> squares;
-    //     serialize(bb, [&](Square sq) -> void { squares.push_back(sq); });
-    //     EXPECT_EQ(squares, std::vector<Square>({0, 9, 18, 27, 36, 45, 54, 63}));
-    // }
+    {
+        const Bitboard bb = BB("10000000"
+                               "01000000"
+                               "00100000"
+                               "00010000"
+                               "00001000"
+                               "00000100"
+                               "00000010"
+                               "00000001");
+        DynArray<Square, 8> squares;
+        serialize(bb, [&](Square sq) -> void { squares.append(sq); });
+        constexpr Square result[] = {0, 9, 18, 27, 36, 45, 54, 63};
+        EXPECT_EQ(squares, result);
+    }
 }
 
 TEST(Bitboard, RankMask)
