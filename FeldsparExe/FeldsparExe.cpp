@@ -51,15 +51,12 @@ int main()
 
     const Game og = *Game::create("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
-    size_t i = 0;
     MoveBuffer moves;
-    while (i < 1e7) {
+    while (true) {
         generate_moves<false, false>(og, moves);
-        i++;
     }
 
     printf("%llu\n", moves.length());
-    printf("%llu\n", i);
 
     return 0;
 }
