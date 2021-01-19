@@ -106,4 +106,16 @@ public:
         m_ptr = &m_data[0];
         m_on_stack = true;
     }
+
+    template <U64 M>
+    constexpr bool operator==(const T (&list)[M]) const
+    {
+        if (M != m_length) return false;
+
+        for (U64 i = 0; i < m_length; i++) {
+            if (list[i] != m_data[i]) return false;
+        }
+
+        return true;
+    }
 };
