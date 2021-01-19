@@ -69,5 +69,8 @@
     <ClCompile Include="zobrist.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="string.ixx">
+      <Filter>Source Files\unstd</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
