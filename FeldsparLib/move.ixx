@@ -98,6 +98,7 @@ void make_move_internal(Game& game, Move move)
 {
     using enum PieceType;
 
+    // TODO: only define these constants at the scope required
     const U32 flag = move_flag(move);
     const Square from_sq = move_from_square(move);
     const Square to_sq = move_to_square(move);
@@ -157,6 +158,7 @@ void make_move_internal(Game& game, Move move)
         get_occupied_mut(game.board, !MOVING_COLOR) ^= captured_bit;
         hash_update_piece_square(game.hash, !MOVING_COLOR, captured_ptype, captured_sq);
 
+        // remove castling rights if rook captured
         if (captured_ptype == Rook) [[unlikely]] {
             if constexpr (MOVING_COLOR == Color::White) {
                 if ((to_sq == 56) && (game.castling_rights & BLACK_KINGSIDE)) [[unlikely]] {
