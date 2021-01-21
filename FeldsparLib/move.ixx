@@ -16,14 +16,8 @@ export class MoveBuffer {
 
 public:
     __forceinline U64 length() const { return m_count; }
-
     __forceinline void clear() { m_count = 0; }
-
-    __forceinline void append(Move m)
-    {
-        moves[m_count] = m;
-        m_count++;
-    }
+    __forceinline void append(Move m) { moves[m_count++] = m; }
 };
 
 export inline constexpr U32 QUIET_FLAG = 0b0000;
@@ -116,9 +110,9 @@ void make_move_internal(Game& game, Move move)
     constexpr CastlingRights REMOVE_BLACK_KINGSIDE = ~BLACK_KINGSIDE;
     constexpr CastlingRights REMOVE_BLACK_QUEENSIDE = ~BLACK_QUEENSIDE;
 
-    const auto remove_castling_rights = [&](CastlingRights castle_mask) {
+    const auto remove_castling_rights = [&](CastlingRights remove_mask) {
         hash_update_castling_rights(game.hash, game.castling_rights);
-        game.castling_rights &= castle_mask;
+        game.castling_rights &= remove_mask;
         hash_update_castling_rights(game.hash, game.castling_rights);
     };
 
@@ -128,7 +122,7 @@ void make_move_internal(Game& game, Move move)
     get_pieces_mut(game.board, moved_ptype, MOVING_COLOR) ^= from_to_bit;
     get_occupied_mut(game.board, MOVING_COLOR) ^= from_to_bit;
 
-    // En Passant square will always change/disappear each move, if it exists
+    // En Passant square will always change or disappear each move, if it exists
     if (game.ep_square.has_value()) {
         hash_update_ep_square(game.hash, *game.ep_square);
     }
