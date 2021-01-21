@@ -1,7 +1,6 @@
 export module unstd.array;
 
 import unstd.core;
-import<utility>;
 
 // TODO: big five for both Array and DynArray
 export template <typename T, U64 N>
@@ -21,15 +20,15 @@ public:
         }
     }
 
-    inline constexpr U64 capacity() const { return N; }
+    __forceinline constexpr U64 capacity() const { return N; }
 
-    constexpr inline const T& operator[](U64 idx) const { return m_data[idx]; }
-    constexpr inline T& operator[](U64 idx) { return m_data[idx]; }
-    constexpr inline T* begin() { return m_data; }
-    constexpr inline T* end() { return m_data + N; }
+    constexpr __forceinline const T& operator[](U64 idx) const { return m_data[idx]; }
+    constexpr __forceinline T& operator[](U64 idx) { return m_data[idx]; }
+    constexpr __forceinline T* begin() { return m_data; }
+    constexpr __forceinline T* end() { return m_data + N; }
 };
 
-export template <typename T, U64 STACK_SIZE>
+export template <typename T, U64 STACK_SIZE = 0>
 class DynArray {
     T m_data[STACK_SIZE];
     T* m_ptr;
@@ -44,7 +43,7 @@ class DynArray {
 
         T* new_ptr = static_cast<T*>(malloc(sizeof(T) * new_capacity));
         for (U64 i = 0; i < m_length; i++) {
-            new (new_ptr + i) T(std::move(m_ptr[i]));
+            new (new_ptr + i) T(m_ptr[i]);
         }
 
         if (m_on_stack) {
@@ -61,18 +60,7 @@ class DynArray {
 public:
     DynArray(void) : m_length(0), m_capacity(STACK_SIZE), m_on_stack(true), m_ptr(&m_data[0]) {}
 
-    template <typename... Args>
-    inline void append_move(Args&&... args)
-    {
-        if (m_length >= m_capacity) [[unlikely]] {
-            grow();
-        }
-
-        new (m_ptr + m_length) T(std::forward<Args>(args)...);
-        m_length++;
-    }
-
-    inline void append(const T& val)
+    __forceinline void append(const T& val)
     {
         if (m_length >= m_capacity) [[unlikely]] {
             grow();
@@ -82,16 +70,16 @@ public:
         m_length++;
     }
 
-    constexpr inline U64 capacity() const { return m_capacity; }
+    constexpr __forceinline U64 capacity() const { return m_capacity; }
 
-    constexpr inline U64 length() const { return m_length; }
+    constexpr __forceinline U64 length() const { return m_length; }
 
-    constexpr inline const T& operator[](U64 idx) const { return m_ptr[idx]; }
-    constexpr inline T& operator[](U64 idx) { return m_ptr[idx]; }
-    constexpr inline T* begin() { return m_ptr; }
-    constexpr inline T* end() { return m_ptr + m_length; }
+    constexpr __forceinline const T& operator[](U64 idx) const { return m_ptr[idx]; }
+    constexpr __forceinline T& operator[](U64 idx) { return m_ptr[idx]; }
+    constexpr __forceinline T* begin() { return m_ptr; }
+    constexpr __forceinline T* end() { return m_ptr + m_length; }
 
-    constexpr inline bool on_stack() const { return m_on_stack; }
+    constexpr __forceinline bool on_stack() const { return m_on_stack; }
 
     void clear()
     {
@@ -114,6 +102,72 @@ public:
 
         for (U64 i = 0; i < m_length; i++) {
             if (list[i] != m_data[i]) return false;
+        }
+
+        return true;
+    }
+};
+
+export template <typename T>
+class DynArray<T, 0> {
+    T* m_ptr;
+    U64 m_length;
+    U64 m_capacity;
+
+    void grow()
+    {
+        const U64 new_capacity = m_capacity > 0 ? m_capacity * 2 : 2;
+
+        // TODO: use fatal_error function to print message and exit if
+        // no memory is available
+        T* new_ptr = static_cast<T*>(malloc(sizeof(T) * new_capacity));
+        for (U64 i = 0; i < m_length; i++) {
+            new (new_ptr + i) T(m_ptr[i]);
+        }
+
+        free(m_ptr);
+        m_ptr = new_ptr;
+        m_capacity = new_capacity;
+    }
+
+public:
+    DynArray(void) : m_length(0), m_capacity(0), m_ptr(nullptr) {}
+
+    __forceinline void append(const T& val)
+    {
+        if (m_length >= m_capacity) [[unlikely]] {
+            grow();
+        }
+
+        new (m_ptr + m_length) T(val);
+        m_length++;
+    }
+
+    constexpr __forceinline U64 capacity() const { return m_capacity; }
+
+    constexpr __forceinline U64 length() const { return m_length; }
+
+    constexpr __forceinline const T& operator[](U64 idx) const { return m_ptr[idx]; }
+    constexpr __forceinline T& operator[](U64 idx) { return m_ptr[idx]; }
+    constexpr __forceinline T* begin() { return m_ptr; }
+    constexpr __forceinline T* end() { return m_ptr + m_length; }
+
+    void clear()
+    {
+        for (U64 i = 0; i < m_length; i++) {
+            m_ptr[i].~T();
+        }
+
+        m_length = 0;
+    }
+
+    template <U64 M>
+    constexpr bool operator==(const T (&list)[M]) const
+    {
+        if (M != m_length) return false;
+
+        for (U64 i = 0; i < m_length; i++) {
+            if (list[i] != m_ptr[i]) return false;
         }
 
         return true;
