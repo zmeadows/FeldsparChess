@@ -2,7 +2,6 @@ export module unstd.core;
 
 import<cassert>;
 import<cstdint>;
-import<utility>;
 
 export using U64 = uint64_t;
 export using U32 = uint32_t;
@@ -16,22 +15,27 @@ export using S8 = int8_t;
 export using F32 = float;
 export using F64 = double;
 
+static_assert(sizeof(U64) == 8);
+static_assert(sizeof(U32) == 4);
+static_assert(sizeof(U16) == 2);
+static_assert(sizeof(U8) == 1);
+
 // For any enum class that defines a LAST member, this allows us to loop over the enum
 // easily in a range-based for loop: for (const auto x : EnumRange<T>()).
 // Luckily optimizes out to be equivalent to incrementing a single integer (on MSVC).
 export template <class T>
 struct EnumRange {
     struct Iterator {
-        explicit inline constexpr Iterator(int v) : value(v) {}
-        inline constexpr void operator++() { ++value; }
-        inline constexpr bool operator!=(Iterator rhs) { return value != rhs.value; }
-        inline constexpr T operator*() const { return static_cast<T>(value); }
+        explicit __forceinline constexpr Iterator(int v) : value(v) {}
+        __forceinline constexpr void operator++() { ++value; }
+        __forceinline constexpr bool operator!=(Iterator rhs) { return value != rhs.value; }
+        __forceinline constexpr T operator*() const { return static_cast<T>(value); }
 
         int value = 0;
     };
 
-    constexpr inline Iterator begin() const { return Iterator(0); }
-    constexpr inline Iterator end() const { return Iterator(static_cast<int>(T::LAST) + 1); }
+    constexpr __forceinline Iterator begin() const { return Iterator(0); }
+    constexpr __forceinline Iterator end() const { return Iterator(static_cast<int>(T::LAST) + 1); }
 };
 
 export template <typename T>
@@ -39,46 +43,38 @@ class alignas(alignof(T)) [[nodiscard]] Optional {
     U8 m_data[sizeof(T)];
     bool m_filled;
 
-    inline T* cast_data(void) { return reinterpret_cast<T*>(&m_data); }
-    inline const T* cast_data(void) const { return reinterpret_cast<const T*>(&m_data); }
+    __forceinline T* cast_data(void) { return reinterpret_cast<T*>(&m_data); }
+    __forceinline const T* cast_data(void) const { return reinterpret_cast<const T*>(&m_data); }
 
 public:
-    [[nodiscard]] inline bool has_value() const { return m_filled; }
+    [[nodiscard]] __forceinline bool has_value() const { return m_filled; }
 
-    inline void clear() { m_filled = false; }
+    __forceinline void clear() { m_filled = false; }
 
-    [[nodiscard]] inline T& operator*()
+    [[nodiscard]] __forceinline T& operator*()
     {
         assert(m_filled);
         return *cast_data();
     }
 
-    [[nodiscard]] inline const T& operator*() const
+    [[nodiscard]] __forceinline const T& operator*() const
     {
         assert(m_filled);
         const T* data = cast_data();
         return *data;
     }
 
-    inline constexpr Optional(void) : m_filled(false) {}
-    inline constexpr Optional(const T& value) { new (cast_data()) T(value); }
-    inline constexpr Optional(T&& value) { new (cast_data()) T(std::move(value)); }
+    __forceinline constexpr Optional(void) : m_filled(false) {}
+    __forceinline constexpr Optional(const T& value) { new (cast_data()) T(value); }
 
-    inline constexpr Optional(const Optional<T>& other)
+    __forceinline constexpr Optional(const Optional<T>& other)
     {
         if (m_filled = other.m_filled) {
             new (cast_data()) T(*other);
         }
     }
 
-    inline constexpr Optional(Optional<T>&& other)
-    {
-        if (m_filled = other.m_filled) {
-            new (cast_data()) T(std::move(*other));
-        }
-    }
-
-    inline Optional& operator=(const Optional& other)
+    __forceinline Optional& operator=(const Optional& other)
     {
         if (m_filled = other.m_filled) {
             memcpy(&m_data, &other.m_data, sizeof(T));
@@ -86,15 +82,7 @@ public:
         return *this;
     }
 
-    inline Optional& operator=(Optional&& other)
-    {
-        if (m_filled = other.m_filled) {
-            memcpy(&m_data, &other.m_data, sizeof(T));
-        }
-        return *this;
-    }
-
-    inline bool operator==(const Optional<T>& other) const
+    __forceinline bool operator==(const Optional<T>& other) const
     {
         if (this->m_filled != other.m_filled) {
             return false;
@@ -114,37 +102,33 @@ class alignas(alignof(T)) [[nodiscard]] Maybe {
     T m_data;
 
 public:
-    [[nodiscard]] inline bool has_value() const { return m_data != SENTINEL; }
+    [[nodiscard]] __forceinline bool has_value() const { return m_data != SENTINEL; }
 
-    inline void clear() { m_data = SENTINEL; }
+    __forceinline void clear() { m_data = SENTINEL; }
 
-    [[nodiscard]] inline T& operator*()
+    [[nodiscard]] __forceinline T& operator*()
     {
         assert(m_data != SENTINEL);
         return m_data;
     }
 
-    inline constexpr Maybe(void) : m_data(SENTINEL) {}
+    __forceinline constexpr Maybe(void) : m_data(SENTINEL) {}
+    __forceinline constexpr Maybe(const T& value) : m_data(value) {}
+    __forceinline constexpr Maybe(const Maybe<T, SENTINEL>& other) : m_data(other.m_data) {}
 
-    inline constexpr Maybe(const T& value) : m_data(value) {}
-    inline constexpr Maybe(T&& value) : m_data(std::move(value)) {}
-
-    inline constexpr Maybe(const Maybe<T, SENTINEL>& other) : m_data(other.m_data) {}
-    inline constexpr Maybe(Maybe<T, SENTINEL>&& other) : m_data(std::move(other.m_data)) {}
-
-    inline Maybe operator=(const Maybe& other)
+    __forceinline Maybe operator=(const Maybe& other)
     {
         m_data = other.m_data;
         return *this;
     }
 
-    inline Maybe& operator=(Maybe&& other) noexcept
+    __forceinline Maybe& operator=(Maybe&& other) noexcept
     {
-        m_data = std::move(other.m_data);
+        m_data = other.m_data;
         return *this;
     }
 
-    inline bool operator==(const Maybe<T, SENTINEL>& other) const
+    __forceinline bool operator==(const Maybe<T, SENTINEL>& other) const
     {
         return this->m_data == other.m_data;
     }
