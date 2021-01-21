@@ -8,7 +8,7 @@ TEST(DynArray, Append)
 {
     DynArray<U64, 32> arr;
     EXPECT_TRUE(arr.on_stack());
-    for (auto i = 0; i < 32; i++) {
+    for (U64 i = 0; i < 32; i++) {
         arr.append(i * i);
     }
     EXPECT_TRUE(arr.on_stack());

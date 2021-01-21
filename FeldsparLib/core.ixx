@@ -138,7 +138,7 @@ public:
         return *this;
     }
 
-    inline Maybe& operator=(Maybe&& other)
+    inline Maybe& operator=(Maybe&& other) noexcept
     {
         m_data = std::move(other.m_data);
         return *this;
