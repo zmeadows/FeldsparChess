@@ -3,8 +3,8 @@ export module bitboard;
 import prelude;
 
 import<cassert>;
+import<cstdio>;
 import<intrin.h>;
-import<iostream>; // TODO: remove
 
 template <size_t N, size_t I>
 constexpr Bitboard BB_helper(const char* input)
@@ -181,7 +181,7 @@ export constexpr Bitboard bitboard_shifted(const Bitboard bb, const Direction di
     }
 }
 
-export void print_bitboard(Bitboard bb, std::ostream& stream = std::cout)
+export void print_bitboard(Bitboard bb)
 {
     bool bits[64] = {0};
     serialize(bb, [&](Square sq) { bits[63 - sq] = true; });
@@ -189,11 +189,11 @@ export void print_bitboard(Bitboard bb, std::ostream& stream = std::cout)
     for (size_t i = 0; i < 8; i++) {
         for (size_t j = 0; j < 8; j++) {
             const size_t idx = 8 * i + j;
-            stream << (bits[idx] ? '1' : '0');
+            printf("%c", (bits[idx] ? '1' : '0'));
         }
-        stream << ' ' << std::endl;
+        printf("\n");
     }
-    stream << std::endl;
+    printf("\n");
 }
 
 export __forceinline constexpr Bitboard rank_mask(Square sq) { return FIRST_RANK << (sq & 56); }

@@ -7,23 +7,15 @@ import game;
 import zobrist;
 
 import<cassert>;
-import<type_traits>;
-static_assert(std::is_same<Move, U32>::value, "ALERT! Move underlying type changed!");
 
 export class MoveBuffer {
     Move moves[220];
     U64 m_count = 0;
 
 public:
+    __forceinline void append(Move m) { moves[m_count++] = m; }
     __forceinline U64 length() const { return m_count; }
-
     __forceinline void clear() { m_count = 0; }
-
-    __forceinline void append(Move m)
-    {
-        moves[m_count] = m;
-        m_count++;
-    }
 };
 
 export inline constexpr U32 QUIET_FLAG = 0b0000;

@@ -60,6 +60,8 @@ class DynArray {
 public:
     DynArray(void) : m_length(0), m_capacity(STACK_SIZE), m_on_stack(true), m_ptr(&m_data[0]) {}
 
+    __forceinline const T* const ptr() { return m_ptr; }
+
     __forceinline void append(const T& val)
     {
         if (m_length >= m_capacity) [[unlikely]] {
