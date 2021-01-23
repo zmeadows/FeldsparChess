@@ -16,6 +16,17 @@ protected:
 
     virtual void reserve_nocheck(U64 new_capacity) = 0;
 
+    DynArrayBase(const T* const buf, U64 len) : DynArrayBase()
+    {
+        this->reserve(len);
+
+        for (U64 idx = 0; idx < len; idx++) {
+            new (this->m_ptr + idx) T(*(buf + idx));
+        }
+
+        this->m_length = len;
+    }
+
 public:
     __forceinline const T* const ptr() const { return m_ptr; }
     __forceinline T* ptr() { return m_ptr; }
@@ -95,16 +106,7 @@ class DynArray final : public DynArrayBase<T> {
 public:
     DynArray(void) : DynArrayBase<T>(&m_data[0], 0, STACK_SIZE), m_on_stack(true) {}
 
-    DynArray(const T* const chunk, U64 len) : DynArray()
-    {
-        this->reserve(len);
-
-        for (U64 idx = 0; idx < len; idx++) {
-            new (this->m_ptr + idx) T(*chunk[idx]);
-        }
-
-        this->m_length += len;
-    }
+    DynArray(const T* const buffer, U64 len) : DynArray(), DynArrayBase<T>(buffer, len) {}
 
     constexpr __forceinline bool on_stack() const { return m_on_stack; }
 
@@ -120,6 +122,12 @@ public:
         this->m_capacity = STACK_SIZE;
         this->m_ptr = &m_data[0];
         m_on_stack = true;
+    }
+
+    template <U64 M>
+    constexpr bool operator==(const T (&list)[M]) const
+    {
+        return static_cast<const DynArrayBase<T>*>(this)->operator==(list);
     }
 };
 
@@ -160,6 +168,12 @@ public:
         }
 
         this->m_length = 0;
+    }
+
+    template <U64 M>
+    constexpr bool operator==(const T (&list)[M]) const
+    {
+        return static_cast<const DynArrayBase<T>*>(this)->operator==(list);
     }
 };
 
