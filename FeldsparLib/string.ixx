@@ -3,14 +3,17 @@ export module unstd.string;
 import unstd.core;
 import unstd.array;
 
+import<cstdlib>;
 import<cstring>;
 
+constexpr U64 MAX_STRING_SIZE = (U64)1e8;
+
 export template <U64 N = 0>
-class String {
-    DynArray<char, N> m_data = {};
+class String : public DynArray<char, N> {
 
 public:
-    explicit String(const char* str) {}
+    String(void) {}
+    explicit String(const char* str) : DynArray<char, N>(str, strnlen_s(str, MAX_STRING_SIZE)) {}
 };
 
 export class StringRef {
