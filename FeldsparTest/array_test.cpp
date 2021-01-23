@@ -4,7 +4,18 @@
 import unstd.core;
 import unstd.array;
 
-TEST(DynArray, Append)
+TEST(DynArray, StackHeapCapacity)
+{
+    DynArray<U64, 32> sarr;
+    EXPECT_TRUE(sarr.capacity() == 32);
+
+    DynArray<U64> harr;
+    EXPECT_TRUE(harr.capacity() == 0);
+
+    EXPECT_GE(sizeof(sarr), sizeof(harr) + 32 * sizeof(U64) + sizeof(bool));
+}
+
+TEST(DynArray, OnStack)
 {
     DynArray<U64, 32> arr;
     EXPECT_TRUE(arr.on_stack());
@@ -27,4 +38,9 @@ TEST(DynArray, Append)
     }
 
     EXPECT_EQ(arr[32], 0);
+
+    arr.clear();
+
+    EXPECT_TRUE(arr.on_stack());
+    EXPECT_TRUE(arr.capacity() == 32);
 }
