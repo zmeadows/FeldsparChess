@@ -20,6 +20,12 @@ static_assert(sizeof(U32) == 4);
 static_assert(sizeof(U16) == 2);
 static_assert(sizeof(U8) == 1);
 
+export template <typename T>
+struct WrappedConstPtr {
+    const T* const p;
+    WrappedConstPtr(const T* const _p) : p(_p) {}
+};
+
 // For any enum class that defines a LAST member, this allows us to loop over the enum
 // easily in a range-based for loop: for (const auto x : EnumRange<T>()).
 // Luckily optimizes out to be equivalent to incrementing a single integer (on MSVC).

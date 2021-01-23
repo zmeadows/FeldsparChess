@@ -147,7 +147,7 @@ public:
         this->reserve(len);
 
         for (U64 idx = 0; idx < len; idx++) {
-            new (this->m_ptr + idx) T(*chunk[idx]);
+            new (this->m_ptr + idx) T(*(chunk + idx));
         }
 
         this->m_length += len;

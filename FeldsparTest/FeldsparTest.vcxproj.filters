@@ -11,6 +11,9 @@
     </ClCompile>
     <ClCompile Include="rays_test.cpp" />
     <ClCompile Include="quad_test.cpp" />
+    <ClCompile Include="string_test.cpp">
+      <Filter>unstd</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -47,6 +47,7 @@
     <ClCompile Include="game_test.cpp" />
     <ClCompile Include="quad_test.cpp" />
     <ClCompile Include="rays_test.cpp" />
+    <ClCompile Include="string_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FeldsparLib\FeldsparLib.vcxproj">

@@ -13,7 +13,27 @@ class String : public DynArray<char, N> {
 
 public:
     String(void) {}
-    explicit String(const char* str) : DynArray<char, N>(str, strnlen_s(str, MAX_STRING_SIZE)) {}
+    String(WrappedConstPtr<char> cstr)
+        : DynArray<char, N>(cstr.p, strnlen_s(cstr.p, MAX_STRING_SIZE))
+    {
+    }
+
+    template <U64 M>
+    explicit String(const char (&list)[M]) : DynArray<char, N>(list, M - 1)
+    {
+    }
+
+    template <U64 M>
+    constexpr inline bool operator==(const char (&list)[M]) const
+    {
+        if (M != this->m_length + 1) return false;
+
+        for (U64 i = 0; i < this->m_length; i++) {
+            if (list[i] != this->m_ptr[i]) return false;
+        }
+
+        return true;
+    }
 };
 
 export class StringRef {
@@ -25,6 +45,7 @@ public:
     explicit StringRef(const String<N>& s) : StringRef(s.ptr())
     {
     }
+
     explicit StringRef(const char* const) {}
 };
 
