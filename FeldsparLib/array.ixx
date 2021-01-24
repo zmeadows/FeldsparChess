@@ -106,12 +106,10 @@ class DynArray final : public DynArrayBase<T> {
             new (new_ptr + i) T(this->m_ptr[i]);
         }
 
-        if (m_on_stack) {
-            m_on_stack = false;
-        }
-        else {
+        if (!on_stack()) {
             free(this->m_ptr);
         }
+        m_on_stack = false;
 
         this->m_ptr = new_ptr;
         this->m_capacity = new_capacity;
@@ -147,6 +145,7 @@ public:
     template <U64 OTHER_STACK_SIZE>
     DynArray(DynArray<T, OTHER_STACK_SIZE>&& other) : DynArray()
     {
+        // TODO: check for this pointer equality?
         if (other.length() <= STACK_SIZE) [[likely]] {
             for (U64 i = 0; i < other.length(); i++) {
                 new (this->m_ptr + i) T(other[i]);
