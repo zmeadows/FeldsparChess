@@ -139,6 +139,9 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <DisableSpecificWarnings>26495;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
     <Link>
       <SubSystem>

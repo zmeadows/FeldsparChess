@@ -254,5 +254,8 @@ export Optional<Game> Game::create(const char* fen)
     }
 }
 
+// tactical positions
+// 3q1r1k/2r2ppp/2p1b3/1p2P2R/p1pP2Nb/P3Q2P/1P2B1P1/5RK1 w - - 5 27 (N -> F6)
+
 // export inline const Game START_POSITION_GAME =
 //     *build_game_from_fen_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");

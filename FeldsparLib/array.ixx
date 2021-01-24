@@ -2,30 +2,53 @@ export module unstd.array;
 
 import unstd.core;
 
+export template <typename T, U64 N>
+class Array {
+    T m_data[N];
+
+public:
+    constexpr Array() {}
+    constexpr Array(const T& value) : m_data({value}) {}
+
+    template <U64 M>
+    constexpr Array(const T (&list)[M])
+    {
+        static_assert(M == N, "Attempted to initialize a fixed length Array with incorrect size.");
+        for (U64 i = 0; i < N; i++) {
+            m_data[i] = list[i];
+        }
+    }
+
+    __forceinline constexpr U64 capacity() const { return N; }
+
+    constexpr __forceinline const T& operator[](U64 idx) const { return m_data[idx]; }
+    constexpr __forceinline T& operator[](U64 idx) { return m_data[idx]; }
+    constexpr __forceinline T* begin() { return m_data; }
+    constexpr __forceinline T* end() { return m_data + N; }
+};
+
 template <typename T>
 class DynArrayBase {
 protected:
-    T* m_ptr = nullptr;
-    U64 m_length = 0;
-    U64 m_capacity = 0;
+    T* m_ptr;
+    U64 m_length;
+    U64 m_capacity;
 
     DynArrayBase(T* ptr, U64 length, U64 capacity)
         : m_ptr(ptr), m_length(length), m_capacity(capacity)
     {
     }
 
+    DynArrayBase() : m_ptr(nullptr), m_length(0), m_capacity(0) {}
+
+    DynArrayBase(DynArrayBase&&) = delete;
+    DynArrayBase(const DynArrayBase&) = delete;
+    DynArrayBase& operator=(DynArrayBase&&) = delete;
+    DynArrayBase& operator=(const DynArrayBase&) = delete;
+
+    virtual ~DynArrayBase() {}
+
     virtual void reserve_nocheck(U64 new_capacity) = 0;
-
-    DynArrayBase(const T* const buf, U64 len) : DynArrayBase()
-    {
-        this->reserve(len);
-
-        for (U64 idx = 0; idx < len; idx++) {
-            new (this->m_ptr + idx) T(*(buf + idx));
-        }
-
-        this->m_length = len;
-    }
 
 public:
     __forceinline const T* const ptr() const { return m_ptr; }
@@ -51,21 +74,12 @@ public:
     __forceinline void append(const T& val)
     {
         if (m_length >= m_capacity) [[unlikely]] {
-            reserve_nocheck(2 * m_capacity);
+            reserve_nocheck(max(2ULL, 2ULL * m_capacity));
         }
 
         new (m_ptr + m_length) T(val);
         m_length++;
     }
-
-    // __forceinline void concat(const T* const data, U64 count)
-    // {
-    //     reserve(m_length + count);
-    //     for (U64 idx = 0; idx < count; idx++) {
-    //         new (m_ptr + m_length + idx) T(*data[idx]);
-    //     }
-    //     m_length += count;
-    // }
 
     template <U64 M>
     constexpr bool operator==(const T (&list)[M]) const
@@ -103,10 +117,67 @@ class DynArray final : public DynArrayBase<T> {
         this->m_capacity = new_capacity;
     }
 
+    void __forceinline shrink_to_stack()
+    {
+        //@IMPORTANT: This does NOT free potential heap allocated memory at m_ptr
+        // or run destructors on T elements.
+        this->m_length = 0;
+        this->m_capacity = STACK_SIZE;
+        this->m_ptr = &m_data[0];
+        m_on_stack = true;
+    }
+
 public:
     DynArray(void) : DynArrayBase<T>(&m_data[0], 0, STACK_SIZE), m_on_stack(true) {}
 
-    DynArray(const T* const buffer, U64 len) : DynArray(), DynArrayBase<T>(buffer, len) {}
+    template <U64 OTHER_STACK_SIZE>
+    DynArray(const DynArray<T, OTHER_STACK_SIZE>& other) : DynArray()
+    {
+        if (other.length() > STACK_SIZE) [[unlikely]] {
+            reserve_nocheck(other.length());
+        }
+
+        for (U64 i = 0; i < other.length(); i++) {
+            new (this->m_ptr + i) T(other[i]);
+        }
+
+        this->m_length = other.length();
+    }
+
+    template <U64 OTHER_STACK_SIZE>
+    DynArray(DynArray<T, OTHER_STACK_SIZE>&& other) : DynArray()
+    {
+        if (other.length() <= STACK_SIZE) [[likely]] {
+            for (U64 i = 0; i < other.length(); i++) {
+                new (this->m_ptr + i) T(other[i]);
+            }
+            this->m_length = other.length();
+            other.clear();
+        }
+        else { // other array exceeds our stack capacity
+            if (other.on_stack()) [[likely]] {
+                reserve_nocheck(other.length());
+                for (U64 i = 0; i < other.length(); i++) {
+                    new (this->m_ptr + i) T(other[i]);
+                }
+                this->m_length = other.length();
+                other.m_length = 0;
+            }
+            else {
+                // bother self and other are in heap allocated state, so simply swap pointers
+                this->m_ptr = other.m_ptr;
+                this->m_length = other.length();
+                this->m_capacity = other.capacity();
+                this->m_on_stack = false;
+                other.shrink_to_stack();
+            }
+        }
+    }
+
+    DynArray& operator=(const DynArray& other) = default;
+    DynArray& operator=(DynArray&& other) = default;
+
+    // DynArray(const T* const buffer, U64 len) : DynArray(), DynArrayBase<T>(buffer, len) {}
 
     constexpr __forceinline bool on_stack() const { return m_on_stack; }
 
@@ -118,10 +189,7 @@ public:
 
         if (!m_on_stack) free(this->m_ptr);
 
-        this->m_length = 0;
-        this->m_capacity = STACK_SIZE;
-        this->m_ptr = &m_data[0];
-        m_on_stack = true;
+        shrink_to_stack();
     }
 
     template <U64 M>
@@ -175,30 +243,4 @@ public:
     {
         return static_cast<const DynArrayBase<T>*>(this)->operator==(list);
     }
-};
-
-// TODO: big five for both Array and DynArray
-export template <typename T, U64 N>
-class Array {
-    T m_data[N];
-
-public:
-    constexpr Array(void) {}
-    constexpr Array(const T& value) : m_data({value}) {}
-
-    template <U64 M>
-    constexpr Array(const T (&list)[M])
-    {
-        static_assert(M == N, "Attempted to initialize a fixed length Array with incorrect size.");
-        for (U64 i = 0; i < N; i++) {
-            m_data[i] = list[i];
-        }
-    }
-
-    __forceinline constexpr U64 capacity() const { return N; }
-
-    constexpr __forceinline const T& operator[](U64 idx) const { return m_data[idx]; }
-    constexpr __forceinline T& operator[](U64 idx) { return m_data[idx]; }
-    constexpr __forceinline T* begin() { return m_data; }
-    constexpr __forceinline T* end() { return m_data + N; }
 };

@@ -21,6 +21,12 @@ static_assert(sizeof(U16) == 2);
 static_assert(sizeof(U8) == 1);
 
 export template <typename T>
+const T& max(const T& a, const T& b)
+{
+    return (a < b) ? b : a;
+}
+
+export template <typename T>
 struct WrappedConstPtr {
     const T* const p;
     WrappedConstPtr(const T* const _p) : p(_p) {}

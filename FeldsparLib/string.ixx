@@ -37,22 +37,58 @@ public:
 };
 
 export class StringRef {
-    const char* const m_str = nullptr;
-    const U64 m_length = 0;
+    const char* const m_str;
+    const U64 m_length;
 
 public:
+    StringRef() : m_str(nullptr), m_length(0) {}
+
+    explicit StringRef(const char* const str, U64 length) : m_str(str), m_length(length) {}
+
     template <U64 N>
-    explicit StringRef(const String<N>& s) : StringRef(s.ptr())
+    explicit StringRef(const String<N>& s) : StringRef(s.ptr(), s.length())
     {
     }
 
-    explicit StringRef(const char* const) {}
+    template <U64 M>
+    constexpr inline bool operator==(const char (&list)[M]) const
+    {
+        if (M != this->m_length + 1) return false;
+
+        for (U64 i = 0; i < this->m_length; i++) {
+            if (list[i] != this->m_str[i]) return false;
+        }
+
+        return true;
+    }
 };
 
-export template <U64 N, U64 EXPECTED_WORD_COUNT = 0>
-DynArray<StringRef, EXPECTED_WORD_COUNT> split(const String<N>& str, const char sep = ' ')
+export template <U64 WORDC = 0, U64 N>
+DynArray<StringRef, WORDC> split(const String<N>& str, const char sep = ' ')
 {
-    DynArray<StringRef, EXPECTED_WORD_COUNT> words;
+    DynArray<StringRef, WORDC> words;
+
+    U64 idx = 0;
+
+    while (true) {
+        while (idx < str.length() && str[idx] == sep) {
+            idx++;
+        }
+
+        if (idx == str.length()) {
+            break;
+        }
+
+        const U64 start_idx = idx;
+
+        while (idx < str.length() && str[idx] != sep) {
+            idx++;
+        }
+
+        const U64 end_idx = idx;
+
+        words.append(StringRef(str.ptr() + start_idx, end_idx - start_idx));
+    }
 
     return words;
 }

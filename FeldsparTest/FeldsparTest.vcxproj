@@ -102,6 +102,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <DisableSpecificWarnings>26495;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>

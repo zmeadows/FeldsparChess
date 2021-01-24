@@ -8,9 +8,26 @@ TEST(String, Constructors)
 {
     String s("asdf");
     EXPECT_EQ(s, "asdf");
+}
 
-    char* ch = (char*)malloc(sizeof(char) * 8);
-    ch[7] = '\0';
+TEST(StringRef, Constructors)
+{
+    String str("Whatever");
+    StringRef ref(str);
 
-    String s2(ch);
+    EXPECT_EQ(ref, "Whatever");
+}
+
+TEST(String, Split)
+{
+    const String sentence("This is a test sentence.");
+    const auto words = split<10>(sentence);
+
+    EXPECT_EQ(words.length(), 5);
+
+    EXPECT_EQ(words[0], "This");
+    EXPECT_EQ(words[1], "is");
+    EXPECT_EQ(words[2], "a");
+    EXPECT_EQ(words[3], "test");
+    EXPECT_EQ(words[4], "sentence.");
 }
