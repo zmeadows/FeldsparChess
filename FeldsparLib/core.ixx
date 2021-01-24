@@ -1,8 +1,8 @@
 export module unstd.core;
 
 import<cassert>;
-import<cstdint>;
 
+import<cstdint>;
 export using U64 = uint64_t;
 export using U32 = uint32_t;
 export using U16 = uint16_t;

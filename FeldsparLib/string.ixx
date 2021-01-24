@@ -3,20 +3,14 @@ export module unstd.string;
 import unstd.core;
 import unstd.array;
 
-import<cstdlib>;
 import<cstring>;
-
-constexpr U64 MAX_STRING_SIZE = (U64)1e8;
 
 export template <U64 N = 0>
 class String : public DynArray<char, N> {
 
 public:
     String(void) {}
-    String(WrappedConstPtr<char> cstr)
-        : DynArray<char, N>(cstr.p, strnlen_s(cstr.p, MAX_STRING_SIZE))
-    {
-    }
+    String(WrappedConstPtr<char> cstr) : DynArray<char, N>(cstr.p, strlen(cstr.p)) {}
 
     template <U64 M>
     explicit String(const char (&list)[M]) : DynArray<char, N>(list, M - 1)
@@ -43,10 +37,12 @@ export class StringRef {
 public:
     StringRef() : m_str(nullptr), m_length(0) {}
 
-    explicit StringRef(const char* const str, U64 length) : m_str(str), m_length(length) {}
+    StringRef(const char* const str, U64 length) : m_str(str), m_length(length) {}
+
+    StringRef(const char* const cstr) : m_str(cstr), m_length(strlen(cstr)) {}
 
     template <U64 N>
-    explicit StringRef(const String<N>& s) : StringRef(s.ptr(), s.length())
+    StringRef(const String<N>& s) : StringRef(s.ptr(), s.length())
     {
     }
 
@@ -61,10 +57,23 @@ public:
 
         return true;
     }
+
+    constexpr __forceinline U64 length() const { return m_length; }
+
+    StringRef substr(U64 start_idx, U64 length) const
+    {
+        return StringRef(m_str + start_idx, length);
+    }
+
+    constexpr __forceinline const char operator[](U64 idx) { return m_str[idx]; }
+    constexpr __forceinline const char* const begin() const { return m_str; }
+    constexpr __forceinline const char* const end() const { return m_str + m_length; }
+
+    constexpr __forceinline const char* const cstr() const { return m_str; }
 };
 
-export template <U64 WORDC = 0, U64 N>
-DynArray<StringRef, WORDC> split(const String<N>& str, const char sep = ' ')
+export template <U64 WORDC>
+DynArray<StringRef, WORDC> split(StringRef str, const char sep = ' ')
 {
     DynArray<StringRef, WORDC> words;
 
@@ -87,7 +96,7 @@ DynArray<StringRef, WORDC> split(const String<N>& str, const char sep = ' ')
 
         const U64 end_idx = idx;
 
-        words.append(StringRef(str.ptr() + start_idx, end_idx - start_idx));
+        words.append(str.substr(start_idx, end_idx - start_idx));
     }
 
     return words;

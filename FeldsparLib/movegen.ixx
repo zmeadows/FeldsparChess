@@ -1,14 +1,15 @@
 export module movegen;
 
+import prelude;
+
 import bitboard;
 import board;
 import game;
 import move;
 import pins;
-import prelude;
+import quad;
 import rays;
 import tables;
-import quad;
 
 import unstd.array;
 

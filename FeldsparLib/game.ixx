@@ -5,15 +5,14 @@ import bitboard;
 import board;
 import zobrist;
 
-#include "logger.h"
-import<cstdio>;
-import<cstring>;
-import<cctype>;
+import unstd.string;
+import unstd.array;
 
-import<string_view>;
-import<vector>;
-import<charconv>;
-import<system_error>;
+import<cstdio>;
+import<cctype>;
+import<cstdlib>;
+import<cstring>;
+#include "logger.h"
 
 export struct Game {
     Board board = {BITBOARD_EMPTY};
@@ -40,40 +39,16 @@ export GameHash create_game_hash(const Game& game)
 }
 
 // TODO: switch to using basic const char* and C functions
-Optional<Game> create_game_internal(std::string_view fen)
+Optional<Game> create_game_internal(StringRef fen)
 {
-    if (fen.size() == 0) [[unlikely]] {
+    if (fen.length() == 0) [[unlikely]] {
         return {};
     }
 
-    // clang-format off
-    // https://www.bfilipek.com/2018/07/string-view-perf-followup.html
-    constexpr auto split_string = [](
-        std::string_view strv,
-        std::string_view delims = " "
-        ) -> std::vector<std::string_view>
-    {
-        std::vector<std::string_view> output;
-        size_t first = 0;
-
-        while (first < strv.size()) {
-            const auto second = strv.find_first_of(delims, first);
-
-            if (first != second) output.emplace_back(strv.substr(first, second - first));
-
-            if (second == std::string_view::npos) break;
-
-            first = second + 1;
-        }
-
-        return output;
-    };
-    // clang-format on
-
-    const auto fen_pieces = split_string(fen);
+    const auto fen_pieces = split<6>(fen);
     // We consider a FEN string valid even if it doesn't specify half and/or full move counts,
     // in which case they are set to 0 and 1 respectively, as at the start of a game.
-    if (fen_pieces.size() != 4 && fen_pieces.size() != 6) [[unlikely]] {
+    if (fen_pieces.length() != 4 && fen_pieces.length() != 6) [[unlikely]] {
         WARN("Invalid FEN string with wrong number of whitespaces");
         return {};
     }
@@ -144,7 +119,7 @@ Optional<Game> create_game_internal(std::string_view fen)
 
     auto fen_color = fen_pieces[1];
 
-    if (fen_color.size() != 1) [[unlikely]] {
+    if (fen_color.length() != 1) [[unlikely]] {
         WARN("Invalid FEN color string length (should be 1).");
         return {};
     }
@@ -204,7 +179,7 @@ Optional<Game> create_game_internal(std::string_view fen)
     auto fen_ep = fen_pieces[3];
 
     if (fen_ep != "-") [[unlikely]] {
-        if (fen_ep.size() != 2) {
+        if (fen_ep.length() != 2) {
             WARN("Invalid FEN en passant target square string.");
             return {};
         }
@@ -218,17 +193,15 @@ Optional<Game> create_game_internal(std::string_view fen)
         }
     }
 
-    if (fen_pieces.size() >= 5) [[likely]] {
-        auto fen_halfmove = fen_pieces[4];
-        game.halfmove_clock = atoi(std::string(fen_halfmove).c_str());
+    if (fen_pieces.length() >= 5) [[likely]] {
+        game.halfmove_clock = atoi(fen_pieces[4].cstr());
     }
     else [[unlikely]] {
         game.halfmove_clock = 0;
     }
 
-    if (fen_pieces.size() >= 6) [[likely]] {
-        auto fen_fullmoves = fen_pieces[5];
-        game.fullmoves = atoi(std::string(fen_fullmoves).c_str());
+    if (fen_pieces.length() >= 6) [[likely]] {
+        game.fullmoves = atoi(fen_pieces[5].cstr());
     }
     else [[unlikely]] {
         game.fullmoves = 1;
@@ -245,7 +218,7 @@ export Optional<Game> Game::create(const char* fen)
         WARN("Passed nullptr to Game::create.");
         return {};
     }
-    else if (strnlen(fen, 100) == 100) [[unlikely]] {
+    else if (strlen(fen) >= 100) [[unlikely]] {
         WARN("Passed invalid FEN string that was too long to Game::create.");
         return {};
     }

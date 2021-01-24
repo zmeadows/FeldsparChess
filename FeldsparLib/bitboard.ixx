@@ -2,16 +2,15 @@ export module bitboard;
 
 import prelude;
 
-import<cassert>;
 import<cstdio>;
 import<intrin.h>;
 
 template <size_t N, size_t I>
 constexpr Bitboard BB_helper(const char* input)
 {
-    if (input[I] != '0' && input[I] != '1') {
-        assert(false);
-    }
+    // if (input[I] != '0' && input[I] != '1') {
+    //     assert(false);
+    // }
 
     if constexpr (I == 0) {
         return (static_cast<Bitboard>(input[0]) - '0') << (N);
