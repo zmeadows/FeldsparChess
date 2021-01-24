@@ -1,13 +1,16 @@
+﻿import prelude;
+
 import game;
 import move;
 import movegen;
 import zobrist;
 import quad;
 import bitboard;
-import prelude;
+import perft;
 
 import<cstdio>;
 #include <cstddef>
+import<cstdint>;
 
 int main()
 {
@@ -51,12 +54,7 @@ int main()
 
     const Game og = *Game::create("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
-    MoveBuffer moves;
-    while (true) {
-        generate_moves<false, false>(og, moves);
-    }
-
-    printf("%llu\n", moves.length());
+    perft_<2>(og);
 
     return 0;
 }

@@ -27,7 +27,9 @@ export __forceinline Pins Pins::create(const Board& board, const Color friendly_
     const Bitboard friendly_pieces = get_occupied(board, friendly_color);
     const Bitboard opponent_pieces = get_occupied(board, !friendly_color);
     const Bitboard occupied_squares = friendly_pieces | opponent_pieces;
-    const Square king_square = get_pieces(board, King, friendly_color);
+    const Square king_square = bitboard_bsf(get_pieces(board, King, friendly_color));
+
+    assert(is_valid_square(king_square));
 
     { // Find non-diagonal pins
         const Bitboard op_rq =

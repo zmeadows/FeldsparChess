@@ -9,13 +9,16 @@ import zobrist;
 import<cassert>;
 
 export class MoveBuffer {
-    Move moves[220];
+    Move moves[256];
     U64 m_count = 0;
 
 public:
-    __forceinline void append(Move m) { moves[m_count++] = m; }
-    __forceinline U64 length() const { return m_count; }
-    __forceinline void clear() { m_count = 0; }
+    constexpr __forceinline void append(Move m) { moves[m_count++] = m; }
+    constexpr __forceinline U64 length() const { return m_count; }
+    constexpr __forceinline void clear() { m_count = 0; }
+
+    constexpr __forceinline Move* begin() { return &moves[0]; }
+    constexpr __forceinline Move* end() { return &moves[0] + m_count; }
 };
 
 export inline constexpr U32 QUIET_FLAG = 0b0000;

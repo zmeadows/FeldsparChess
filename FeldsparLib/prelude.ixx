@@ -6,6 +6,7 @@ export using Bitboard = U64;
 
 export using Square = S64;
 export using MaybeSquare = Maybe<Square, -1>;
+export constexpr __forceinline bool is_valid_square(Square sq) { return sq >= 0 && sq < 64; }
 
 export using Move = U32;
 
