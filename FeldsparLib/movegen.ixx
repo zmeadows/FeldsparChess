@@ -17,6 +17,7 @@ import<cassert>;
 
 using enum PieceType;
 
+/*
 template <PieceType P>
 Bitboard pseudolegal_move_mask(Square sq, Bitboard occupied)
 {
@@ -29,6 +30,7 @@ __forceinline Bitboard pseudolegal_move_mask<Knight>(Square sq, Bitboard)
 {
     return get_knight_moves(sq);
 }
+*/
 
 export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
 [[msvc::forceinline_calls]] void generate_moves(const Game& game, MoveBuffer& moves)

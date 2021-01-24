@@ -72,5 +72,8 @@
     <ClCompile Include="string.ixx">
       <Filter>Source Files\unstd</Filter>
     </ClCompile>
+    <ClCompile Include="perft.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

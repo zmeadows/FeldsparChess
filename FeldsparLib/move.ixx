@@ -183,8 +183,7 @@ void make_move_internal(Game& game, Move move)
 
                 hash_update_ep_square(game.hash, *game.ep_square);
             }
-
-            if (move_is_pawn_promotion(move)) [[unlikely]] {
+            else if (move_is_pawn_promotion(move)) [[unlikely]] {
                 if (flag == KNIGHT_PROMO_FLAG || flag == KNIGHT_PROMO_CAPTURE_FLAG) {
                 }
                 else if (flag == BISHOP_PROMO_FLAG || flag == BISHOP_PROMO_CAPTURE_FLAG) {
