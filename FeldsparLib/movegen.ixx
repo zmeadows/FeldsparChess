@@ -7,6 +7,7 @@ import board;
 import game;
 import move;
 import pins;
+import print;
 import quad;
 import rays;
 import tables;
@@ -32,6 +33,7 @@ __forceinline Bitboard pseudolegal_move_mask<Knight>(Square sq, Bitboard)
 }
 */
 
+// TODO: add MOVING_COLOR as template parameter similar to make_move
 export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
 [[msvc::forceinline_calls]] void generate_moves(const Game& game, MoveBuffer& moves)
 {
@@ -188,14 +190,9 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
                                     FOURTH_RANK;
 
             promotion_rank = 8;
-
-            attacking_pawns_mask = bitboard_shifted(
-                bitboard_shifted(friendly_pawns, Direction::NorthEast) & capture_mask,
-                Direction::SouthWest);
-
-            attacking_pawns_mask |= bitboard_shifted(
-                bitboard_shifted(friendly_pawns, Direction::NorthWest) & capture_mask,
-                Direction::SouthEast);
+            attacking_pawns_mask = bitboard_shifted(capture_mask, Direction::SouthWest);
+            attacking_pawns_mask |= bitboard_shifted(capture_mask, Direction::SouthEast);
+            attacking_pawns_mask &= friendly_pawns;
         }
         else {
             pawn_move_delta = -8;
@@ -207,14 +204,9 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
                 quiet_mask & bitboard_shifted(singly_advanced_pawns, Direction::South) & FIFTH_RANK;
 
             promotion_rank = 1;
-
-            attacking_pawns_mask = bitboard_shifted(
-                bitboard_shifted(friendly_pawns, Direction::SouthEast) & capture_mask,
-                Direction::NorthWest);
-
-            attacking_pawns_mask |= bitboard_shifted(
-                bitboard_shifted(friendly_pawns, Direction::SouthWest) & capture_mask,
-                Direction::NorthEast);
+            attacking_pawns_mask = bitboard_shifted(capture_mask, Direction::NorthWest);
+            attacking_pawns_mask |= bitboard_shifted(capture_mask, Direction::NorthEast);
+            attacking_pawns_mask &= friendly_pawns;
         }
 
         serialize(singly_advanced_pawns, [&](Square to) {
@@ -371,5 +363,19 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
                     create_quiet_move(king_square, queen_castle_square, QUEEN_CASTLE_FLAG, King));
             }
         }
+    }
+
+    if constexpr (DEBUG_PRINT) {
+        // TODO: print all moves
+    }
+}
+
+export void print_possible_moves(const Game& game)
+{
+    MoveBuffer moves;
+    generate_moves(game, moves);
+
+    for (const Move m : moves) {
+        print_move(m);
     }
 }

@@ -192,6 +192,7 @@
     <ClCompile Include="hashtable.ixx" />
     <ClCompile Include="perft.ixx" />
     <ClCompile Include="pins.ixx" />
+    <ClCompile Include="print.ixx" />
     <ClCompile Include="quad.ixx" />
     <ClCompile Include="random.ixx" />
     <ClCompile Include="rays.ixx" />

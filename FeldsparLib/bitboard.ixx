@@ -2,7 +2,6 @@ export module bitboard;
 
 import prelude;
 
-import<cstdio>;
 import<intrin.h>;
 
 template <size_t N, size_t I>
@@ -128,6 +127,12 @@ export __forceinline constexpr bool check_bit(Bitboard bb, Square sq)
     return ((bb >> sq) & Bitboard(1)) > 0;
 }
 
+export template <Square... sqs>
+__forceinline constexpr Bitboard set_bits(void)
+{
+    return (square_bitrep(sqs) | ...);
+}
+
 export __forceinline constexpr Bitboard bitboard_flipped(Bitboard bb) { return ~bb; }
 
 export __forceinline Square bitboard_bsf(Bitboard bb)
@@ -180,25 +185,8 @@ export constexpr Bitboard bitboard_shifted(const Bitboard bb, const Direction di
     }
 }
 
-export void print_bitboard(Bitboard bb)
-{
-    bool bits[64] = {0};
-    serialize(bb, [&](Square sq) { bits[63 - sq] = true; });
-
-    for (size_t i = 0; i < 8; i++) {
-        for (size_t j = 0; j < 8; j++) {
-            const size_t idx = 8 * i + j;
-            printf("%c", (bits[idx] ? '1' : '0'));
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-
 export __forceinline constexpr Bitboard rank_mask(Square sq) { return FIRST_RANK << (sq & 56); }
 export __forceinline constexpr Bitboard file_mask(Square sq) { return H_FILE << (sq & 7); }
-export __forceinline constexpr S64 rank_of(Square sq) { return 1 + sq & 56; }
-export __forceinline constexpr S64 file_of(Square sq) { return 8 - sq & 7; }
 
 export inline constexpr Bitboard rank_mask_ex(Square sq)
 {

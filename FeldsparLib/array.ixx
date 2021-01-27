@@ -10,7 +10,7 @@ class Array {
 
 public:
     constexpr Array() {}
-    constexpr Array(const T& value) : m_data({value}) {}
+    constexpr explicit Array(const T& value) : m_data({value}) {}
 
     template <U64 M>
     constexpr Array(const T (&list)[M])
@@ -21,12 +21,15 @@ public:
         }
     }
 
-    __forceinline constexpr U64 capacity() const { return N; }
+    constexpr __forceinline U64 capacity() const { return N; }
+    constexpr __forceinline U64 length() const { return N; }
 
     constexpr __forceinline const T& operator[](U64 idx) const { return m_data[idx]; }
     constexpr __forceinline T& operator[](U64 idx) { return m_data[idx]; }
     constexpr __forceinline T* begin() { return m_data; }
     constexpr __forceinline T* end() { return m_data + N; }
+    constexpr __forceinline const T* begin() const { return m_data; }
+    constexpr __forceinline const T* end() const { return m_data + N; }
 };
 
 template <typename T>

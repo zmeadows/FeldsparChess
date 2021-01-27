@@ -5,8 +5,6 @@ import bitboard;
 import rays;
 import tables;
 
-import<cstring>;
-
 export inline constexpr auto BOARD_SIZE = 14;
 export using Board = Bitboard[BOARD_SIZE];
 // Board[0] = White Pawns
@@ -23,11 +21,6 @@ export using Board = Bitboard[BOARD_SIZE];
 // Board[11] = Black King
 // Board[12] = White Occupied (OR of all White pieces)
 // Board[13] = Black Occupied (OR of all Black pieces)
-
-export __forceinline void board_reset_to_zero(Board& board)
-{
-    (void)memset(&board, 0, sizeof(Board));
-}
 
 export __forceinline constexpr Bitboard get_pieces(const Board& board, const PieceType p,
                                                    const Color c)

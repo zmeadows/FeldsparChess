@@ -8,6 +8,7 @@ import zobrist;
 import unstd.string;
 import unstd.array;
 
+import<cassert>;
 import<cstdio>;
 import<cctype>;
 import<cstdlib>;
@@ -36,6 +37,13 @@ export GameHash create_game_hash(const Game& game)
     }
 
     return hash;
+}
+
+// TODO: implement
+MaybeSquare from_algebraic(StringRef alg)
+{
+    assert(alg.length() == 2);
+    return {};
 }
 
 // TODO: switch to using basic const char* and C functions
@@ -184,7 +192,7 @@ Optional<Game> create_game_internal(StringRef fen)
             return {};
         }
 
-        if (MaybeSquare sq = from_algebraic(fen_ep[0], fen_ep[1]); sq.has_value()) {
+        if (MaybeSquare sq = from_algebraic(fen_ep); sq.has_value()) {
             game.ep_square = sq;
         }
         else {

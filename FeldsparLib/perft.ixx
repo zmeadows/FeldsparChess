@@ -24,7 +24,7 @@ export template <U64 MAX_DEPTH>
 void print_perft_stats(const Array<PerftStats, MAX_DEPTH>& stats)
 {
     for (U64 i = 0; i < MAX_DEPTH; i++) {
-        printf("DEPTH %llu NODES = %llu", i, stats[i].node_count);
+        printf("DEPTH %llu NODES = %llu\n", i, stats[i].node_count);
     }
 }
 

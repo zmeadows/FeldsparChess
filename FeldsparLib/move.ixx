@@ -17,8 +17,8 @@ public:
     constexpr __forceinline U64 length() const { return m_count; }
     constexpr __forceinline void clear() { m_count = 0; }
 
-    constexpr __forceinline Move* begin() { return &moves[0]; }
-    constexpr __forceinline Move* end() { return &moves[0] + m_count; }
+    constexpr __forceinline const Move* const begin() const { return &moves[0]; }
+    constexpr __forceinline const Move* const end() const { return &moves[0] + m_count; }
 };
 
 export inline constexpr U32 QUIET_FLAG = 0b0000;
@@ -39,6 +39,7 @@ export inline constexpr U32 QUEEN_PROMO_CAPTURE_FLAG = 0b1111;
 export inline constexpr Move NULL_MOVE = 0x0;
 
 // TODO: check if these const intermediate variables are stored in registers or optimized out
+// TODO: add assert statements to validate these function inputs
 export __forceinline constexpr Move create_quiet_move(Square from, Square to, U32 flag,
                                                       PieceType moved_ptype)
 {
@@ -50,6 +51,7 @@ export __forceinline constexpr Move create_quiet_move(Square from, Square to, U3
     return ptype_bits | flag_bits | from_bits | to_bits;
 }
 
+// TODO: add assert statements to validate these function inputs
 export __forceinline constexpr Move create_capture_move(Square from, Square to, U32 flag,
                                                         PieceType moved_ptype,
                                                         PieceType captured_ptype)
@@ -64,26 +66,29 @@ export __forceinline constexpr Move create_capture_move(Square from, Square to, 
 }
 
 // TODO: add tests for all of these
-__forceinline constexpr U32 move_flag(Move move) { return (move >> 12) & 0xF; }
+export __forceinline constexpr U32 move_flag(Move move) { return (move >> 12) & 0xF; }
 
-__forceinline constexpr bool move_is_capture(Move move) { return (move_flag(move) & 0b0100) != 0; }
+export __forceinline constexpr bool move_is_capture(Move move)
+{
+    return (move_flag(move) & 0b0100) != 0;
+}
 
-__forceinline constexpr bool move_is_pawn_promotion(Move move)
+export __forceinline constexpr bool move_is_pawn_promotion(Move move)
 {
     return (move_flag(move) & 0b1000) != 0;
 }
 
-__forceinline constexpr bool move_from_square(Move move) { return (move >> 6) & 0x3F; }
+export __forceinline constexpr Square move_from_square(Move move) { return (move >> 6) & 0x3F; }
 
-__forceinline constexpr bool move_to_square(Move move) { return move & 0x3F; }
+export __forceinline constexpr Square move_to_square(Move move) { return move & 0x3F; }
 
-__forceinline constexpr PieceType moved_piece_type(Move move)
+export __forceinline constexpr PieceType moved_piece_type(Move move)
 {
     return static_cast<PieceType>((move >> 16) & 0x7);
 }
 
 // NOTE: this will be equal to PieceType::Pawn if the move is not a capture. How bad is that...?
-__forceinline constexpr PieceType captured_piece_type(Move move)
+export __forceinline constexpr PieceType captured_piece_type(Move move)
 {
     return static_cast<PieceType>((move >> 19) & 0x7);
 }

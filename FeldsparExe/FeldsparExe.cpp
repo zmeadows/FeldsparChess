@@ -7,17 +7,15 @@ import zobrist;
 import quad;
 import bitboard;
 import perft;
+import print;
+import tables;
 
-import<cstdio>;
 #include <cstddef>
-import<cstdint>;
+#include <cstdint>
+#include <cstdio>;
 
 int main()
 {
-    printf("%llu\n", alignof(QuadBitboard));
-    printf("%llu\n", alignof(std::max_align_t));
-    printf("%llu\n", sizeof(size_t));
-
     const Bitboard rq = BB("00000000"
                            "00000000"
                            "00000000"
@@ -45,16 +43,14 @@ int main()
                               "11111111"
                               "11111111");
 
-    const QuadBitboard attacks = east_nort_noWe_noEa_Attacks(pack(rq, rq, bq, bq), empty);
-    alignas(QuadBitboard) Bitboard bbs[4];
-    unpack(attacks, bbs);
+    print_bitboard(get_knight_moves(f6));
+    printf("%llu\n", set_bits<h6, f6>());
 
-    const Bitboard attacked = reduceOR(attacks);
-    print_bitboard(attacked);
+    const Game og1 = *Game::create("rnbqkbnr/ppppppp1/8/7p/7P/8/PPPPPPP1/RNBQKBNR w KQkq - 0 2");
+    print_possible_moves(og1);
 
     const Game og = *Game::create("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-
-    perft_<2>(og);
+    perft_<3>(og);
 
     return 0;
 }
