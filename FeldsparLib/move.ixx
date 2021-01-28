@@ -93,7 +93,7 @@ export __forceinline constexpr PieceType captured_piece_type(Move move)
     return static_cast<PieceType>((move >> 19) & 0x7);
 }
 
-template <Color MOVING_COLOR>
+template <Color MOVING_COLOR, bool UPDATE_HASH>
 void make_move_internal(Game& game, Move move)
 {
     using enum PieceType;
@@ -117,23 +117,27 @@ void make_move_internal(Game& game, Move move)
     constexpr CastlingRights REMOVE_BLACK_QUEENSIDE = ~BLACK_QUEENSIDE;
 
     const auto remove_castling_rights = [&](CastlingRights remove_mask) {
-        hash_update_castling_rights(game.hash, game.castling_rights);
+        if constexpr (UPDATE_HASH) hash_update_castling_rights(game.hash, game.castling_rights);
         game.castling_rights &= remove_mask;
-        hash_update_castling_rights(game.hash, game.castling_rights);
+        if constexpr (UPDATE_HASH) hash_update_castling_rights(game.hash, game.castling_rights);
     };
 
     // TODO: should we not be updating hash for the to_sq on pawn promotion?
-    hash_update_piece_square(game.hash, MOVING_COLOR, moved_ptype, from_sq);
-    hash_update_piece_square(game.hash, MOVING_COLOR, moved_ptype, to_sq);
+    if constexpr (UPDATE_HASH) {
+        hash_update_piece_square(game.hash, MOVING_COLOR, moved_ptype, from_sq);
+        hash_update_piece_square(game.hash, MOVING_COLOR, moved_ptype, to_sq);
+    }
     get_pieces_mut(game.board, moved_ptype, MOVING_COLOR) ^= from_to_bit;
     get_occupied_mut(game.board, MOVING_COLOR) ^= from_to_bit;
 
     // En Passant square will always change or disappear each move, if it exists
-    if (game.ep_square.has_value()) {
-        hash_update_ep_square(game.hash, *game.ep_square);
+    if constexpr (UPDATE_HASH) {
+        if (game.ep_square.has_value()) {
+            hash_update_ep_square(game.hash, *game.ep_square);
+        }
     }
 
-    if (is_capture) {
+    if (is_capture) [[unlikely]] {
         Bitboard captured_bit;
         Square captured_sq;
 
@@ -156,7 +160,9 @@ void make_move_internal(Game& game, Move move)
 
         get_pieces_mut(game.board, captured_ptype, !MOVING_COLOR) ^= captured_bit;
         get_occupied_mut(game.board, !MOVING_COLOR) ^= captured_bit;
-        hash_update_piece_square(game.hash, !MOVING_COLOR, captured_ptype, captured_sq);
+        if constexpr (UPDATE_HASH) {
+            hash_update_piece_square(game.hash, !MOVING_COLOR, captured_ptype, captured_sq);
+        }
 
         // remove castling rights if rook captured
         if (captured_ptype == Rook) [[unlikely]] {
@@ -189,7 +195,9 @@ void make_move_internal(Game& game, Move move)
                     game.ep_square = to_sq + 8;
                 }
 
-                hash_update_ep_square(game.hash, *game.ep_square);
+                if constexpr (UPDATE_HASH) {
+                    hash_update_ep_square(game.hash, *game.ep_square);
+                }
             }
             else if (move_is_pawn_promotion(move)) [[unlikely]] {
                 if (flag == KNIGHT_PROMO_FLAG || flag == KNIGHT_PROMO_CAPTURE_FLAG) {
@@ -258,15 +266,18 @@ void make_move_internal(Game& game, Move move)
     }
 
     game.to_move = !game.to_move;
-    hash_update_color_to_move(game.hash);
+    if constexpr (UPDATE_HASH) {
+        hash_update_color_to_move(game.hash);
+    }
 }
 
-export __forceinline void make_move(Game& game, Move move)
+export template <bool UPDATE_HASH>
+__forceinline void make_move(Game& game, Move move)
 {
     if (game.to_move == Color::White) {
-        make_move_internal<Color::White>(game, move);
+        make_move_internal<Color::White, UPDATE_HASH>(game, move);
     }
     else {
-        make_move_internal<Color::Black>(game, move);
+        make_move_internal<Color::Black, UPDATE_HASH>(game, move);
     }
 }

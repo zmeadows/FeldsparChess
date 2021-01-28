@@ -5,6 +5,45 @@ import prelude;
 import bitboard;
 
 import unstd.array;
+
+TEST(Bitboard, SetBits)
+{
+    {
+        constexpr Bitboard bb = set_bits<h1, a1>();
+        EXPECT_EQ(bb, BB("00000000"
+                         "00000000"
+                         "00000000"
+                         "00000000"
+                         "00000000"
+                         "00000000"
+                         "00000000"
+                         "10000001"));
+    }
+
+    {
+        constexpr Bitboard bb = set_bits<h1, a1, h8, a8>();
+        EXPECT_EQ(bb, BB("10000001"
+                         "00000000"
+                         "00000000"
+                         "00000000"
+                         "00000000"
+                         "00000000"
+                         "00000000"
+                         "10000001"));
+    }
+
+    {
+        constexpr Bitboard bb = set_bits<a8, a7, a6, a5, a4, a3, a2, a1>();
+        EXPECT_EQ(bb, BB("10000000"
+                         "10000000"
+                         "10000000"
+                         "10000000"
+                         "10000000"
+                         "10000000"
+                         "10000000"
+                         "10000000"));
+    }
+}
 TEST(Bitboard, StringToBitboardConversion)
 {
     EXPECT_EQ(BITBOARD_EMPTY, BB("00000000"

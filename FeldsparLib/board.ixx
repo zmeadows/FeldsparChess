@@ -110,7 +110,8 @@ __forceinline Bitboard attacked(const Board& board, Color attacking_color)
     serialize(get_pieces(board, Queen, attacking_color),
               [&](Square sq) { attacked |= get_queen_attacks(sq, all_pieces); });
 
-    attacked |= get_king_moves(bitboard_bsf(get_pieces(board, King, attacking_color)));
+    serialize(get_pieces(board, King, attacking_color),
+              [&](Square sq) { attacked |= get_king_moves(sq); });
 
     return attacked;
 }

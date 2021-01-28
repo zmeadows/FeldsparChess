@@ -2,6 +2,7 @@ export module perft;
 
 import unstd.core;
 import unstd.array;
+import unstd.string;
 
 import game;
 import move;
@@ -9,6 +10,10 @@ import movegen;
 
 import<cstring>;
 import<cstdio>;
+
+// TODO: use my own hash map and string types
+import<string>;
+import<unordered_map>;
 
 export struct PerftStats {
     U64 node_count = 0;
@@ -38,7 +43,7 @@ void perft_internal(Game& game, U64 depth, Array<PerftStats, MAX_DEPTH>& stats)
 
     const Game game_premove_copy(game);
     for (Move m : moves) {
-        make_move(game, m);
+        make_move<false>(game, m);
 
         stats[MAX_DEPTH - depth].node_count++;
         // TODO: add promotions, castles, etc...
@@ -62,4 +67,11 @@ void perft_(const Game& game)
 {
     const auto results = perft<MAX_DEPTH>(game);
     print_perft_stats(results);
+}
+
+std::unordered_map<std::string, U64> perft_divide(const Game& game)
+{
+    std::unordered_map<std::string, U64> result;
+
+    return result;
 }

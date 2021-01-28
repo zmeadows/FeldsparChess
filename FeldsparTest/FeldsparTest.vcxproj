@@ -46,6 +46,7 @@
   <ItemGroup>
     <ClCompile Include="array_test.cpp" />
     <ClCompile Include="bitboard_test.cpp" />
+    <ClCompile Include="board_test.cpp" />
     <ClCompile Include="core_test.cpp" />
     <ClCompile Include="game_test.cpp" />
     <ClCompile Include="quad_test.cpp" />

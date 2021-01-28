@@ -1,9 +1,12 @@
 #define _HAS_EXCEPTIONS 0
 #include "gtest/gtest.h"
 
-import prelude;
 import bitboard;
+import board;
+import prelude;
+import print;
 import quad;
+
 import unstd.random;
 
 #include <limits>

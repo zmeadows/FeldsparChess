@@ -2,14 +2,14 @@ export module unstd.hashtable;
 
 import unstd.core;
 
-template <U64 STACK_SIZE, typename Key, typename Value, Key EMPTY_SENTINEL, Key TOMBSTONE_SENTINEL>
+template <typename Key, typename Value, Key EMPTY_SENTINEL, Key TOMBSTONE_SENTINEL>
 class HashTable {
     struct KVPair {
         Key key;
         Value val;
     };
 
-    alignas(alignof(KVPair)) U8 m_data[sizeof(KVPair) * STACK_SIZE];
+    // alignas(alignof(KVPair)) U8 m_data[sizeof(KVPair) * STACK_SIZE];
     KVPair* m_ptr;
 
     U64 m_count;

@@ -128,7 +128,7 @@ export __forceinline constexpr bool check_bit(Bitboard bb, Square sq)
 }
 
 export template <Square... sqs>
-__forceinline constexpr Bitboard set_bits(void)
+constexpr __forceinline Bitboard set_bits(void)
 {
     return (square_bitrep(sqs) | ...);
 }

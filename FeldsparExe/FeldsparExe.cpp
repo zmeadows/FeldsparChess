@@ -11,8 +11,8 @@ import print;
 import tables;
 
 #include <cstddef>
-#include <cstdint>
-#include <cstdio>;
+import<cstdint>;
+import<cstdio>;
 
 int main()
 {
@@ -50,7 +50,7 @@ int main()
     print_possible_moves(og1);
 
     const Game og = *Game::create("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    perft_<3>(og);
+    perft_<6>(og);
 
     return 0;
 }
