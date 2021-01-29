@@ -133,6 +133,7 @@ export constexpr Square c8 = 7 * 8 + 5;
 export constexpr Square b8 = 7 * 8 + 6;
 export constexpr Square a8 = 7 * 8 + 7;
 
+// TODO: replace with simple version calling 'a' + file
 export constexpr const char* to_algebraic(Square sq)
 {
     switch (sq) {
