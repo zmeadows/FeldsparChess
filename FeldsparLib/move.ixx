@@ -6,8 +6,7 @@ import board;
 import game;
 import zobrist;
 
-import unstd.string;
-
+import<string>;
 import<cassert>;
 
 export class MoveBuffer {
@@ -284,7 +283,7 @@ __forceinline void make_move(Game& game, Move move)
     }
 }
 
-export String<4> move_to_algebraic(Move m)
+export std::string move_to_algebraic(Move m)
 {
     const Square from = move_from_square(m);
     const Square to = move_to_square(m);
@@ -293,11 +292,11 @@ export String<4> move_to_algebraic(Move m)
     StringRef to_alg = square_to_algebraic(to);
 
     // TODO: create String::concat method
-    String<4> alg_str;
-    alg_str.append(from_alg[0]);
-    alg_str.append(from_alg[1]);
-    alg_str.append(to_alg[0]);
-    alg_str.append(to_alg[1]);
+    std::string alg_str;
+    alg_str.push_back(from_alg[0]);
+    alg_str.push_back(from_alg[1]);
+    alg_str.push_back(to_alg[0]);
+    alg_str.push_back(to_alg[1]);
 
     return alg_str;
 }

@@ -5,6 +5,8 @@ import unstd.array;
 
 import<cstring>;
 
+// TODO: has_prefix method
+
 export template <U64 N = 0>
 class String : public DynArray<char, N> {
 
@@ -75,7 +77,7 @@ public:
     constexpr __forceinline const char* const cstr() const { return m_str; }
 };
 
-export template <U64 WORDC>
+export template <U64 WORDC = 0>
 DynArray<StringRef, WORDC> split(StringRef str, const char sep = ' ')
 {
     DynArray<StringRef, WORDC> words;

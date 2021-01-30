@@ -2,6 +2,7 @@ export module unstd.array;
 
 import unstd.core;
 
+import<cstdlib>;
 import<new>;
 import<utility>;
 import<type_traits>;
@@ -9,8 +10,26 @@ import<type_traits>;
 template <typename T>
 __forceinline T* alloc_buffer(U64 count)
 {
-    return static_cast<T*>(malloc(sizeof(T) * count));
+    T* buf = static_cast<T*>(malloc(sizeof(T) * count));
+
+    if (buf == nullptr) {
+        // TODO: print type
+        fprintf(stderr, "Ran out of memory.");
+        exit(EXIT_FAILURE);
+    }
+
+    return buf;
 }
+
+// template <typename T>
+// __forceinline T* realloc_buffer(T* ptr, U64 count)
+// {
+//     if constexpr (
+//     static_assert(std::is_trivially_copyable<T>::value &&
+//                   std::is_trivially_move_constructible<T>::value);
+//
+//     return static_cast<T*>(realloc(ptr), count);
+// }
 
 template <typename T>
 __forceinline void copy_buffer(T* destination, const T* const source, U64 count)
@@ -289,10 +308,24 @@ public:
 
     DynArray(U64 init_capacity) : DynArray() { this->reserve_nocheck(init_capacity); }
 
+    DynArray(U64 init_size, const T& value) : DynArray(init_size)
+    {
+        for (U64 i = 0; i < init_size; i++) {
+            this->m_ptr[i] = value;
+        }
+        this->m_length = init_size;
+    }
+
     DynArray(const T* const chunk, U64 len) : DynArray(len)
     {
         copy_buffer(this->m_ptr, chunk, len);
         this->m_length = len;
+    }
+
+    DynArray(const DynArray& other) : DynArray(other.length())
+    {
+        copy_buffer(this->m_ptr, other.m_ptr, other.length());
+        this->m_length = other.length();
     }
 
     void clear()

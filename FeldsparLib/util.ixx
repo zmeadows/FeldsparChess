@@ -7,7 +7,7 @@ import quad;
 
 import attacks.classical;
 
-export __forceinline constexpr Bitboard attackers(const Board& board, Color color, Square sq)
+export constexpr Bitboard attackers(const Board& board, Color color, Square sq)
 {
     using enum PieceType;
 
@@ -29,7 +29,7 @@ export __forceinline constexpr Bitboard attackers(const Board& board, Color colo
 }
 
 export template <bool REMOVE_KING>
-__forceinline Bitboard attacked(const Board& board, Color attacking_color)
+Bitboard attacked(const Board& board, Color attacking_color)
 {
     using enum PieceType;
 
@@ -68,7 +68,7 @@ __forceinline Bitboard attacked(const Board& board, Color attacking_color)
 
 // qsliders = {rq,rq,bq,bq}
 // TODO: replace -1 with BITBOARD_FULL
-export inline QuadBitboard east_nort_noWe_noEa_Attacks(QuadBitboard qsliders, Bitboard empty)
+export QuadBitboard east_nort_noWe_noEa_Attacks(QuadBitboard qsliders, Bitboard empty)
 {
     const QuadBitboard qmask = pack(NOT_A_FILE, -1, NOT_H_FILE, NOT_A_FILE);
     const QuadBitboard qshift = pack(1, 8, 7, 9);
@@ -84,7 +84,7 @@ export inline QuadBitboard east_nort_noWe_noEa_Attacks(QuadBitboard qsliders, Bi
 }
 
 // qsliders = {rq,rq,bq,bq}
-export inline QuadBitboard west_sout_soEa_soWe_Attacks(QuadBitboard qsliders, Bitboard empty)
+export QuadBitboard west_sout_soEa_soWe_Attacks(QuadBitboard qsliders, Bitboard empty)
 {
     const QuadBitboard qmask = pack(NOT_H_FILE, -1, NOT_A_FILE, NOT_H_FILE);
     const QuadBitboard qshift = pack(1, 8, 7, 9);
@@ -100,7 +100,7 @@ export inline QuadBitboard west_sout_soEa_soWe_Attacks(QuadBitboard qsliders, Bi
 }
 
 export template <bool REMOVE_KING>
-__forceinline Bitboard quad_attacked(const Board& board, Color attacking_color)
+Bitboard quad_attacked(const Board& board, Color attacking_color)
 {
     using enum PieceType;
 

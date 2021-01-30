@@ -5,7 +5,12 @@ import movegen;
 import perft;
 import print;
 
+import unstd.io;
+import unstd.string;
+
 import<cstdlib>;
+import<cstdio>;
+import<string>;
 
 int main()
 {
@@ -13,7 +18,9 @@ int main()
     print_possible_moves(og1);
 
     const Game og2 = *Game::create("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    perft_<6>(og2);
+    perft_(og2, 5);
+
+    (void)qperft_divide("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 4);
 
     return EXIT_SUCCESS;
 }

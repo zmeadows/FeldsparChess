@@ -84,5 +84,8 @@
     <ClCompile Include="util.ixx">
       <Filter>Source Files\attacks</Filter>
     </ClCompile>
+    <ClCompile Include="io.ixx">
+      <Filter>Source Files\unstd</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

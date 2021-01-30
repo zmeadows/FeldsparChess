@@ -188,6 +188,7 @@
     <ClCompile Include="bitboard.ixx" />
     <ClCompile Include="board.ixx" />
     <ClCompile Include="core.ixx" />
+    <ClCompile Include="io.ixx" />
     <ClCompile Include="game.ixx" />
     <ClCompile Include="hashtable.ixx" />
     <ClCompile Include="perft.ixx" />
