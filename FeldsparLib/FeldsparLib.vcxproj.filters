@@ -16,6 +16,9 @@
     <Filter Include="Source Files\unstd">
       <UniqueIdentifier>{d8d7c3f2-bcd4-4d5d-917a-24051049373d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\attacks">
+      <UniqueIdentifier>{98c1b820-a342-4e60-bf4e-854e8a779706}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core.ixx">
@@ -45,12 +48,6 @@
     <ClCompile Include="array.ixx">
       <Filter>Source Files\unstd</Filter>
     </ClCompile>
-    <ClCompile Include="rays.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="magic.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="random.ixx">
       <Filter>Source Files\unstd</Filter>
     </ClCompile>
@@ -58,9 +55,6 @@
       <Filter>Source Files\unstd</Filter>
     </ClCompile>
     <ClCompile Include="pins.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="tables.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="quad.ixx">
@@ -77,6 +71,15 @@
     </ClCompile>
     <ClCompile Include="print.ixx">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="classical.ixx">
+      <Filter>Source Files\attacks</Filter>
+    </ClCompile>
+    <ClCompile Include="magic.ixx">
+      <Filter>Source Files\attacks</Filter>
+    </ClCompile>
+    <ClCompile Include="base.ixx">
+      <Filter>Source Files\attacks</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

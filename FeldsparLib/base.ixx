@@ -1,4 +1,4 @@
-export module tables;
+export module attacks.base;
 
 import prelude;
 import bitboard;

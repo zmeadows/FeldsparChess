@@ -3,6 +3,42 @@ export module unstd.array;
 import unstd.core;
 
 import<new>;
+import<utility>;
+import<type_traits>;
+
+template <typename T>
+__forceinline T* alloc_buffer(U64 count)
+{
+    return static_cast<T*>(malloc(sizeof(T) * count));
+}
+
+template <typename T>
+__forceinline void copy_buffer(T* destination, const T* const source, U64 count)
+{
+    if constexpr (std::is_trivially_copyable<T>::value) {
+        memcpy(static_cast<void*>(destination), static_cast<const void*>(source),
+               count * sizeof(T));
+    }
+    else {
+        for (U64 i = 0; i < count; i++) {
+            new (destination + i) T(*(source + i));
+        }
+    }
+}
+
+template <typename T>
+__forceinline void move_buffer(T* destination, T* source, U64 count)
+{
+    if constexpr (std::is_trivially_move_constructible<T>::value) {
+        memcpy(static_cast<void*>(destination), static_cast<const void*>(source),
+               count * sizeof(T));
+    }
+    else {
+        for (U64 i = 0; i < count; i++) {
+            new (destination + i) T(std::move(source[i]));
+        }
+    }
+}
 
 export template <typename T, U64 N>
 class Array {
@@ -10,6 +46,8 @@ class Array {
 
 public:
     constexpr Array() {}
+
+    // TODO: check that this uniform initialization works correctly
     constexpr explicit Array(const T& value) : m_data({value}) {}
 
     template <U64 M>
@@ -21,11 +59,30 @@ public:
         }
     }
 
+    template <U64 M>
+    constexpr bool operator==(const T (&list)[M]) const
+    {
+        if constexpr (M != N) return false;
+
+        for (U64 i = 0; i < N; i++) {
+            if constexpr (list[i] != m_data[i]) return false;
+        }
+
+        return true;
+    }
+
+    template <U64 M>
+    constexpr bool operator!=(const T (&list)[M]) const
+    {
+        return !(*this == list);
+    }
+
     constexpr __forceinline U64 capacity() const { return N; }
     constexpr __forceinline U64 length() const { return N; }
 
     constexpr __forceinline const T& operator[](U64 idx) const { return m_data[idx]; }
     constexpr __forceinline T& operator[](U64 idx) { return m_data[idx]; }
+
     constexpr __forceinline T* begin() { return m_data; }
     constexpr __forceinline T* end() { return m_data + N; }
     constexpr __forceinline const T* begin() const { return m_data; }
@@ -56,16 +113,20 @@ protected:
     virtual void reserve_nocheck(U64 new_capacity) = 0;
 
 public:
-    __forceinline const T* const ptr() const { return m_ptr; }
-    __forceinline T* ptr() { return m_ptr; }
+    constexpr __forceinline const T* const ptr() const { return m_ptr; }
+    constexpr __forceinline T* ptr() { return m_ptr; }
 
     constexpr __forceinline U64 capacity() const { return m_capacity; }
     constexpr __forceinline U64 length() const { return m_length; }
 
     constexpr __forceinline const T& operator[](U64 idx) const { return m_ptr[idx]; }
     constexpr __forceinline T& operator[](U64 idx) { return m_ptr[idx]; }
+
     constexpr __forceinline T* begin() { return m_ptr; }
     constexpr __forceinline T* end() { return m_ptr + m_length; }
+
+    constexpr __forceinline const T* const begin() const { return m_ptr; }
+    constexpr __forceinline const T* const end() const { return m_ptr + m_length; }
 
     virtual void clear() = 0;
 
@@ -78,11 +139,14 @@ public:
 
     __forceinline void append(const T& val)
     {
+        constexpr U64 TWO = 2ULL;
+
         if (m_length >= m_capacity) [[unlikely]] {
-            reserve_nocheck(max(2ULL, 2ULL * m_capacity));
+            reserve_nocheck(max(TWO, TWO * m_capacity));
         }
 
         new (m_ptr + m_length) T(val);
+
         m_length++;
     }
 
@@ -133,6 +197,7 @@ class DynArray final : public DynArrayBase<T> {
 public:
     DynArray(void) : DynArrayBase<T>(&m_data[0], 0, STACK_SIZE), m_on_stack(true) {}
 
+    // TODO: test this
     template <U64 OTHER_STACK_SIZE>
     DynArray(const DynArray<T, OTHER_STACK_SIZE>& other) : DynArray()
     {
@@ -147,13 +212,14 @@ public:
         this->m_length = other.length();
     }
 
+    // TODO: test this
     template <U64 OTHER_STACK_SIZE>
     DynArray(DynArray<T, OTHER_STACK_SIZE>&& other) : DynArray()
     {
         // TODO: check for this pointer equality?
         if (other.length() <= STACK_SIZE) [[likely]] {
             for (U64 i = 0; i < other.length(); i++) {
-                new (this->m_ptr + i) T(other[i]);
+                new (this->m_ptr + i) T(std::move(other[i]));
             }
             this->m_length = other.length();
             other.clear();
@@ -162,7 +228,7 @@ public:
             if (other.on_stack()) [[likely]] {
                 reserve_nocheck(other.length());
                 for (U64 i = 0; i < other.length(); i++) {
-                    new (this->m_ptr + i) T(other[i]);
+                    new (this->m_ptr + i) T(std::move(other[i]));
                 }
                 this->m_length = other.length();
                 other.m_length = 0;
@@ -209,10 +275,9 @@ class DynArray<T, 0> final : public DynArrayBase<T> {
     {
         // TODO: use fatal_error function to print message and exit if
         // no memory is available
-        T* new_ptr = static_cast<T*>(malloc(sizeof(T) * new_capacity));
-        for (U64 i = 0; i < this->m_length; i++) {
-            new (new_ptr + i) T(this->m_ptr[i]);
-        }
+        T* new_ptr = alloc_buffer<T>(new_capacity);
+
+        move_buffer(new_ptr, this->m_ptr, this->m_length);
 
         free(this->m_ptr);
         this->m_ptr = new_ptr;
@@ -222,15 +287,12 @@ class DynArray<T, 0> final : public DynArrayBase<T> {
 public:
     DynArray(void) : DynArrayBase<T>(nullptr, 0, 0) {}
 
-    DynArray(const T* const chunk, U64 len) : DynArray()
+    DynArray(U64 init_capacity) : DynArray() { this->reserve_nocheck(init_capacity); }
+
+    DynArray(const T* const chunk, U64 len) : DynArray(len)
     {
-        this->reserve(len);
-
-        for (U64 idx = 0; idx < len; idx++) {
-            new (this->m_ptr + idx) T(*(chunk + idx));
-        }
-
-        this->m_length += len;
+        copy_buffer(this->m_ptr, chunk, len);
+        this->m_length = len;
     }
 
     void clear()

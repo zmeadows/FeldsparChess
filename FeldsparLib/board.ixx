@@ -2,8 +2,6 @@ export module board;
 
 import prelude;
 import bitboard;
-import rays;
-import tables;
 
 export inline constexpr auto BOARD_SIZE = 14;
 export using Board = Bitboard[BOARD_SIZE];
@@ -54,64 +52,4 @@ export __forceinline constexpr Bitboard get_occupied(const Board& board)
 export __forceinline constexpr Bitboard get_unoccupied(const Board& board)
 {
     return ~get_occupied(board);
-}
-
-export inline constexpr Bitboard attackers(const Board& board, Color color, Square sq)
-{
-    using enum PieceType;
-
-    Bitboard attackers = BITBOARD_EMPTY;
-
-    attackers |= get_pawn_attacks(sq, !color) & get_pieces(board, Pawn, color);
-    attackers |= get_knight_moves(sq) & get_pieces(board, Knight, color);
-    attackers |= get_king_moves(sq) & get_pieces(board, King, color);
-
-    const Bitboard occupied = get_occupied(board);
-
-    const Bitboard BQ = get_pieces(board, Queen, color) | get_pieces(board, Bishop, color);
-    attackers |= get_bishop_attacks(sq, occupied) & BQ;
-
-    const Bitboard RQ = get_pieces(board, Queen, color) | get_pieces(board, Rook, color);
-    attackers |= get_rook_attacks(sq, occupied) & RQ;
-
-    return attackers;
-}
-
-// TODO: Use AVX2 flood fills to compute this faster
-export template <bool REMOVE_KING>
-__forceinline Bitboard attacked(const Board& board, Color attacking_color)
-{
-    using enum PieceType;
-
-    const Color defending_color = !attacking_color;
-    Bitboard attacked = BITBOARD_EMPTY;
-
-    Bitboard defending_pieces = get_occupied(board, defending_color);
-
-    if constexpr (REMOVE_KING) {
-        defending_pieces &= bitboard_flipped(get_pieces(board, King, defending_color));
-    }
-
-    const Bitboard attacking_pieces = get_occupied(board, attacking_color);
-    const Bitboard all_pieces = defending_pieces | attacking_pieces;
-
-    serialize(get_pieces(board, Pawn, attacking_color),
-              [&](Square sq) { attacked |= get_pawn_attacks(sq, attacking_color); });
-
-    serialize(get_pieces(board, Knight, attacking_color),
-              [&](Square sq) { attacked |= get_knight_moves(sq); });
-
-    serialize(get_pieces(board, Bishop, attacking_color),
-              [&](Square sq) { attacked |= get_bishop_attacks(sq, all_pieces); });
-
-    serialize(get_pieces(board, Rook, attacking_color),
-              [&](Square sq) { attacked |= get_rook_attacks(sq, all_pieces); });
-
-    serialize(get_pieces(board, Queen, attacking_color),
-              [&](Square sq) { attacked |= get_queen_attacks(sq, all_pieces); });
-
-    serialize(get_pieces(board, King, attacking_color),
-              [&](Square sq) { attacked |= get_king_moves(sq); });
-
-    return attacked;
 }

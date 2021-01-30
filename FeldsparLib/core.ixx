@@ -27,9 +27,16 @@ const T& max(const T& a, const T& b)
 }
 
 export template <typename T>
+const T& min(const T& a, const T& b)
+{
+    return (b >= a) ? a : b;
+}
+
+export template <typename T>
 struct WrappedConstPtr {
     const T* const p;
-    WrappedConstPtr(const T* const _p) : p(_p) {}
+    WrappedConstPtr() = delete;
+    explicit WrappedConstPtr(const T* const _p) : p(_p) {}
 };
 
 // For any enum class that defines a LAST member, this allows us to loop over the enum

@@ -9,8 +9,7 @@ import move;
 import pins;
 import print;
 import quad;
-import rays;
-import tables;
+import attacks.classical;
 
 import unstd.array;
 

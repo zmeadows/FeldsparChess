@@ -6,6 +6,8 @@ import board;
 import game;
 import zobrist;
 
+import unstd.string;
+
 import<cassert>;
 
 export class MoveBuffer {
@@ -280,4 +282,21 @@ __forceinline void make_move(Game& game, Move move)
     else {
         make_move_internal<Color::Black, UPDATE_HASH>(game, move);
     }
+}
+
+export String<4> move_to_algebraic(Move m)
+{
+    const Square from = move_from_square(m);
+    const Square to = move_to_square(m);
+
+    const char* from_alg = square_to_algebraic(from);
+    const char* to_alg = square_to_algebraic(to);
+
+    String<4> alg_str;
+    alg_str.append(from_alg[0]);
+    alg_str.append(from_alg[1]);
+    alg_str.append(to_alg[0]);
+    alg_str.append(to_alg[1]);
+
+    return alg_str;
 }

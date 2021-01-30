@@ -2,8 +2,10 @@ export module pins;
 
 import prelude;
 import bitboard;
-import rays;
 import board;
+import attacks.classical;
+
+import unstd.array;
 
 import<cassert>;
 

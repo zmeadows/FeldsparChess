@@ -1,7 +1,11 @@
-export module rays;
+export module attacks.classical;
 
 import prelude;
 import bitboard;
+import board;
+
+export import attacks.base;
+
 import unstd.array;
 
 // These 'classical' ray methods are primarily used as a way of producing valid attack tables
@@ -640,6 +644,65 @@ export constexpr __forceinline Bitboard xray_bishop_attacks(Bitboard occ, Bitboa
     return attacks ^ get_bishop_attacks(bishop_square, occ ^ blockers);
 }
 
+export __forceinline constexpr Bitboard attackers(const Board& board, Color color, Square sq)
+{
+    using enum PieceType;
+
+    Bitboard attackers = BITBOARD_EMPTY;
+
+    attackers |= get_pawn_attacks(sq, !color) & get_pieces(board, Pawn, color);
+    attackers |= get_knight_moves(sq) & get_pieces(board, Knight, color);
+    attackers |= get_king_moves(sq) & get_pieces(board, King, color);
+
+    const Bitboard occupied = get_occupied(board);
+
+    const Bitboard BQ = get_pieces(board, Queen, color) | get_pieces(board, Bishop, color);
+    attackers |= get_bishop_attacks(sq, occupied) & BQ;
+
+    const Bitboard RQ = get_pieces(board, Queen, color) | get_pieces(board, Rook, color);
+    attackers |= get_rook_attacks(sq, occupied) & RQ;
+
+    return attackers;
+}
+
+export template <bool REMOVE_KING>
+__forceinline Bitboard attacked(const Board& board, Color attacking_color)
+{
+    using enum PieceType;
+
+    const Color defending_color = !attacking_color;
+    Bitboard attacked = BITBOARD_EMPTY;
+
+    Bitboard defending_pieces = get_occupied(board, defending_color);
+
+    if constexpr (REMOVE_KING) {
+        defending_pieces &= bitboard_flipped(get_pieces(board, King, defending_color));
+    }
+
+    const Bitboard attacking_pieces = get_occupied(board, attacking_color);
+    const Bitboard all_pieces = defending_pieces | attacking_pieces;
+
+    serialize(get_pieces(board, Pawn, attacking_color),
+              [&](Square sq) { attacked |= get_pawn_attacks(sq, attacking_color); });
+
+    serialize(get_pieces(board, Knight, attacking_color),
+              [&](Square sq) { attacked |= get_knight_moves(sq); });
+
+    serialize(get_pieces(board, Bishop, attacking_color),
+              [&](Square sq) { attacked |= get_bishop_attacks(sq, all_pieces); });
+
+    serialize(get_pieces(board, Rook, attacking_color),
+              [&](Square sq) { attacked |= get_rook_attacks(sq, all_pieces); });
+
+    serialize(get_pieces(board, Queen, attacking_color),
+              [&](Square sq) { attacked |= get_queen_attacks(sq, all_pieces); });
+
+    serialize(get_pieces(board, King, attacking_color),
+              [&](Square sq) { attacked |= get_king_moves(sq); });
+
+    return attacked;
+}
+
 const Array<Bitboard, 64 * 64> RAYS_BETWEEN_SQUARES = []() {
     Array<Bitboard, 64 * 64> rays;
 
@@ -663,7 +726,7 @@ const Array<Bitboard, 64 * 64> RAYS_BETWEEN_SQUARES = []() {
     return rays;
 }();
 
-export inline Bitboard ray_between_squares(Square a, Square b)
+export constexpr __forceinline Bitboard ray_between_squares(Square a, Square b)
 {
     return RAYS_BETWEEN_SQUARES[a * 64 + b];
 }

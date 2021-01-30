@@ -1,11 +1,11 @@
-export module magic;
-
-import unstd.core;
-import unstd.array;
+export module attacks.magic;
 
 import prelude;
 import bitboard;
-import rays;
+import attacks.base;
+
+import unstd.core;
+import unstd.array;
 
 constexpr const Bitboard INNER_SQUARES = BB("00000000"
                                             "01111110"
