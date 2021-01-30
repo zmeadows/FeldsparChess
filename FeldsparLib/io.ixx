@@ -1,11 +1,8 @@
 export module unstd.io;
 
 import unstd.core;
-import unstd.array;
-import unstd.string;
 
 import<cstdio>;
-
 import<memory>;
 import<string>;
 

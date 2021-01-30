@@ -1,9 +1,8 @@
 export module perft;
 
 import unstd.core;
-import unstd.array;
-import unstd.string;
 import unstd.io;
+import unstd.string;
 
 import game;
 import move;
@@ -16,7 +15,7 @@ import<cstdio>;
 import<string>;
 import<sstream>;
 import<vector>;
-import<unordered_map>;
+import<map>;
 import<iterator>;
 
 export struct PerftStats {
@@ -29,14 +28,14 @@ export struct PerftStats {
     U64 check_mates = 0;
 };
 
-void print_perft_stats(const DynArray<PerftStats>& stats)
+void print_perft_stats(const std::vector<PerftStats>& stats)
 {
-    for (U64 i = 0; i < stats.length(); i++) {
+    for (U64 i = 0; i < stats.size(); i++) {
         printf("DEPTH %llu NODES = %llu\n", i, stats[i].node_count);
     }
 }
 
-void perft_internal(Game& game, const U64 max_depth, U64 depth, DynArray<PerftStats>& stats)
+void perft_internal(Game& game, const U64 max_depth, U64 depth, std::vector<PerftStats>& stats)
 {
     if (depth == 0) return;
 
@@ -55,9 +54,9 @@ void perft_internal(Game& game, const U64 max_depth, U64 depth, DynArray<PerftSt
     }
 }
 
-DynArray<PerftStats> perft(const Game& game, U64 depth)
+std::vector<PerftStats> perft(const Game& game, U64 depth)
 {
-    DynArray<PerftStats> stats(depth, PerftStats());
+    std::vector<PerftStats> stats(depth);
     Game game_copy = game;
     perft_internal(game_copy, depth, depth, stats);
     return stats;
@@ -69,13 +68,30 @@ export void perft_(const Game& game, U64 depth)
     print_perft_stats(results);
 }
 
-export std::unordered_map<std::string, U64> perft_divide(const Game& game, U64 depth)
+export std::map<std::string, int> perft_divide(StringRef fen, U64 depth)
 {
     if (depth == 0) return {};
 
-    std::unordered_map<std::string, U64> result;
+    std::map<std::string, int> result;
+    auto ogame = Game::create(fen);
 
-    const auto results = perft(game, depth);
+    if (!ogame.has_value()) return {};
+
+    Game game = *ogame;
+
+    MoveBuffer moves;
+    generate_moves(game, moves);
+    const Game game_premove_copy(game);
+    for (Move m : moves) {
+        make_move<false>(game, m);
+        const auto stats = perft(game, depth - 1);
+        result[move_to_algebraic(m)] = (int)stats.back().node_count;
+        memcpy(&game, &game_premove_copy, sizeof(Game));
+    }
+
+    for (const auto& [m, c] : result) {
+        printf("%s %d\n", m.c_str(), c);
+    }
 
     return result;
 }
@@ -99,7 +115,7 @@ std::vector<std::string> split(const std::string& s, char delim)
     return elems;
 }
 
-export std::unordered_map<std::string, int> qperft_divide(const char* fen, U64 depth)
+export std::map<std::string, int> qperft_divide(const char* fen, U64 depth)
 {
     // TODO: use SOLUTION_DIR macro
     std::string qperft_cmd(SOLUTION_DIR);
@@ -112,13 +128,12 @@ export std::unordered_map<std::string, int> qperft_divide(const char* fen, U64 d
     qperft_cmd += " \"";
     qperft_cmd += std::string(fen);
     qperft_cmd += "\"";
-    printf("%s\n", qperft_cmd.c_str());
 
     bool monitor_lines = false;
     const std::string depth_marker = "perft( " + std::to_string(depth - 1) + ")=";
     const std::string over_depth_marker = "perft( " + std::to_string(depth) + ")=";
 
-    std::unordered_map<std::string, int> result;
+    std::map<std::string, int> result;
 
     for_each_line_in_process_stdout(qperft_cmd.c_str(), [&](const std::string& str) {
         if (!monitor_lines && str.compare(0, depth_marker.size(), depth_marker) == 0) {
@@ -138,6 +153,10 @@ export std::unordered_map<std::string, int> qperft_divide(const char* fen, U64 d
 
         return true;
     });
+
+    for (const auto& [m, c] : result) {
+        printf("%s %d\n", m.c_str(), c);
+    }
 
     return result;
 }
