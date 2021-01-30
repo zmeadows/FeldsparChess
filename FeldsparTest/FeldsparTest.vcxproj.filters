@@ -16,6 +16,7 @@
     <ClCompile Include="board_test.cpp" />
     <ClCompile Include="move_test.cpp" />
     <ClCompile Include="attacks_classical_test.cpp" />
+    <ClCompile Include="attacks_util_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

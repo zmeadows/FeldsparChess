@@ -81,5 +81,8 @@
     <ClCompile Include="base.ixx">
       <Filter>Source Files\attacks</Filter>
     </ClCompile>
+    <ClCompile Include="util.ixx">
+      <Filter>Source Files\attacks</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

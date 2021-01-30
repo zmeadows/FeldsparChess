@@ -203,6 +203,7 @@
     <ClCompile Include="prelude.ixx" />
     <ClCompile Include="string.ixx" />
     <ClCompile Include="base.ixx" />
+    <ClCompile Include="util.ixx" />
     <ClCompile Include="zobrist.ixx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

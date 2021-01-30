@@ -9,28 +9,15 @@ import move;
 import pins;
 import print;
 import quad;
+
 import attacks.classical;
+import attacks.util;
 
 import unstd.array;
 
 import<cassert>;
 
 using enum PieceType;
-
-/*
-template <PieceType P>
-Bitboard pseudolegal_move_mask(Square sq, Bitboard occupied)
-{
-    static_assert(false, "get_pseudolegal_moves called for unimplemented piece type!");
-    return BITBOARD_EMPTY;
-}
-
-template <>
-__forceinline Bitboard pseudolegal_move_mask<Knight>(Square sq, Bitboard)
-{
-    return get_knight_moves(sq);
-}
-*/
 
 // TODO: add MOVING_COLOR as template parameter similar to make_move
 export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>

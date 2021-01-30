@@ -41,63 +41,9 @@ export __forceinline QuadBitboard& operator|=(QuadBitboard& qbb1, const QuadBitb
     return qbb1;
 }
 
-// qsliders = {rq,rq,bq,bq}
-// TODO: replace -1 with BITBOARD_FULL
-export inline QuadBitboard east_nort_noWe_noEa_Attacks(QuadBitboard qsliders, Bitboard empty)
-{
-    const QuadBitboard qmask = pack(NOT_A_FILE, -1, NOT_H_FILE, NOT_A_FILE);
-    const QuadBitboard qshift = pack(1, 8, 7, 9);
-    QuadBitboard qflood = qsliders;
-    QuadBitboard qempty = pack(empty) & qmask;
-    qflood |= qsliders = (qsliders << qshift) & qempty;
-    qflood |= qsliders = (qsliders << qshift) & qempty;
-    qflood |= qsliders = (qsliders << qshift) & qempty;
-    qflood |= qsliders = (qsliders << qshift) & qempty;
-    qflood |= qsliders = (qsliders << qshift) & qempty;
-    qflood |= (qsliders << qshift) & qempty;
-    return (qflood << qshift) & qmask;
-}
-
-// qsliders = {rq,rq,bq,bq}
-export inline QuadBitboard west_sout_soEa_soWe_Attacks(QuadBitboard qsliders, Bitboard empty)
-{
-    const QuadBitboard qmask = pack(NOT_H_FILE, -1, NOT_A_FILE, NOT_H_FILE);
-    const QuadBitboard qshift = pack(1, 8, 7, 9);
-    QuadBitboard qflood = qsliders;
-    QuadBitboard qempty = pack(empty) & qmask;
-    qflood |= qsliders = (qsliders >> qshift) & qempty;
-    qflood |= qsliders = (qsliders >> qshift) & qempty;
-    qflood |= qsliders = (qsliders >> qshift) & qempty;
-    qflood |= qsliders = (qsliders >> qshift) & qempty;
-    qflood |= qsliders = (qsliders >> qshift) & qempty;
-    qflood |= (qsliders >> qshift) & qempty;
-    return (qflood >> qshift) & qmask;
-}
-
 export __forceinline Bitboard reduceOR(QuadBitboard x)
 {
     alignas(alignof(QuadBitboard)) Bitboard bbs[4];
     unpack(x, bbs);
     return bbs[0] | bbs[1] | bbs[2] | bbs[3];
-}
-
-export template <bool REMOVE_KING>
-__forceinline Bitboard quad_attacked(const Board& board, Color attacking_color)
-{
-    using enum PieceType;
-
-    Bitboard empty = get_unoccupied(board);
-    if constexpr (REMOVE_KING) {
-        empty |= get_pieces(board, King, !attacking_color);
-    }
-
-    const Bitboard q = get_pieces(board, Queen, attacking_color);
-    const Bitboard rq = q | get_pieces(board, Rook, attacking_color);
-    const Bitboard bq = q | get_pieces(board, Bishop, attacking_color);
-    const QuadBitboard sliders = pack(rq, rq, bq, bq);
-
-    QuadBitboard attacks = east_nort_noWe_noEa_Attacks(sliders, empty);
-    attacks |= west_sout_soEa_soWe_Attacks(sliders, empty);
-
-    return reduceOR(attacks);
 }
