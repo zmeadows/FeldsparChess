@@ -7,6 +7,7 @@ import<new>;
 import<utility>;
 import<type_traits>;
 
+// TODO: combine these into Buffer class? HeapBuffer?
 template <typename T>
 __forceinline T* alloc_buffer(U64 count)
 {
@@ -20,16 +21,6 @@ __forceinline T* alloc_buffer(U64 count)
 
     return buf;
 }
-
-// template <typename T>
-// __forceinline T* realloc_buffer(T* ptr, U64 count)
-// {
-//     if constexpr (
-//     static_assert(std::is_trivially_copyable<T>::value &&
-//                   std::is_trivially_move_constructible<T>::value);
-//
-//     return static_cast<T*>(realloc(ptr), count);
-// }
 
 template <typename T>
 __forceinline void copy_buffer(T* destination, const T* const source, U64 count)
@@ -156,7 +147,10 @@ public:
         }
     }
 
-    __forceinline void append(const T& val)
+    // TODO: examine assembly to see that this compiles to simple
+    // instructions for POD types
+    template <typename... Args>
+    __forceinline void append(Args&&... args)
     {
         constexpr U64 TWO = 2ULL;
 
@@ -164,7 +158,7 @@ public:
             reserve_nocheck(max(TWO, TWO * m_capacity));
         }
 
-        new (m_ptr + m_length) T(val);
+        new (m_ptr + m_length) T(std::forward<Args>(args)...);
 
         m_length++;
     }
@@ -235,7 +229,8 @@ public:
     template <U64 OTHER_STACK_SIZE>
     DynArray(DynArray<T, OTHER_STACK_SIZE>&& other) : DynArray()
     {
-        // TODO: check for this pointer equality?
+        assert(this != &other);
+
         if (other.length() <= STACK_SIZE) [[likely]] {
             for (U64 i = 0; i < other.length(); i++) {
                 new (this->m_ptr + i) T(std::move(other[i]));
@@ -263,20 +258,25 @@ public:
         }
     }
 
+    // TODO: implement
     DynArray& operator=(const DynArray& other) = default;
-    DynArray& operator=(DynArray&& other) = default;
 
-    // DynArray(const T* const buffer, U64 len) : DynArray(), DynArrayBase<T>(buffer, len) {}
+    // TODO: implement
+    DynArray& operator=(DynArray&& other) = default;
 
     constexpr __forceinline bool on_stack() const { return m_on_stack; }
 
     void clear()
     {
-        for (U64 i = 0; i < this->m_length; i++) {
-            this->m_ptr[i].~T();
+        if constexpr (std::is_destructible<T>::value && !std::is_trivially_destructible<T>::value) {
+            for (U64 i = 0; i < this->m_length; i++) {
+                this->m_ptr[i].~T();
+            }
         }
 
-        if (!m_on_stack) free(this->m_ptr);
+        if (!m_on_stack) {
+            free(this->m_ptr);
+        }
 
         shrink_to_stack();
     }
@@ -292,8 +292,6 @@ export template <typename T>
 class DynArray<T, 0> final : public DynArrayBase<T> {
     void reserve_nocheck(U64 new_capacity)
     {
-        // TODO: use fatal_error function to print message and exit if
-        // no memory is available
         T* new_ptr = alloc_buffer<T>(new_capacity);
 
         move_buffer(new_ptr, this->m_ptr, this->m_length);
@@ -306,34 +304,68 @@ class DynArray<T, 0> final : public DynArrayBase<T> {
 public:
     DynArray(void) : DynArrayBase<T>(nullptr, 0, 0) {}
 
-    DynArray(U64 init_capacity) : DynArray() { this->reserve_nocheck(init_capacity); }
-
-    DynArray(U64 init_size, const T& value) : DynArray(init_size)
+    DynArray(U64 count, const T& value = T())
     {
-        for (U64 i = 0; i < init_size; i++) {
-            this->m_ptr[i] = value;
+        this->m_ptr = alloc_buffer<T>(count);
+        this->m_capacity = count;
+        for (U64 i = 0; i < count; i++) {
+            new (this->m_ptr + i) T(value);
         }
-        this->m_length = init_size;
+        this->m_length = count;
     }
 
-    DynArray(const T* const chunk, U64 len) : DynArray(len)
+    DynArray(const T* const chunk, U64 count)
     {
-        copy_buffer(this->m_ptr, chunk, len);
-        this->m_length = len;
+        this->m_ptr = alloc_buffer<T>(count);
+        this->m_capacity = count;
+        copy_buffer(this->m_ptr, chunk, count);
+        this->m_length = count;
     }
 
-    DynArray(const DynArray& other) : DynArray(other.length())
+    DynArray(const DynArray& other)
     {
+        assert(this != &other);
+        this->m_ptr = alloc_buffer<T>(other.length());
+        this->m_capacity = other.length();
+        copy_buffer(this->m_ptr, other.m_ptr, other.length());
+        this->m_length = other.length();
+    }
+
+    DynArray(DynArray&& other)
+    {
+        assert(this != &other);
+        std::swap(this->m_ptr, other.m_ptr);
+        std::swap(this->m_length, other.m_length);
+        std::swap(this->m_capacity, other.m_capacity);
+    }
+
+    DynArray& operator=(DynArray&& other)
+    {
+        assert(this != &other);
+        std::swap(*this, other);
+        return *this;
+    }
+
+    DynArray& operator=(const DynArray& other)
+    {
+        assert(this != &other);
+        clear();
+
+        if (this->m_capacity < other.length()) {
+            reserve_nocheck(other.length());
+        }
+
         copy_buffer(this->m_ptr, other.m_ptr, other.length());
         this->m_length = other.length();
     }
 
     void clear()
     {
-        for (U64 i = 0; i < this->m_length; i++) {
-            this->m_ptr[i].~T();
+        if constexpr (std::is_destructible<T>::value && !std::is_trivially_destructible<T>::value) {
+            for (U64 i = 0; i < this->m_length; i++) {
+                this->m_ptr[i].~T();
+            }
         }
-
         this->m_length = 0;
     }
 
