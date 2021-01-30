@@ -26,7 +26,7 @@ export struct Game {
 
     bool operator==(const Game&) const = default;
 
-    static Optional<Game> create(const char*);
+    static Optional<Game> create(StringRef fen);
 };
 
 export GameHash create_game_hash(const Game& game)
@@ -220,13 +220,13 @@ Optional<Game> create_game_internal(StringRef fen)
     return game;
 }
 
-export Optional<Game> Game::create(const char* fen)
+export Optional<Game> Game::create(StringRef fen)
 {
-    if (fen == nullptr) [[unlikely]] {
-        WARN("Passed nullptr to Game::create.");
+    if (fen.length() == 0) [[unlikely]] {
+        WARN("Passed empty FEN string to Game::create.");
         return {};
     }
-    else if (strlen(fen) >= 100) [[unlikely]] {
+    else if (fen.length() >= 100) [[unlikely]] {
         WARN("Passed invalid FEN string that was too long to Game::create.");
         return {};
     }

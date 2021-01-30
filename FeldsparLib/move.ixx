@@ -289,9 +289,10 @@ export String<4> move_to_algebraic(Move m)
     const Square from = move_from_square(m);
     const Square to = move_to_square(m);
 
-    const char* from_alg = square_to_algebraic(from);
-    const char* to_alg = square_to_algebraic(to);
+    StringRef from_alg = square_to_algebraic(from);
+    StringRef to_alg = square_to_algebraic(to);
 
+    // TODO: create String::concat method
     String<4> alg_str;
     alg_str.append(from_alg[0]);
     alg_str.append(from_alg[1]);

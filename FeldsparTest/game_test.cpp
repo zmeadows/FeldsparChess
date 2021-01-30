@@ -208,7 +208,6 @@ TEST(Game, FENToGame)
     }
 
     { // invalid FEN strings
-        EXPECT_FALSE(Game::create(nullptr).has_value());
         EXPECT_FALSE(Game::create("").has_value());
         EXPECT_FALSE(Game::create("asdf").has_value());
     }

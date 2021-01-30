@@ -35,11 +35,14 @@ export class StringRef {
     const U64 m_length;
 
 public:
-    StringRef() : m_str(nullptr), m_length(0) {}
+    constexpr StringRef() : m_str(nullptr), m_length(0) {}
 
     StringRef(const char* const str, U64 length) : m_str(str), m_length(length) {}
 
-    StringRef(const char* const cstr) : m_str(cstr), m_length(strlen(cstr)) {}
+    template <U64 M>
+    constexpr StringRef(const char (&list)[M]) : m_str(list), m_length(M - 1)
+    {
+    }
 
     template <U64 N>
     StringRef(const String<N>& s) : StringRef(s.ptr(), s.length())

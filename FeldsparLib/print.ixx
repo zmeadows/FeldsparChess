@@ -10,9 +10,9 @@ import<cstdio>;
 
 export void print_move(Move m)
 {
-    const char* from_alg = square_to_algebraic(move_from_square(m));
-    const char* to_alg = square_to_algebraic(move_to_square(m));
-    printf("%s -> %s\n", from_alg, to_alg);
+    StringRef from_alg = square_to_algebraic(move_from_square(m));
+    StringRef to_alg = square_to_algebraic(move_to_square(m));
+    printf("%s -> %s\n", from_alg.cstr(), to_alg.cstr());
 }
 
 export void print_bitboard(Bitboard bb)

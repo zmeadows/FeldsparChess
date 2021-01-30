@@ -1,6 +1,7 @@
 export module prelude;
 
 export import unstd.core;
+export import unstd.string;
 
 export using Bitboard = U64;
 
@@ -134,7 +135,7 @@ export constexpr Square b8 = 7 * 8 + 6;
 export constexpr Square a8 = 7 * 8 + 7;
 
 // TODO: replace with simple version calling 'a' + file
-export constexpr const char* square_to_algebraic(Square sq)
+export constexpr StringRef square_to_algebraic(Square sq)
 {
     switch (sq) {
         case h1:
