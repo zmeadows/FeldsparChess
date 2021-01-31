@@ -162,6 +162,7 @@ __forceinline void serialize(Bitboard bb, Callable&& f)
 }
 
 // Any bits shifted 'off the board' disappear rather than wrap around
+// TODO: test fully
 export constexpr Bitboard bitboard_shifted(const Bitboard bb, const Direction dir)
 {
     switch (dir) {
@@ -178,9 +179,9 @@ export constexpr Bitboard bitboard_shifted(const Bitboard bb, const Direction di
         case Direction::NorthWest:
             return (bb << 9) & NOT_H_FILE;
         case Direction::SouthEast:
-            return (bb >> 7) & NOT_A_FILE;
+            return (bb >> 9) & NOT_A_FILE;
         case Direction::SouthWest:
-            return (bb << 7) & NOT_H_FILE;
+            return (bb >> 7) & NOT_H_FILE;
         default:
             return 0;
     }

@@ -83,6 +83,8 @@ public:
         return *data;
     }
 
+    // TODO: add move assignment/constructor that use std::move or memcpy
+
     __forceinline constexpr Optional(void) : m_filled(false) {}
     __forceinline constexpr Optional(const T& value) { new (cast_data()) T(value); }
 

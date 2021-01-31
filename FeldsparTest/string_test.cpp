@@ -12,7 +12,7 @@ TEST(String, Constructors)
 
 TEST(StringRef, Constructors)
 {
-    String str("Whatever");
+    const String str("Whatever");
     StringRef ref(str);
 
     EXPECT_EQ(ref, "Whatever");

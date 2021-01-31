@@ -4,13 +4,32 @@
 import unstd.core;
 import unstd.array;
 
+TEST(Array, Constructors)
+{
+    {
+        constexpr Array<S64, 10> arr(-123);
+
+        for (U64 i = 0; i < arr.length(); i++) {
+            EXPECT_EQ(arr[i], -123);
+        }
+    }
+
+    {
+        constexpr Array<U64, 10> arr({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+
+        for (U64 i = 0; i < arr.length(); i++) {
+            EXPECT_EQ(arr[i], i);
+        }
+    }
+}
+
 TEST(DynArray, StackHeapCapacity)
 {
     DynArray<U64, 32> sarr;
-    EXPECT_TRUE(sarr.capacity() == 32);
+    EXPECT_EQ(sarr.capacity(), 32);
 
     DynArray<U64> harr;
-    EXPECT_TRUE(harr.capacity() == 0);
+    EXPECT_EQ(harr.capacity(), 0);
 
     EXPECT_GE(sizeof(sarr), sizeof(harr) + 32 * sizeof(U64) + sizeof(bool));
 }

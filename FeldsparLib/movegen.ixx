@@ -16,8 +16,25 @@ import attacks.util;
 import unstd.array;
 
 import<cassert>;
+import<cstdio>;
 
 using enum PieceType;
+
+#define DEBUG_PRINT_BB(x)                                                                          \
+    do {                                                                                           \
+        if constexpr (DEBUG_PRINT) {                                                               \
+            printf("%s:\n", #x);                                                                   \
+            print_bitboard(x);                                                                     \
+        }                                                                                          \
+    } while (0)
+
+#define DEBUG_PRINT_BB2(x, descr)                                                                  \
+    do {                                                                                           \
+        if constexpr (DEBUG_PRINT) {                                                               \
+            printf("%s (%s):\n", #x, descr);                                                       \
+            print_bitboard(x);                                                                     \
+        }                                                                                          \
+    } while (0)
 
 // TODO: add MOVING_COLOR as template parameter similar to make_move
 export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
@@ -31,13 +48,18 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
 
     const Bitboard friendly_pieces = get_occupied(board, friendly_color);
     const Bitboard opponent_pieces = get_occupied(board, opponent_color);
+    DEBUG_PRINT_BB(friendly_pieces);
+    DEBUG_PRINT_BB(opponent_pieces);
 
     const Bitboard occupied_squares = friendly_pieces | opponent_pieces;
     const Bitboard empty_squares = bitboard_flipped(occupied_squares);
+    DEBUG_PRINT_BB(occupied_squares);
+    DEBUG_PRINT_BB(empty_squares);
 
     const Square king_square = bitboard_bsf(get_pieces(board, King, friendly_color));
     const Bitboard king_attackers = attackers(board, opponent_color, king_square);
     const U64 check_multiplicity = bitboard_popcount(king_attackers);
+    DEBUG_PRINT_BB(king_attackers);
 
     const auto opponent_piece_type_at = [&](Square sq) -> PieceType {
         const Bitboard sqbit = square_bitrep(sq);
@@ -88,22 +110,23 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
         }
     }
 
-    if constexpr (DEBUG_PRINT) {
-        print_bitboard(king_attackers);
-        print_bitboard(opponent_pieces);
-        print_bitboard(empty_squares);
-        print_bitboard(quiet_mask);
-        print_bitboard(capture_mask);
-    }
+    DEBUG_PRINT_BB(quiet_mask);
+    DEBUG_PRINT_BB(capture_mask);
 
     const Pins pins = Pins::create(board, friendly_color);
     const Bitboard pinned = pins.diagonal | pins.nondiagonal;
     const Bitboard unpinned = ~pinned;
     const Bitboard pinned_only_nondiagonally = pinned & ~pins.diagonal;
     const Bitboard pinned_only_diagonally = pinned & ~pins.nondiagonal;
+    DEBUG_PRINT_BB(pinned);
+    DEBUG_PRINT_BB(unpinned);
+    DEBUG_PRINT_BB(pinned_only_diagonally);
+    DEBUG_PRINT_BB(pinned_only_nondiagonally);
 
     // Knights
     const Bitboard friendly_knights = get_pieces(board, Knight, friendly_color);
+    DEBUG_PRINT_BB(friendly_knights);
+    DEBUG_PRINT_BB(friendly_knights & unpinned);
 
     serialize(friendly_knights & unpinned, [&](Square from) {
         const Bitboard knight_moves = get_knight_moves(from);
@@ -112,6 +135,7 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
 
     // Bishops
     const Bitboard friendly_bishops = get_pieces(board, Bishop, friendly_color);
+    DEBUG_PRINT_BB(friendly_bishops);
 
     serialize(friendly_bishops & unpinned, [&](Square from) {
         const Bitboard bishop_moves = get_bishop_attacks(from, occupied_squares);
@@ -126,6 +150,7 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
 
     // Rooks
     const Bitboard friendly_rooks = get_pieces(board, Rook, friendly_color);
+    DEBUG_PRINT_BB(friendly_rooks);
 
     serialize(friendly_rooks & unpinned, [&](Square from) {
         const Bitboard rook_moves = get_rook_attacks(from, occupied_squares);
@@ -140,6 +165,7 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
 
     // Queens
     const Bitboard friendly_queens = get_pieces(board, Queen, friendly_color);
+    DEBUG_PRINT_BB(friendly_queens);
 
     serialize(friendly_queens & unpinned, [&](Square from) {
         const Bitboard queen_moves = get_queen_attacks(from, occupied_squares);
@@ -159,6 +185,7 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
     });
 
     const Bitboard friendly_pawns = get_pieces(board, Pawn, friendly_color);
+    DEBUG_PRINT_BB(friendly_pawns);
 
     Bitboard singly_advanced_pawns, doubly_advanced_pawns, attacking_pawns_mask;
     Square pawn_move_delta;
@@ -170,15 +197,20 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
 
             singly_advanced_pawns =
                 quiet_mask & bitboard_shifted(friendly_pawns & unpinned, Direction::North);
+            DEBUG_PRINT_BB2(singly_advanced_pawns, "unpinned");
 
             doubly_advanced_pawns = quiet_mask &
                                     bitboard_shifted(singly_advanced_pawns, Direction::North) &
                                     FOURTH_RANK;
+            DEBUG_PRINT_BB2(doubly_advanced_pawns, "unpinned");
 
             promotion_rank = 8;
             attacking_pawns_mask = bitboard_shifted(capture_mask, Direction::SouthWest);
+            DEBUG_PRINT_BB2(attacking_pawns_mask, "unpinned, step1");
             attacking_pawns_mask |= bitboard_shifted(capture_mask, Direction::SouthEast);
+            DEBUG_PRINT_BB2(attacking_pawns_mask, "unpinned, step2");
             attacking_pawns_mask &= friendly_pawns;
+            DEBUG_PRINT_BB2(attacking_pawns_mask, "unpinned");
         }
         else {
             pawn_move_delta = -8;
@@ -350,16 +382,12 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
             }
         }
     }
-
-    if constexpr (DEBUG_PRINT) {
-        // TODO: print all moves
-    }
 }
 
-export void print_possible_moves(const Game& game)
+export void debug_print_movegen(const Game& game)
 {
     MoveBuffer moves;
-    generate_moves(game, moves);
+    generate_moves<false, true>(game, moves);
 
     for (const Move m : moves) {
         print_move(m);

@@ -6,6 +6,7 @@ import unstd.array;
 import<cstring>;
 
 // TODO: has_prefix method
+// TODO: concat method
 
 export template <U64 N = 0>
 class String : public DynArray<char, N> {
@@ -38,6 +39,8 @@ export class StringRef {
 
 public:
     constexpr StringRef() : m_str(nullptr), m_length(0) {}
+
+    StringRef(const char* cstr) : m_str(cstr), m_length(strlen(cstr)) {}
 
     StringRef(const char* const str, U64 length) : m_str(str), m_length(length) {}
 
@@ -74,6 +77,7 @@ public:
     constexpr __forceinline const char* const begin() const { return m_str; }
     constexpr __forceinline const char* const end() const { return m_str + m_length; }
 
+    // TODO: add null terminator
     constexpr __forceinline const char* const cstr() const { return m_str; }
 };
 

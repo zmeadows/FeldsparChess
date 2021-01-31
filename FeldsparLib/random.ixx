@@ -9,6 +9,7 @@ T rand()
     return T();
 }
 
+// random seed values
 thread_local U64 s[4] = {0xe066a3beb543235a, 0x616300ea38021090, 0xe239b667a4fd40f3,
                          0x3d77eb67a5bb6a73};
 

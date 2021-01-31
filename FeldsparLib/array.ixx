@@ -2,19 +2,19 @@ export module unstd.array;
 
 import unstd.core;
 
+import<cassert>;
 import<cstdlib>;
 import<new>;
 import<utility>;
 import<type_traits>;
 
-// TODO: combine these into Buffer class? HeapBuffer?
+// TODO: combine these into Buffer class? HeapBuffer class?
 template <typename T>
 __forceinline T* alloc_buffer(U64 count)
 {
     T* buf = static_cast<T*>(malloc(sizeof(T) * count));
 
     if (buf == nullptr) {
-        // TODO: print type
         fprintf(stderr, "Ran out of memory.");
         exit(EXIT_FAILURE);
     }
@@ -50,6 +50,28 @@ __forceinline void move_buffer(T* destination, T* source, U64 count)
     }
 }
 
+template <typename T>
+__forceinline T* realloc_buffer(T* ptr, U64 count)
+{
+    if constexpr (std::is_trivially_move_constructible<T>::value) {
+        T* new_buffer = static_cast<T*>(realloc(static_cast<void*>(ptr), count * sizeof(T)));
+        if (new_buffer == nullptr) {
+            // TODO: print type
+            fprintf(stderr, "Ran out of memory.");
+            exit(EXIT_FAILURE);
+        }
+        return new_buffer;
+    }
+    else {
+        T* new_buffer = alloc_buffer<T>(count);
+        for (U64 i = 0; i < count; i++) {
+            new (new_buffer + i) T(std::move(ptr[i]));
+        }
+        free(ptr);
+        return new_buffer;
+    }
+}
+
 export template <typename T, U64 N>
 class Array {
     T m_data[N];
@@ -58,33 +80,21 @@ public:
     constexpr Array() {}
 
     // TODO: check that this uniform initialization works correctly
-    constexpr explicit Array(const T& value) : m_data({value}) {}
+    constexpr explicit Array(const T& value)
+    {
+        for (U64 i = 0; i < N; i++) {
+            m_data[i] = value;
+        }
+    }
 
     template <U64 M>
     constexpr Array(const T (&list)[M])
     {
         static_assert(M == N, "Attempted to initialize a fixed length Array with incorrect size.");
+
         for (U64 i = 0; i < N; i++) {
             m_data[i] = list[i];
         }
-    }
-
-    template <U64 M>
-    constexpr bool operator==(const T (&list)[M]) const
-    {
-        if constexpr (M != N) return false;
-
-        for (U64 i = 0; i < N; i++) {
-            if constexpr (list[i] != m_data[i]) return false;
-        }
-
-        return true;
-    }
-
-    template <U64 M>
-    constexpr bool operator!=(const T (&list)[M]) const
-    {
-        return !(*this == list);
     }
 
     constexpr __forceinline U64 capacity() const { return N; }
@@ -129,8 +139,17 @@ public:
     constexpr __forceinline U64 capacity() const { return m_capacity; }
     constexpr __forceinline U64 length() const { return m_length; }
 
-    constexpr __forceinline const T& operator[](U64 idx) const { return m_ptr[idx]; }
-    constexpr __forceinline T& operator[](U64 idx) { return m_ptr[idx]; }
+    constexpr __forceinline const T& operator[](U64 idx) const
+    {
+        assert(idx < m_length);
+        return m_ptr[idx];
+    }
+
+    constexpr __forceinline T& operator[](U64 idx)
+    {
+        assert(idx < m_length);
+        return m_ptr[idx];
+    }
 
     constexpr __forceinline T* begin() { return m_ptr; }
     constexpr __forceinline T* end() { return m_ptr + m_length; }
@@ -210,33 +229,33 @@ class DynArray final : public DynArrayBase<T> {
 public:
     DynArray(void) : DynArrayBase<T>(&m_data[0], 0, STACK_SIZE), m_on_stack(true) {}
 
-    // TODO: test this
-    template <U64 OTHER_STACK_SIZE>
-    DynArray(const DynArray<T, OTHER_STACK_SIZE>& other) : DynArray()
+    DynArray(const DynArrayBase<T>& other) : DynArray()
     {
         if (other.length() > STACK_SIZE) [[unlikely]] {
             reserve_nocheck(other.length());
         }
 
-        for (U64 i = 0; i < other.length(); i++) {
-            new (this->m_ptr + i) T(other[i]);
-        }
+        copy_buffer<T>(this->m_ptr, other.ptr(), other.length());
 
         this->m_length = other.length();
     }
 
-    // TODO: test this
     template <U64 OTHER_STACK_SIZE>
     DynArray(DynArray<T, OTHER_STACK_SIZE>&& other) : DynArray()
     {
-        assert(this != &other);
-
+        static_assert(OTHER_STACK_SIZE != 0);
         if (other.length() <= STACK_SIZE) [[likely]] {
             for (U64 i = 0; i < other.length(); i++) {
                 new (this->m_ptr + i) T(std::move(other[i]));
             }
             this->m_length = other.length();
-            other.clear();
+            if (!other.on_stack()) {
+                free(other.m_ptr);
+                other.shrink_to_stack();
+            }
+            else {
+                other.m_length = 0;
+            }
         }
         else { // other array exceeds our stack capacity
             if (other.on_stack()) [[likely]] {
@@ -259,10 +278,20 @@ public:
     }
 
     // TODO: implement
-    DynArray& operator=(const DynArray& other) = default;
+    template <U64 OTHER_STACK_SIZE>
+    DynArray& operator=(const DynArray<T, OTHER_STACK_SIZE>& other)
+    {
+        assert(this != &other);
+        static_assert(false, "unimplemented");
+    }
 
     // TODO: implement
-    DynArray& operator=(DynArray&& other) = default;
+    template <U64 OTHER_STACK_SIZE>
+    DynArray& operator=(DynArray<T, OTHER_STACK_SIZE>&& other)
+    {
+        assert(this != &other);
+        static_assert(false, "unimplemented");
+    }
 
     constexpr __forceinline bool on_stack() const { return m_on_stack; }
 
@@ -292,11 +321,7 @@ export template <typename T>
 class DynArray<T, 0> final : public DynArrayBase<T> {
     void reserve_nocheck(U64 new_capacity)
     {
-        T* new_ptr = alloc_buffer<T>(new_capacity);
-
-        move_buffer(new_ptr, this->m_ptr, this->m_length);
-
-        free(this->m_ptr);
+        T* new_ptr = realloc_buffer<T>(this->m_ptr, new_capacity);
         this->m_ptr = new_ptr;
         this->m_capacity = new_capacity;
     }
@@ -331,19 +356,24 @@ public:
         this->m_length = other.length();
     }
 
-    DynArray(DynArray&& other)
+    template <U64 STACK_SIZE>
+    DynArray(const DynArray<T, STACK_SIZE>&)
     {
-        assert(this != &other);
-        std::swap(this->m_ptr, other.m_ptr);
-        std::swap(this->m_length, other.m_length);
-        std::swap(this->m_capacity, other.m_capacity);
+        static_assert(false, "unimplemented");
     }
 
-    DynArray& operator=(DynArray&& other)
+    template <U64 STACK_SIZE>
+    DynArray(DynArray<T, STACK_SIZE>&&)
+    {
+        static_assert(false, "unimplemented");
+    }
+
+    DynArray(DynArray&& other) : DynArrayBase<T>(other.m_ptr, other.m_length, other.m_capacity)
     {
         assert(this != &other);
-        std::swap(*this, other);
-        return *this;
+        other.m_ptr = nullptr;
+        other.m_length = 0;
+        other.m_capacity = 0;
     }
 
     DynArray& operator=(const DynArray& other)
@@ -357,6 +387,32 @@ public:
 
         copy_buffer(this->m_ptr, other.m_ptr, other.length());
         this->m_length = other.length();
+    }
+
+    DynArray& operator=(DynArray&& other)
+    {
+        assert(this != &other);
+        std::swap(*this, other);
+        return *this;
+    }
+
+    template <U64 STACK_SIZE>
+    DynArray& operator=(const DynArray<T, STACK_SIZE>& other)
+    {
+        static_assert(false, "unimplemented");
+    }
+
+    template <U64 STACK_SIZE>
+    DynArray& operator=(DynArray<T, STACK_SIZE>&& other)
+    {
+        static_assert(false, "unimplemented");
+    }
+
+    ~DynArray()
+    {
+        clear();
+        free(this->m_ptr);
+        this->m_capacity = 0;
     }
 
     void clear()

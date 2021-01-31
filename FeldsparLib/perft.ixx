@@ -47,7 +47,7 @@ void perft_internal(Game& game, const U64 max_depth, U64 depth, std::vector<Perf
         make_move<false>(game, m);
 
         stats[max_depth - depth].node_count++;
-        // TODO: add promotions, castles, etc...
+        // TODO: record promotions, castles, etc...
 
         perft_internal(game, max_depth, depth - 1, stats);
         memcpy(&game, &game_premove_copy, sizeof(Game));
@@ -73,7 +73,7 @@ export std::map<std::string, int> perft_divide(StringRef fen, U64 depth)
     if (depth == 0) return {};
 
     std::map<std::string, int> result;
-    auto ogame = Game::create(fen);
+    auto ogame = Game::create(StringRef(fen));
 
     if (!ogame.has_value()) return {};
 
@@ -87,10 +87,6 @@ export std::map<std::string, int> perft_divide(StringRef fen, U64 depth)
         const auto stats = perft(game, depth - 1);
         result[move_to_algebraic(m)] = (int)stats.back().node_count;
         memcpy(&game, &game_premove_copy, sizeof(Game));
-    }
-
-    for (const auto& [m, c] : result) {
-        printf("%s %d\n", m.c_str(), c);
     }
 
     return result;
@@ -154,9 +150,24 @@ export std::map<std::string, int> qperft_divide(const char* fen, U64 depth)
         return true;
     });
 
-    for (const auto& [m, c] : result) {
-        printf("%s %d\n", m.c_str(), c);
-    }
-
     return result;
+}
+
+export bool qperft_validate(const char* const fen, U64 max_depth)
+{
+    for (U64 depth = 3; depth <= max_depth; depth++) {
+        const auto qperft_results = qperft_divide(fen, depth);
+        const auto feldspar_results = perft_divide(fen, depth);
+
+        for (const auto& [move_alg, count] : qperft_results) {
+            int feldspar_count = 0;
+            if (auto it = feldspar_results.find(move_alg); it != feldspar_results.end()) {
+                feldspar_count = it->second;
+            }
+            if (count != feldspar_count) {
+                printf("%s %d %d\n", move_alg.c_str(), count, feldspar_count);
+            }
+        }
+    }
+    return true;
 }

@@ -46,7 +46,6 @@ MaybeSquare from_algebraic(StringRef alg)
     return {};
 }
 
-// TODO: switch to using basic const char* and C functions
 Optional<Game> create_game_internal(StringRef fen)
 {
     if (fen.length() == 0) [[unlikely]] {

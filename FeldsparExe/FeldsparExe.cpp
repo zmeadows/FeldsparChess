@@ -14,14 +14,15 @@ import<string>;
 
 int main()
 {
-    const Game og1 = *Game::create("rnbqkbnr/ppppppp1/8/7p/7P/8/PPPPPPP1/RNBQKBNR w KQkq - 0 2");
-    print_possible_moves(og1);
+    const Game og1 = *Game::create("rnbqkbnr/1ppppppp/8/p7/1P6/8/P1PPPPPP/RNBQKBNR w KQkq - 0 2");
+    debug_print_movegen(og1);
 
-    const Game og2 = *Game::create("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    perft_(og2, 5);
+    // const Game og2 = *Game::create("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    // perft_(og2, 5);
 
-    (void)qperft_divide("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 5);
-    (void)perft_divide("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 5);
+    printf("\n\n\n");
+
+    (void)qperft_validate("rnbqkbnr/1ppppppp/8/p7/1P6/8/P1PPPPPP/RNBQKBNR w KQkq - 0 2", 3);
 
     return EXIT_SUCCESS;
 }
