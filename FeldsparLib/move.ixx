@@ -288,8 +288,8 @@ export std::string move_to_algebraic(Move m)
     const Square from = move_from_square(m);
     const Square to = move_to_square(m);
 
-    StringRef from_alg = square_to_algebraic(from);
-    StringRef to_alg = square_to_algebraic(to);
+    const char* from_alg = square_to_algebraic(from);
+    const char* to_alg = square_to_algebraic(to);
 
     // TODO: create String::concat method
     std::string alg_str;

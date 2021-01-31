@@ -67,18 +67,19 @@ TEST(Game, ComparisonOperator)
         EXPECT_NE(g1, g2);
     }
 }
-TEST(Game, FENToGame)
+
+TEST(Game, GameFromFEN)
 {
     { // starting position
         const Optional<Game> og =
-            Game::create("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+            game_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
         ASSERT_TRUE(og.has_value());
 
         const Game g = *og;
 
         const Optional<Game> og_nomoves =
-            Game::create("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -");
+            game_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -");
 
         ASSERT_TRUE(og_nomoves.has_value());
 
@@ -87,7 +88,7 @@ TEST(Game, FENToGame)
         EXPECT_EQ(g_nomoves, g);
 
         const Optional<Game> og_only_halfmoves =
-            Game::create("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0");
+            game_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0");
 
         EXPECT_FALSE(og_only_halfmoves.has_value());
 
@@ -208,7 +209,22 @@ TEST(Game, FENToGame)
     }
 
     { // invalid FEN strings
-        EXPECT_FALSE(Game::create("").has_value());
-        EXPECT_FALSE(Game::create("asdf").has_value());
+        EXPECT_FALSE(game_from_fen("").has_value());
+        EXPECT_FALSE(game_from_fen("asdf").has_value());
+    }
+}
+
+TEST(Game, GameFromToFEN)
+{
+    for (std::string fen :
+         {"r1bq1rk1/ppp1npbp/3p1np1/3Pp3/1PP1P3/2N2N2/P3BPPP/R1BQ1RK1 b - - 0 9",
+          "rn1q1rk1/1pp2pp1/p3pb1p/8/P2Pb3/5NP1/1P2PPBP/RNQR2K1 b - - 1 14",
+          "r1bq1rk1/pp3pbp/2n2np1/2p1p3/4PP2/2N2NP1/PPP3BP/R1B1QRK1 b - - 1 10"}) {
+
+        const auto og = game_from_fen(fen);
+        ASSERT_TRUE(og.has_value());
+        const Game& g = *og;
+
+        EXPECT_EQ(fen, game_to_fen(g));
     }
 }

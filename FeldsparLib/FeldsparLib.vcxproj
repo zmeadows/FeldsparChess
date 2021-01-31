@@ -186,26 +186,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="array.ixx" />
     <ClCompile Include="bitboard.ixx" />
     <ClCompile Include="board.ixx" />
-    <ClCompile Include="core.ixx" />
-    <ClCompile Include="io.ixx" />
+    <ClCompile Include="init.ixx" />
+    <ClCompile Include="unstd\core.ixx" />
+    <ClCompile Include="unstd\io.ixx" />
     <ClCompile Include="game.ixx" />
-    <ClCompile Include="hashtable.ixx" />
     <ClCompile Include="perft.ixx" />
     <ClCompile Include="pins.ixx" />
     <ClCompile Include="print.ixx" />
     <ClCompile Include="quad.ixx" />
-    <ClCompile Include="random.ixx" />
-    <ClCompile Include="classical.ixx" />
-    <ClCompile Include="magic.ixx" />
+    <ClCompile Include="unstd\random.ixx" />
+    <ClCompile Include="attacks\classical.ixx" />
+    <ClCompile Include="attacks\magic.ixx" />
     <ClCompile Include="logger.h" />
     <ClCompile Include="move.ixx" />
     <ClCompile Include="movegen.ixx" />
     <ClCompile Include="prelude.ixx" />
-    <ClCompile Include="string.ixx" />
-    <ClCompile Include="base.ixx" />
+    <ClCompile Include="attacks\base.ixx" />
+    <ClCompile Include="unstd\string_util.ixx" />
     <ClCompile Include="util.ixx" />
     <ClCompile Include="zobrist.ixx" />
   </ItemGroup>

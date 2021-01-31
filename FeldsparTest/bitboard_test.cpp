@@ -4,7 +4,7 @@
 import prelude;
 import bitboard;
 
-import unstd.array;
+import<vector>;
 
 TEST(Bitboard, SetBits)
 {
@@ -44,6 +44,7 @@ TEST(Bitboard, SetBits)
                          "10000000"));
     }
 }
+
 TEST(Bitboard, StringToBitboardConversion)
 {
     EXPECT_EQ(BITBOARD_EMPTY, BB("00000000"
@@ -515,9 +516,9 @@ TEST(Bitboard, Serialization)
                                "00000100"
                                "00000010"
                                "00000001");
-        DynArray<Square, 8> squares;
-        serialize(bb, [&](Square sq) -> void { squares.append(sq); });
-        constexpr Square result[] = {0, 9, 18, 27, 36, 45, 54, 63};
+        std::vector<Square> squares;
+        serialize(bb, [&](Square sq) -> void { squares.push_back(sq); });
+        const std::vector<Square> result = {0, 9, 18, 27, 36, 45, 54, 63};
         EXPECT_EQ(squares, result);
     }
 }

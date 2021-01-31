@@ -5,7 +5,6 @@ import bitboard;
 import attacks.base;
 
 import unstd.core;
-import unstd.array;
 
 constexpr const Bitboard INNER_SQUARES = BB("00000000"
                                             "01111110"
@@ -15,12 +14,6 @@ constexpr const Bitboard INNER_SQUARES = BB("00000000"
                                             "01111110"
                                             "01111110"
                                             "00000000");
-
-constexpr Array<Bitboard, 64> generate_attack_table()
-{
-    Array<Bitboard, 64> table;
-    return table;
-}
 
 struct MagicSquare {
     Bitboard* table_chunk = nullptr;
@@ -39,17 +32,17 @@ inline void for_each_mask_permutation(Bitboard mask, Callable&& f)
     }
 }
 
-constexpr Array<MagicSquare, 64> generate_bishop_magics()
-{
-    Array<MagicSquare, 64> magics;
-
-    for (Square sq = 0; sq < 64; sq++) {
-        MagicSquare magic;
-        magic.mask = INNER_SQUARES & bishop_mask_ex(sq);
-    }
-
-    return magics;
-}
+// constexpr Array<MagicSquare, 64> generate_bishop_magics()
+// {
+//     Array<MagicSquare, 64> magics;
+//
+//     for (Square sq = 0; sq < 64; sq++) {
+//         MagicSquare magic;
+//         magic.mask = INNER_SQUARES & bishop_mask_ex(sq);
+//     }
+//
+//     return magics;
+// }
 
 export void fill_magic_attack_table(void) {}
 

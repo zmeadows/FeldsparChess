@@ -371,6 +371,8 @@ TEST(ClassicalAttacks, QueenAttackRays)
 
 TEST(ClassicalAttacks, RayBetweenSquares)
 {
+    init_rays_between_squares();
+
     {
         const Bitboard ray = ray_between_squares(0, 7);
 

@@ -13,8 +13,6 @@ import quad;
 import attacks.classical;
 import attacks.util;
 
-import unstd.array;
-
 import<cassert>;
 import<cstdio>;
 
@@ -136,6 +134,7 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
     // Bishops
     const Bitboard friendly_bishops = get_pieces(board, Bishop, friendly_color);
     DEBUG_PRINT_BB(friendly_bishops);
+    DEBUG_PRINT_BB(friendly_bishops & unpinned);
 
     serialize(friendly_bishops & unpinned, [&](Square from) {
         const Bitboard bishop_moves = get_bishop_attacks(from, occupied_squares);
@@ -151,6 +150,7 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
     // Rooks
     const Bitboard friendly_rooks = get_pieces(board, Rook, friendly_color);
     DEBUG_PRINT_BB(friendly_rooks);
+    DEBUG_PRINT_BB(friendly_rooks & unpinned);
 
     serialize(friendly_rooks & unpinned, [&](Square from) {
         const Bitboard rook_moves = get_rook_attacks(from, occupied_squares);
@@ -166,6 +166,7 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
     // Queens
     const Bitboard friendly_queens = get_pieces(board, Queen, friendly_color);
     DEBUG_PRINT_BB(friendly_queens);
+    DEBUG_PRINT_BB(friendly_queens & unpinned);
 
     serialize(friendly_queens & unpinned, [&](Square from) {
         const Bitboard queen_moves = get_queen_attacks(from, occupied_squares);

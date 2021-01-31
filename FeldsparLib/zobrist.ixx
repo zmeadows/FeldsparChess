@@ -3,15 +3,14 @@ export module zobrist;
 import prelude;
 import bitboard;
 
-import unstd.array;
 import unstd.core;
 import unstd.random;
 
 export using GameHash = U64;
 
-Array<U64, 12 * 64> PIECE_KEYS;
-Array<U64, 16> CASTLE_KEYS;
-Array<U64, 8> EN_PASSANT_KEYS;
+U64 PIECE_KEYS[12 * 64];
+U64 CASTLE_KEYS[16];
+U64 EN_PASSANT_KEYS[8];
 U64 BLACK_TO_MOVE_KEY;
 
 export void init_zobrist_hashing()

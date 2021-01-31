@@ -21,9 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="core.ixx">
-      <Filter>Source Files\unstd</Filter>
-    </ClCompile>
     <ClCompile Include="bitboard.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -45,15 +42,6 @@
     <ClCompile Include="movegen.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="array.ixx">
-      <Filter>Source Files\unstd</Filter>
-    </ClCompile>
-    <ClCompile Include="random.ixx">
-      <Filter>Source Files\unstd</Filter>
-    </ClCompile>
-    <ClCompile Include="hashtable.ixx">
-      <Filter>Source Files\unstd</Filter>
-    </ClCompile>
     <ClCompile Include="pins.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,29 +51,38 @@
     <ClCompile Include="zobrist.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="string.ixx">
-      <Filter>Source Files\unstd</Filter>
-    </ClCompile>
     <ClCompile Include="perft.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="print.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="classical.ixx">
-      <Filter>Source Files\attacks</Filter>
-    </ClCompile>
-    <ClCompile Include="magic.ixx">
-      <Filter>Source Files\attacks</Filter>
-    </ClCompile>
-    <ClCompile Include="base.ixx">
-      <Filter>Source Files\attacks</Filter>
-    </ClCompile>
     <ClCompile Include="util.ixx">
       <Filter>Source Files\attacks</Filter>
     </ClCompile>
-    <ClCompile Include="io.ixx">
+    <ClCompile Include="unstd\core.ixx">
       <Filter>Source Files\unstd</Filter>
+    </ClCompile>
+    <ClCompile Include="unstd\io.ixx">
+      <Filter>Source Files\unstd</Filter>
+    </ClCompile>
+    <ClCompile Include="unstd\random.ixx">
+      <Filter>Source Files\unstd</Filter>
+    </ClCompile>
+    <ClCompile Include="attacks\classical.ixx">
+      <Filter>Source Files\attacks</Filter>
+    </ClCompile>
+    <ClCompile Include="attacks\magic.ixx">
+      <Filter>Source Files\attacks</Filter>
+    </ClCompile>
+    <ClCompile Include="attacks\base.ixx">
+      <Filter>Source Files\attacks</Filter>
+    </ClCompile>
+    <ClCompile Include="init.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unstd\string_util.ixx">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

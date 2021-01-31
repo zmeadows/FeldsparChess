@@ -45,7 +45,6 @@
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <ItemGroup>
-    <ClCompile Include="array_test.cpp" />
     <ClCompile Include="attacks_util_test.cpp" />
     <ClCompile Include="bitboard_test.cpp" />
     <ClCompile Include="board_test.cpp" />
@@ -54,7 +53,6 @@
     <ClCompile Include="move_test.cpp" />
     <ClCompile Include="quad_test.cpp" />
     <ClCompile Include="attacks_classical_test.cpp" />
-    <ClCompile Include="string_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FeldsparLib\FeldsparLib.vcxproj">

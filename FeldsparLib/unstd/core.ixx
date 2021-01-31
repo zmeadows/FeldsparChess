@@ -57,6 +57,7 @@ struct EnumRange {
     constexpr __forceinline Iterator end() const { return Iterator(static_cast<int>(T::LAST) + 1); }
 };
 
+// TODO: replace with std::optional
 export template <typename T>
 class alignas(alignof(T)) [[nodiscard]] Optional {
     U8 m_data[sizeof(T)];

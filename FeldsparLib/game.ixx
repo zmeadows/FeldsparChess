@@ -5,14 +5,16 @@ import bitboard;
 import board;
 import zobrist;
 
-import unstd.string;
-import unstd.array;
+import unstd.string_util;
 
 import<cassert>;
 import<cstdio>;
 import<cctype>;
 import<cstdlib>;
 import<cstring>;
+
+import<string>;
+import<vector>;
 #include "logger.h"
 
 export struct Game {
@@ -25,8 +27,6 @@ export struct Game {
     CastlingRights castling_rights = NO_CASTLING_RIGHTS;
 
     bool operator==(const Game&) const = default;
-
-    static Optional<Game> create(StringRef fen);
 };
 
 export GameHash create_game_hash(const Game& game)
@@ -40,22 +40,22 @@ export GameHash create_game_hash(const Game& game)
 }
 
 // TODO: implement
-MaybeSquare from_algebraic(StringRef alg)
+MaybeSquare from_algebraic(std::string alg)
 {
     assert(alg.length() == 2);
     return {};
 }
 
-Optional<Game> create_game_internal(StringRef fen)
+Optional<Game> game_from_fen_internal(const std::string& fen)
 {
     if (fen.length() == 0) [[unlikely]] {
         return {};
     }
 
-    const auto fen_pieces = split<6>(fen);
+    const std::vector<std::string> fen_pieces = split(fen, ' ');
     // We consider a FEN string valid even if it doesn't specify half and/or full move counts,
     // in which case they are set to 0 and 1 respectively, as at the start of a game.
-    if (fen_pieces.length() != 4 && fen_pieces.length() != 6) [[unlikely]] {
+    if (fen_pieces.size() != 4 && fen_pieces.size() != 6) [[unlikely]] {
         WARN("Invalid FEN string with wrong number of whitespaces");
         return {};
     }
@@ -200,15 +200,15 @@ Optional<Game> create_game_internal(StringRef fen)
         }
     }
 
-    if (fen_pieces.length() >= 5) [[likely]] {
-        game.halfmove_clock = atoi(fen_pieces[4].cstr());
+    if (fen_pieces.size() >= 5) [[likely]] {
+        game.halfmove_clock = atoi(fen_pieces[4].c_str());
     }
     else [[unlikely]] {
         game.halfmove_clock = 0;
     }
 
-    if (fen_pieces.length() >= 6) [[likely]] {
-        game.fullmoves = atoi(fen_pieces[5].cstr());
+    if (fen_pieces.size() >= 6) [[likely]] {
+        game.fullmoves = atoi(fen_pieces[5].c_str());
     }
     else [[unlikely]] {
         game.fullmoves = 1;
@@ -219,20 +219,22 @@ Optional<Game> create_game_internal(StringRef fen)
     return game;
 }
 
-export Optional<Game> Game::create(StringRef fen)
+export Optional<Game> game_from_fen(const std::string& fen)
 {
     if (fen.length() == 0) [[unlikely]] {
         WARN("Passed empty FEN string to Game::create.");
         return {};
     }
-    else if (fen.length() >= 100) [[unlikely]] {
+    else if (fen.length() > 92) [[unlikely]] {
         WARN("Passed invalid FEN string that was too long to Game::create.");
         return {};
     }
     else [[likely]] {
-        return create_game_internal(fen);
+        return game_from_fen_internal(fen);
     }
 }
+
+export std::string game_to_fen(const Game& game) { return ""; }
 
 // tactical positions
 // 3q1r1k/2r2ppp/2p1b3/1p2P2R/p1pP2Nb/P3Q2P/1P2B1P1/5RK1 w - - 5 27 (N -> F6)

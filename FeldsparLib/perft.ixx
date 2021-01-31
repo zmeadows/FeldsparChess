@@ -2,7 +2,7 @@ export module perft;
 
 import unstd.core;
 import unstd.io;
-import unstd.string;
+import unstd.string_util;
 
 import game;
 import move;
@@ -11,12 +11,9 @@ import movegen;
 import<cstring>;
 import<cstdio>;
 
-// TODO: use my own hash map and string types
 import<string>;
-import<sstream>;
 import<vector>;
 import<map>;
-import<iterator>;
 
 export struct PerftStats {
     U64 node_count = 0;
@@ -68,12 +65,12 @@ export void perft_(const Game& game, U64 depth)
     print_perft_stats(results);
 }
 
-export std::map<std::string, int> perft_divide(StringRef fen, U64 depth)
+export std::map<std::string, int> perft_divide(const std::string& fen, U64 depth)
 {
     if (depth == 0) return {};
 
     std::map<std::string, int> result;
-    auto ogame = Game::create(StringRef(fen));
+    auto ogame = game_from_fen(fen);
 
     if (!ogame.has_value()) return {};
 
@@ -90,25 +87,6 @@ export std::map<std::string, int> perft_divide(StringRef fen, U64 depth)
     }
 
     return result;
-}
-
-template <typename Out>
-void split(const std::string& s, char delim, Out result)
-{
-    std::istringstream iss(s);
-    std::string item;
-    while (std::getline(iss, item, delim)) {
-        if (!item.empty()) {
-            *result++ = item;
-        }
-    }
-}
-
-std::vector<std::string> split(const std::string& s, char delim)
-{
-    std::vector<std::string> elems;
-    split(s, delim, std::back_inserter(elems));
-    return elems;
 }
 
 export std::map<std::string, int> qperft_divide(const char* fen, U64 depth)

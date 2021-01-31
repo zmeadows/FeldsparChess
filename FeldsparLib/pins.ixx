@@ -5,8 +5,6 @@ import bitboard;
 import board;
 import attacks.classical;
 
-import unstd.array;
-
 import<cassert>;
 
 // TODO: perhaps replace these with small stack-based hash tables?

@@ -6,13 +6,7 @@
     </ClCompile>
     <ClCompile Include="bitboard_test.cpp" />
     <ClCompile Include="game_test.cpp" />
-    <ClCompile Include="array_test.cpp">
-      <Filter>unstd</Filter>
-    </ClCompile>
     <ClCompile Include="quad_test.cpp" />
-    <ClCompile Include="string_test.cpp">
-      <Filter>unstd</Filter>
-    </ClCompile>
     <ClCompile Include="board_test.cpp" />
     <ClCompile Include="move_test.cpp" />
     <ClCompile Include="attacks_classical_test.cpp" />

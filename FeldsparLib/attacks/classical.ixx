@@ -6,12 +6,10 @@ import board;
 
 export import attacks.base;
 
-import unstd.array;
-
 // These 'classical' ray methods are primarily used as a way of producing valid attack tables
 // for use in other methods such as magic bitboards.
 
-inline constexpr Array<Bitboard, 8 * 64> RAY_TABLE({
+const Bitboard RAY_TABLE[8 * 64] = {
     /* NORTH */
     72340172838076672,
     144680345676153344,
@@ -539,7 +537,7 @@ inline constexpr Array<Bitboard, 8 * 64> RAY_TABLE({
     18155135997837312,
     36028797018963968,
     0,
-});
+};
 
 inline constexpr bool is_positive_direction(Direction dir)
 {
@@ -644,28 +642,28 @@ export constexpr __forceinline Bitboard xray_bishop_attacks(Bitboard occ, Bitboa
     return attacks ^ get_bishop_attacks(bishop_square, occ ^ blockers);
 }
 
-const Array<Bitboard, 64 * 64> RAYS_BETWEEN_SQUARES = []() {
-    Array<Bitboard, 64 * 64> rays;
+Bitboard RAYS_BETWEEN_SQUARES[64 * 64];
 
+// TODO: convert to smaller hash table?
+export void init_rays_between_squares(void)
+{
     U64 idx = 0;
 
     for (Square sq_a = 0; sq_a < 64; sq_a++) {
         for (Square sq_b = 0; sq_b < 64; sq_b++) {
             const Bitboard sqb_bit = square_bitrep(sq_b);
-            rays[idx] = 0;
+            RAYS_BETWEEN_SQUARES[idx] = 0;
             for (Direction dir : EnumRange<Direction>()) {
                 const Bitboard ray = get_ray_attacks(sq_a, sqb_bit, dir);
                 if (bitboard_is_occupied(ray & sqb_bit)) {
-                    rays[idx] = ray;
+                    RAYS_BETWEEN_SQUARES[idx] = ray;
                     break;
                 }
             }
             idx++;
         }
     }
-
-    return rays;
-}();
+}
 
 export constexpr __forceinline Bitboard ray_between_squares(Square a, Square b)
 {
