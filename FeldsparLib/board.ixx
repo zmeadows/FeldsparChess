@@ -48,7 +48,7 @@ export __forceinline constexpr Bitboard& get_occupied_mut(Board& board, const Co
 
 export __forceinline constexpr Bitboard get_occupied(const Board& board)
 {
-    return get_occupied(board, Color::White) || get_occupied(board, Color::Black);
+    return get_occupied(board, Color::White) | get_occupied(board, Color::Black);
 }
 
 export __forceinline constexpr Bitboard get_unoccupied(const Board& board)

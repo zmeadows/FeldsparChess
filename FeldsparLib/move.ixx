@@ -8,6 +8,7 @@ import zobrist;
 
 import<string>;
 import<cassert>;
+import<optional>;
 
 export class MoveBuffer {
     Move moves[256];
@@ -299,4 +300,13 @@ export std::string move_to_algebraic(Move m)
     alg_str.push_back(to_alg[1]);
 
     return alg_str;
+}
+
+export std::optional<Move> move_from_algebraic(const MoveBuffer& moves, const std::string& alg)
+{
+    for (const Move m : moves) {
+        if (move_to_algebraic(m) == alg) return m;
+    }
+
+    return {};
 }

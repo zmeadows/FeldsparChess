@@ -8,6 +8,7 @@ import game;
 import move;
 import movegen;
 
+import<cassert>;
 import<cstring>;
 import<cstdio>;
 
@@ -72,7 +73,7 @@ export std::map<std::string, int> perft_divide(const std::string& fen, U64 depth
     std::map<std::string, int> result;
     auto ogame = game_from_fen(fen);
 
-    if (!ogame.has_value()) return {};
+    assert(ogame.has_value());
 
     Game game = *ogame;
 
@@ -131,21 +132,71 @@ export std::map<std::string, int> qperft_divide(const char* fen, U64 depth)
     return result;
 }
 
-export bool qperft_validate(const char* const fen, U64 max_depth)
+template <bool DEBUG_PRINT = true>
+void qperft_validate_internal(const std::string& fen, U64 max_depth, bool& failed)
 {
+    if (failed) return;
+
     for (U64 depth = 3; depth <= max_depth; depth++) {
-        const auto qperft_results = qperft_divide(fen, depth);
+        const auto qperft_results = qperft_divide(fen.c_str(), depth);
         const auto feldspar_results = perft_divide(fen, depth);
 
-        for (const auto& [move_alg, count] : qperft_results) {
-            int feldspar_count = 0;
-            if (auto it = feldspar_results.find(move_alg); it != feldspar_results.end()) {
-                feldspar_count = it->second;
+        std::vector<std::string> missing_moves;
+        for (const auto& [move_alg, _] : qperft_results) {
+            if (auto it = feldspar_results.find(move_alg); it == feldspar_results.end()) {
+                missing_moves.push_back(move_alg);
             }
-            if (count != feldspar_count) {
-                printf("%s %d %d\n", move_alg.c_str(), count, feldspar_count);
+        }
+
+        std::vector<std::string> illegal_moves;
+        for (const auto& [move_alg, _] : feldspar_results) {
+            if (auto it = qperft_results.find(move_alg); it == qperft_results.end()) {
+                illegal_moves.push_back(move_alg);
+            }
+        }
+
+        failed = missing_moves.size() > 0 || illegal_moves.size() > 0;
+
+        if (failed) {
+            if constexpr (DEBUG_PRINT) {
+                printf("%s\n", fen.c_str());
+                printf("Feldspar failed to generate the following legal moves:\n");
+                for (const std::string m : missing_moves) {
+                    printf("\t%s\n", m.c_str());
+                }
+                printf("Feldspar generate the following non-legal moves:\n");
+                for (const std::string m : illegal_moves) {
+                    printf("\t%s\n", m.c_str());
+                }
+            }
+
+            return;
+        }
+
+        Game game = *game_from_fen(fen);
+        MoveBuffer moves;
+        generate_moves(game, moves);
+
+        const Game game_premove_copy(game);
+
+        for (const auto& [move_alg, qperft_count] : qperft_results) {
+            auto it = feldspar_results.find(move_alg);
+            assert(it != feldspar_results.end());
+            if (it->second != qperft_count) {
+                const auto m = *move_from_algebraic(moves, move_alg);
+                make_move<false>(game, m);
+                qperft_validate_internal<DEBUG_PRINT>(game_to_fen(game), max_depth - 1, failed);
+                if (failed) return;
+                memcpy(&game, &game_premove_copy, sizeof(Game));
             }
         }
     }
-    return true;
+}
+
+export template <bool DEBUG_PRINT = true>
+bool qperft_validate(const std::string& fen, U64 max_depth)
+{
+    bool failed = false;
+    qperft_validate_internal<DEBUG_PRINT>(fen, max_depth, failed);
+    return failed;
 }

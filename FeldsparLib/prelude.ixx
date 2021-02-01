@@ -286,7 +286,7 @@ export constexpr const char* square_to_algebraic(Square sq)
 
 export __forceinline MaybeSquare square_from_algebraic(const std::string& alg)
 {
-    if (alg.size() != 2) {
+    if (alg.size() != 2) [[unlikely]] {
         return {};
     }
 
