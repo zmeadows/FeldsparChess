@@ -134,6 +134,12 @@ public:
         return m_data;
     }
 
+    [[nodiscard]] __forceinline const T& operator*() const
+    {
+        assert(m_data != SENTINEL);
+        return m_data;
+    }
+
     __forceinline constexpr Maybe(void) : m_data(SENTINEL) {}
     __forceinline constexpr Maybe(const T& value) : m_data(value) {}
     __forceinline constexpr Maybe(const Maybe<T, SENTINEL>& other) : m_data(other.m_data) {}

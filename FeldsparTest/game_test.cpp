@@ -216,10 +216,10 @@ TEST(Game, GameFromFEN)
 
 TEST(Game, GameFromToFEN)
 {
-    for (std::string fen :
-         {"r1bq1rk1/ppp1npbp/3p1np1/3Pp3/1PP1P3/2N2N2/P3BPPP/R1BQ1RK1 b - - 0 9",
-          "rn1q1rk1/1pp2pp1/p3pb1p/8/P2Pb3/5NP1/1P2PPBP/RNQR2K1 b - - 1 14",
-          "r1bq1rk1/pp3pbp/2n2np1/2p1p3/4PP2/2N2NP1/PPP3BP/R1B1QRK1 b - - 1 10"}) {
+    for (std::string fen : {"r1bq1rk1/ppp1npbp/3p1np1/3Pp3/1PP1P3/2N2N2/P3BPPP/R1BQ1RK1 b - - 0 9",
+                            "rn1q1rk1/1pp2pp1/p3pb1p/8/P2Pb3/5NP1/1P2PPBP/RNQR2K1 b - - 1 14",
+                            "r1bq1rk1/pp3pbp/2n2np1/2p1p3/4PP2/2N2NP1/PPP3BP/R1B1QRK1 b - - 1 10",
+                            "rnbqkbnr/p1p2ppp/4p3/1pPp4/3P4/8/PP2PPPP/RNBQKBNR w KQkq b6 0 4"}) {
 
         const auto og = game_from_fen(fen);
         ASSERT_TRUE(og.has_value());

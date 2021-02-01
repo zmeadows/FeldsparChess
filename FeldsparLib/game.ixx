@@ -15,6 +15,7 @@ import<cstring>;
 
 import<string>;
 import<vector>;
+import<optional>;
 #include "logger.h"
 
 export struct Game {
@@ -37,13 +38,6 @@ export GameHash create_game_hash(const Game& game)
     }
 
     return hash;
-}
-
-// TODO: implement
-MaybeSquare from_algebraic(std::string alg)
-{
-    assert(alg.length() == 2);
-    return {};
 }
 
 Optional<Game> game_from_fen_internal(const std::string& fen)
@@ -191,7 +185,7 @@ Optional<Game> game_from_fen_internal(const std::string& fen)
             return {};
         }
 
-        if (MaybeSquare sq = from_algebraic(fen_ep); sq.has_value()) {
+        if (MaybeSquare sq = square_from_algebraic(fen_ep); sq.has_value()) {
             game.ep_square = sq;
         }
         else {
@@ -234,7 +228,105 @@ export Optional<Game> game_from_fen(const std::string& fen)
     }
 }
 
-export std::string game_to_fen(const Game& game) { return ""; }
+export std::string game_to_fen(const Game& game)
+{
+    std::string fen;
+    fen.reserve(92);
+    int empty_tally = 0;
+
+    for (Square sq = 63; sq >= 0; sq--) {
+        const bool wrapped_across_row = sq % 8 == 7;
+
+        const std::optional<Piece> maybe_piece = get_piece_at(game.board, sq);
+
+        if ((maybe_piece.has_value() || wrapped_across_row) && empty_tally > 0) {
+            assert(empty_tally <= 8);
+            fen.push_back('0' + static_cast<char>(empty_tally));
+            empty_tally = 0;
+        }
+
+        if (wrapped_across_row && sq < 63) {
+            fen.push_back('/');
+        }
+
+        if (maybe_piece.has_value()) {
+            const Piece& piece = *maybe_piece;
+
+            char letter;
+            switch (piece.type) {
+                case PieceType::Pawn: {
+                    letter = 'p';
+                    break;
+                }
+                case PieceType::Knight: {
+                    letter = 'n';
+                    break;
+                }
+                case PieceType::Bishop: {
+                    letter = 'b';
+                    break;
+                }
+                case PieceType::Rook: {
+                    letter = 'r';
+                    break;
+                }
+                case PieceType::Queen: {
+                    letter = 'q';
+                    break;
+                }
+                case PieceType::King: {
+                    letter = 'k';
+                    break;
+                }
+            }
+
+            if (piece.color == Color::White) {
+                letter = toupper(letter);
+            }
+
+            fen.push_back(letter);
+        }
+        else {
+            empty_tally++;
+        }
+    }
+
+    if (empty_tally > 0) {
+        fen.push_back('0' + static_cast<char>(empty_tally));
+    }
+
+    if (game.to_move == Color::White) {
+        fen += " w ";
+    }
+    else {
+        fen += " b ";
+    }
+
+    if (game.castling_rights == NO_CASTLING_RIGHTS) {
+        fen += "- ";
+    }
+    else {
+        if (game.castling_rights | WHITE_KINGSIDE) fen.push_back('K');
+        if (game.castling_rights | WHITE_QUEENSIDE) fen.push_back('Q');
+        if (game.castling_rights | BLACK_KINGSIDE) fen.push_back('k');
+        if (game.castling_rights | BLACK_QUEENSIDE) fen.push_back('q');
+        fen.push_back(' ');
+    }
+
+    if (game.ep_square.has_value()) {
+        fen += square_to_algebraic(*(game.ep_square));
+    }
+    else {
+        fen.push_back('-');
+    }
+
+    fen.push_back(' ');
+    fen += std::to_string(game.halfmove_clock);
+    fen.push_back(' ');
+    fen += std::to_string(game.fullmoves);
+
+    return fen;
+}
 
 // tactical positions
 // 3q1r1k/2r2ppp/2p1b3/1p2P2R/p1pP2Nb/P3Q2P/1P2B1P1/5RK1 w - - 5 27 (N -> F6)

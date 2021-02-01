@@ -2,14 +2,23 @@ export module prelude;
 
 export import unstd.core;
 
+import<cassert>;
+import<string>;
+
 export using Bitboard = U64;
 
 export using Square = S64;
 export using MaybeSquare = Maybe<Square, -1>;
 
 export constexpr __forceinline bool is_valid_square(Square sq) { return sq >= 0 && sq < 64; }
-export __forceinline constexpr S64 rank_of(Square sq) { return 1 + sq & 56; }
-export __forceinline constexpr S64 file_of(Square sq) { return 8 - sq & 7; }
+export __forceinline constexpr S64 rank_of(Square sq) { return 1 + (sq / 8); }
+export __forceinline constexpr S64 file_of(Square sq) { return 8 - (sq % 8); }
+export __forceinline constexpr Square from_rank_file(S64 rank, S64 file)
+{
+    const Square sq = rank * 8 - file;
+    assert(sq >= 0 && sq <= 63);
+    return sq;
+}
 
 export using Move = U32;
 
@@ -53,6 +62,11 @@ export enum class Direction {
 export enum class PieceType { Pawn = 0, Knight, Bishop, Rook, Queen, King, LAST = King };
 
 using MaybePieceType = Maybe<PieceType, PieceType::LAST>;
+
+export struct Piece {
+    Color color;
+    PieceType type;
+};
 
 export constexpr __forceinline bool is_slider(const PieceType ptype)
 {
@@ -268,4 +282,16 @@ export constexpr const char* square_to_algebraic(Square sq)
         default:
             return "UNKNOWN";
     }
+}
+
+export __forceinline MaybeSquare square_from_algebraic(const std::string& alg)
+{
+    if (alg.size() != 2) {
+        return {};
+    }
+
+    const S64 rank = static_cast<S64>(alg[1] - '0');
+    const S64 file = 1 + alg[0] - 'a';
+
+    return from_rank_file(rank, file);
 }

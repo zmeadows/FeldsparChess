@@ -51,6 +51,7 @@
     <ClCompile Include="core_test.cpp" />
     <ClCompile Include="game_test.cpp" />
     <ClCompile Include="move_test.cpp" />
+    <ClCompile Include="prelude_test.cpp" />
     <ClCompile Include="quad_test.cpp" />
     <ClCompile Include="attacks_classical_test.cpp" />
   </ItemGroup>

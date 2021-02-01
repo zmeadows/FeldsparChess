@@ -3,6 +3,8 @@ export module board;
 import prelude;
 import bitboard;
 
+import<optional>;
+
 export inline constexpr auto BOARD_SIZE = 14;
 export using Board = Bitboard[BOARD_SIZE];
 // Board[0] = White Pawns
@@ -52,4 +54,28 @@ export __forceinline constexpr Bitboard get_occupied(const Board& board)
 export __forceinline constexpr Bitboard get_unoccupied(const Board& board)
 {
     return ~get_occupied(board);
+}
+
+export std::optional<Piece> get_piece_at(const Board& board, Square sq)
+{
+    const Bitboard bit = square_bitrep(sq);
+
+    Color color;
+    if (bit & get_occupied(board, Color::White)) {
+        color = Color::White;
+    }
+    else if (bit & get_occupied(board, Color::Black)) {
+        color = Color::Black;
+    }
+    else {
+        return {};
+    }
+
+    for (const PieceType piece_type : EnumRange<PieceType>()) {
+        if (bit & get_pieces(board, piece_type, color)) {
+            return Piece{.color = color, .type = piece_type};
+        }
+    }
+
+    return {};
 }
