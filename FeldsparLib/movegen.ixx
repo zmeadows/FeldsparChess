@@ -197,30 +197,30 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
             pawn_move_delta = 8;
 
             singly_advanced_pawns =
-                quiet_mask & bitboard_shifted(friendly_pawns & unpinned, Direction::North);
-            DEBUG_PRINT_BB2(singly_advanced_pawns, "unpinned");
+                empty_squares & bitboard_shifted(friendly_pawns & unpinned, Direction::North);
 
-            doubly_advanced_pawns = quiet_mask &
-                                    bitboard_shifted(singly_advanced_pawns, Direction::North) &
-                                    FOURTH_RANK;
-            DEBUG_PRINT_BB2(doubly_advanced_pawns, "unpinned");
+            doubly_advanced_pawns =
+                bitboard_shifted(singly_advanced_pawns, Direction::North) & FOURTH_RANK;
+
+            singly_advanced_pawns &= quiet_mask;
+            doubly_advanced_pawns &= quiet_mask;
 
             promotion_rank = 8;
             attacking_pawns_mask = bitboard_shifted(capture_mask, Direction::SouthWest);
-            DEBUG_PRINT_BB2(attacking_pawns_mask, "unpinned, step1");
             attacking_pawns_mask |= bitboard_shifted(capture_mask, Direction::SouthEast);
-            DEBUG_PRINT_BB2(attacking_pawns_mask, "unpinned, step2");
             attacking_pawns_mask &= friendly_pawns;
-            DEBUG_PRINT_BB2(attacking_pawns_mask, "unpinned");
         }
         else {
             pawn_move_delta = -8;
 
             singly_advanced_pawns =
-                quiet_mask & bitboard_shifted(friendly_pawns & unpinned, Direction::South);
+                empty_squares & bitboard_shifted(friendly_pawns & unpinned, Direction::South);
 
             doubly_advanced_pawns =
-                quiet_mask & bitboard_shifted(singly_advanced_pawns, Direction::South) & FIFTH_RANK;
+                bitboard_shifted(singly_advanced_pawns, Direction::South) & FIFTH_RANK;
+
+            singly_advanced_pawns &= quiet_mask;
+            doubly_advanced_pawns &= quiet_mask;
 
             promotion_rank = 1;
             attacking_pawns_mask = bitboard_shifted(capture_mask, Direction::NorthWest);
@@ -247,6 +247,7 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
         });
     }
 
+    // TODO: this is BUGGGGGGGGGGGGGGGGGGGGGED like above !!!!
     { // Non-diagonally pinned pawns
         if (game.to_move == Color::White) {
             singly_advanced_pawns =
