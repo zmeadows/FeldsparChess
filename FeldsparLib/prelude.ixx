@@ -23,16 +23,19 @@ export __forceinline constexpr Square from_rank_file(S64 rank, S64 file)
 export using Move = U32;
 
 export using CastlingRights = U8;
-export constexpr U8 WHITE_KINGSIDE = 0b0001;
-export constexpr U8 WHITE_QUEENSIDE = 0b0010;
-export constexpr U8 WHITE_CASTLE_MASK = 0b0011;
-export constexpr U8 BLACK_KINGSIDE = 0b0100;
-export constexpr U8 BLACK_QUEENSIDE = 0b1000;
-export constexpr U8 BLACK_CASTLE_MASK = 0b1100;
-export constexpr U8 FULL_CASTLING_RIGHTS = 0b1111;
-export constexpr U8 NO_CASTLING_RIGHTS = 0b0000;
+export constexpr CastlingRights CASTLE_RIGHTS_WHITE_KINGSIDE = 0b0001;
+export constexpr CastlingRights CASTLE_RIGHTS_WHITE_QUEENSIDE = 0b0010;
+export constexpr CastlingRights CASTLE_RIGHTS_WHITE_BOTH = 0b0011;
+export constexpr CastlingRights CASTLE_RIGHTS_BLACK_KINGSIDE = 0b0100;
+export constexpr CastlingRights CASTLE_RIGHTS_BLACK_QUEENSIDE = 0b1000;
+export constexpr CastlingRights CASTLE_RIGHTS_BLACK_BOTH = 0b1100;
 
-// TODO: create bits_set({1,2,...}) function
+export __forceinline void remove_castling_rights(CastlingRights& rights, CastlingRights to_remove)
+{
+    rights &= ~(to_remove);
+}
+
+// TODO: use bits_set({1,2,...}) function
 export constexpr Bitboard WHITE_KINGSIDE_CASTLE_PATH = 1ULL << 1 | 1ULL << 2;
 export constexpr Bitboard BLACK_KINGSIDE_CASTLE_PATH = 1ULL << 57 | 1ULL << 58;
 export constexpr Bitboard BLACK_QUEENSIDE_CASTLE_PATH = 1ULL << 62 | 1ULL << 61 | 1ULL << 60;

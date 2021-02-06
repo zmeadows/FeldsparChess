@@ -92,7 +92,7 @@ export __forceinline constexpr PieceType moved_piece_type(Move move)
 // NOTE: this will be equal to PieceType::Pawn if the move is not a capture. How bad is that...?
 export __forceinline constexpr PieceType captured_piece_type(Move move)
 {
-    assert(move_is_capture(move) && "Called captured_piece_type on non-capture move.");
+    // assert(move_is_capture(move) && "Called captured_piece_type on non-capture move.");
     return static_cast<PieceType>((move >> 19) & 0x7);
 }
 
@@ -114,14 +114,9 @@ void make_move_internal(Game& game, Move move)
     const PieceType moved_ptype = moved_piece_type(move);
     const PieceType captured_ptype = captured_piece_type(move);
 
-    constexpr CastlingRights REMOVE_WHITE_KINGSIDE = ~WHITE_KINGSIDE;
-    constexpr CastlingRights REMOVE_WHITE_QUEENSIDE = ~WHITE_QUEENSIDE;
-    constexpr CastlingRights REMOVE_BLACK_KINGSIDE = ~BLACK_KINGSIDE;
-    constexpr CastlingRights REMOVE_BLACK_QUEENSIDE = ~BLACK_QUEENSIDE;
-
-    const auto remove_castling_rights = [&](CastlingRights remove_mask) {
+    const auto cancel_castling_rights = [&](CastlingRights to_remove) {
         if constexpr (UPDATE_HASH) hash_update_castling_rights(game.hash, game.castling_rights);
-        game.castling_rights &= remove_mask;
+        remove_castling_rights(game.castling_rights, to_remove);
         if constexpr (UPDATE_HASH) hash_update_castling_rights(game.hash, game.castling_rights);
     };
 
@@ -164,23 +159,24 @@ void make_move_internal(Game& game, Move move)
         if (captured_ptype == Rook) [[unlikely]] {
             if constexpr (MOVING_COLOR == Color::White) {
                 if (to_sq == 56) [[unlikely]] {
-                    remove_castling_rights(REMOVE_BLACK_KINGSIDE);
+                    cancel_castling_rights(CASTLE_RIGHTS_BLACK_KINGSIDE);
                 }
                 else if (to_sq == 63) [[unlikely]] {
-                    remove_castling_rights(REMOVE_BLACK_QUEENSIDE);
+                    cancel_castling_rights(CASTLE_RIGHTS_BLACK_QUEENSIDE);
                 }
             }
             else { // MOVING_COLOR == Color::Black
                 if (to_sq == 0) [[unlikely]] {
-                    remove_castling_rights(REMOVE_WHITE_KINGSIDE);
+                    cancel_castling_rights(CASTLE_RIGHTS_WHITE_KINGSIDE);
                 }
                 else if (to_sq == 7) [[unlikely]] {
-                    remove_castling_rights(REMOVE_WHITE_QUEENSIDE);
+                    cancel_castling_rights(CASTLE_RIGHTS_WHITE_QUEENSIDE);
                 }
             }
         }
     }
 
+    // handle special cases, e.g. castling
     switch (moved_ptype) {
         case Pawn: {
             if (flag == DOUBLE_PAWN_PUSH_FLAG) {
@@ -202,57 +198,109 @@ void make_move_internal(Game& game, Move move)
                 }
             }
             else if (move_is_pawn_promotion(move)) [[unlikely]] {
+                get_pieces_mut(game.board, Pawn, MOVING_COLOR) ^= to_bit;
+                if constexpr (UPDATE_HASH) {
+                    hash_update_piece_square(game.hash, MOVING_COLOR, Pawn, to_sq);
+                }
+
                 if (flag == KNIGHT_PROMO_FLAG || flag == KNIGHT_PROMO_CAPTURE_FLAG) {
-                    // TODO!
+                    get_pieces_mut(game.board, Knight, MOVING_COLOR) |= to_bit;
+                    if constexpr (UPDATE_HASH) {
+                        hash_update_piece_square(game.hash, MOVING_COLOR, Knight, to_sq);
+                    }
                 }
                 else if (flag == BISHOP_PROMO_FLAG || flag == BISHOP_PROMO_CAPTURE_FLAG) {
-                    // TODO!
+                    get_pieces_mut(game.board, Bishop, MOVING_COLOR) |= to_bit;
+                    if constexpr (UPDATE_HASH) {
+                        hash_update_piece_square(game.hash, MOVING_COLOR, Bishop, to_sq);
+                    }
                 }
                 else if (flag == ROOK_PROMO_FLAG || flag == ROOK_PROMO_CAPTURE_FLAG) {
-                    // TODO!
+                    get_pieces_mut(game.board, Rook, MOVING_COLOR) |= to_bit;
+                    if constexpr (UPDATE_HASH) {
+                        hash_update_piece_square(game.hash, MOVING_COLOR, Rook, to_sq);
+                    }
                 }
                 else if (flag == QUEEN_PROMO_FLAG || flag == QUEEN_PROMO_CAPTURE_FLAG) {
-                    // TODO!
+                    get_pieces_mut(game.board, Queen, MOVING_COLOR) |= to_bit;
+                    if constexpr (UPDATE_HASH) {
+                        hash_update_piece_square(game.hash, MOVING_COLOR, Queen, to_sq);
+                    }
                 }
             }
             break;
         }
         case Rook: {
             if constexpr (MOVING_COLOR == Color::White) {
-                if (from_sq == 0 && (game.castling_rights & WHITE_KINGSIDE)) [[unlikely]] {
-                    remove_castling_rights(REMOVE_WHITE_KINGSIDE);
+                if (from_sq == h1) [[unlikely]] {
+                    cancel_castling_rights(CASTLE_RIGHTS_WHITE_KINGSIDE);
                 }
-                else if (from_sq == 7 && (game.castling_rights & WHITE_QUEENSIDE)) [[unlikely]] {
-                    remove_castling_rights(REMOVE_WHITE_QUEENSIDE);
+                else if (from_sq == a1) [[unlikely]] {
+                    cancel_castling_rights(CASTLE_RIGHTS_WHITE_QUEENSIDE);
                 }
             }
             else { // MOVING_COLOR == Color::Black
-                if (from_sq == 56) [[unlikely]] {
-                    remove_castling_rights(REMOVE_BLACK_KINGSIDE);
+                if (from_sq == h8) [[unlikely]] {
+                    cancel_castling_rights(CASTLE_RIGHTS_BLACK_KINGSIDE);
                 }
-                else if (from_sq == 63) [[unlikely]] {
-                    remove_castling_rights(REMOVE_BLACK_QUEENSIDE);
+                else if (from_sq == a8) [[unlikely]] {
+                    cancel_castling_rights(CASTLE_RIGHTS_BLACK_QUEENSIDE);
                 }
             }
             break;
         }
         case King: {
+
+            // TODO: bugged still...?
             if constexpr (MOVING_COLOR == Color::White) {
-                if (flag == KING_CASTLE_FLAG) [[unlikely]] {
+                cancel_castling_rights(CASTLE_RIGHTS_WHITE_KINGSIDE);
+                cancel_castling_rights(CASTLE_RIGHTS_WHITE_QUEENSIDE);
+            }
+            else {
+                cancel_castling_rights(CASTLE_RIGHTS_BLACK_KINGSIDE);
+                cancel_castling_rights(CASTLE_RIGHTS_BLACK_QUEENSIDE);
+            }
+
+            if (flag == KING_CASTLE_FLAG || flag == QUEEN_CASTLE_FLAG) [[unlikely]] {
+
+                Square rook_from_sq, rook_to_sq;
+
+                if constexpr (MOVING_COLOR == Color::White) {
+                    if (flag == KING_CASTLE_FLAG) [[unlikely]] {
+                        assert(from_sq == e1);
+                        rook_from_sq = h1;
+                        rook_to_sq = f1;
+                    }
+                    else if (flag == QUEEN_CASTLE_FLAG) [[unlikely]] {
+                        assert(from_sq == e1);
+                        rook_from_sq = a1;
+                        rook_to_sq = d1;
+                    }
                 }
-                else if (flag == QUEEN_CASTLE_FLAG) [[unlikely]] {
+                else { // MOVING_COLOR == Color::Black
+                    if (flag == KING_CASTLE_FLAG) [[unlikely]] {
+                        assert(from_sq == e8);
+                        rook_from_sq = h8;
+                        rook_to_sq = f8;
+                    }
+                    else if (flag == QUEEN_CASTLE_FLAG) [[unlikely]] {
+                        assert(from_sq == e8);
+                        rook_from_sq = a8;
+                        rook_to_sq = d8;
+                    }
                 }
 
-                remove_castling_rights(REMOVE_WHITE_KINGSIDE & REMOVE_WHITE_QUEENSIDE);
-            }
-            else { // MOVING_COLOR == Color::Black
-                if (flag == KING_CASTLE_FLAG) [[unlikely]] {
-                }
-                else if (flag == QUEEN_CASTLE_FLAG) [[unlikely]] {
-                }
+                const Bitboard rook_bit = square_bitrep(rook_from_sq) | square_bitrep(rook_to_sq);
 
-                remove_castling_rights(REMOVE_BLACK_KINGSIDE & REMOVE_BLACK_QUEENSIDE);
+                get_pieces_mut(game.board, Rook, MOVING_COLOR) ^= rook_bit;
+                get_occupied_mut(game.board, MOVING_COLOR) ^= rook_bit;
+
+                if constexpr (UPDATE_HASH) {
+                    hash_update_piece_square(game.hash, MOVING_COLOR, Rook, rook_from_sq);
+                    hash_update_piece_square(game.hash, MOVING_COLOR, Rook, rook_to_sq);
+                }
             }
+
             break;
         }
         default: {

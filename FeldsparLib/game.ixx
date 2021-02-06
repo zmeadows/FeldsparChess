@@ -25,7 +25,7 @@ export struct Game {
     Color to_move = Color::White;
     U16 fullmoves = 0;
     U8 halfmove_clock = 0;
-    CastlingRights castling_rights = NO_CASTLING_RIGHTS;
+    CastlingRights castling_rights = 0;
 
     bool operator==(const Game&) const = default;
 };
@@ -145,25 +145,25 @@ Optional<Game> game_from_fen_internal(const std::string& fen)
     auto fen_castle = fen_pieces[2];
 
     if (fen_castle == "-") {
-        game.castling_rights = NO_CASTLING_RIGHTS;
+        game.castling_rights = 0;
     }
     else {
         for (const char ch : fen_castle) {
             switch (ch) {
                 case 'K': {
-                    game.castling_rights |= WHITE_KINGSIDE;
+                    game.castling_rights |= CASTLE_RIGHTS_WHITE_KINGSIDE;
                     break;
                 }
                 case 'Q': {
-                    game.castling_rights |= WHITE_QUEENSIDE;
+                    game.castling_rights |= CASTLE_RIGHTS_WHITE_QUEENSIDE;
                     break;
                 }
                 case 'k': {
-                    game.castling_rights |= BLACK_KINGSIDE;
+                    game.castling_rights |= CASTLE_RIGHTS_BLACK_KINGSIDE;
                     break;
                 }
                 case 'q': {
-                    game.castling_rights |= BLACK_QUEENSIDE;
+                    game.castling_rights |= CASTLE_RIGHTS_BLACK_QUEENSIDE;
                     break;
                 }
                 default:
@@ -302,14 +302,14 @@ export std::string game_to_fen(const Game& game)
         fen += " b ";
     }
 
-    if (game.castling_rights == NO_CASTLING_RIGHTS) {
+    if (game.castling_rights == 0) {
         fen += "- ";
     }
     else {
-        if (game.castling_rights | WHITE_KINGSIDE) fen.push_back('K');
-        if (game.castling_rights | WHITE_QUEENSIDE) fen.push_back('Q');
-        if (game.castling_rights | BLACK_KINGSIDE) fen.push_back('k');
-        if (game.castling_rights | BLACK_QUEENSIDE) fen.push_back('q');
+        if (game.castling_rights & CASTLE_RIGHTS_WHITE_KINGSIDE) fen.push_back('K');
+        if (game.castling_rights & CASTLE_RIGHTS_WHITE_QUEENSIDE) fen.push_back('Q');
+        if (game.castling_rights & CASTLE_RIGHTS_BLACK_KINGSIDE) fen.push_back('k');
+        if (game.castling_rights & CASTLE_RIGHTS_BLACK_QUEENSIDE) fen.push_back('q');
         fen.push_back(' ');
     }
 

@@ -29,7 +29,7 @@ export struct PerftStats {
 void print_perft_stats(const std::vector<PerftStats>& stats)
 {
     for (U64 i = 0; i < stats.size(); i++) {
-        printf("DEPTH %llu NODES = %llu\n", i, stats[i].node_count);
+        printf("DEPTH %llu NODES = %llu\n", i + 1, stats[i].node_count);
     }
 }
 
@@ -42,10 +42,12 @@ void perft_internal(Game& game, const U64 max_depth, U64 depth, std::vector<Perf
 
     const Game game_premove_copy(game);
     for (Move m : moves) {
+        const CastlingRights old_rights = game.castling_rights;
+        const Color moving_color = game.to_move;
         make_move<false>(game, m);
 
-        stats[max_depth - depth].node_count++;
         // TODO: record promotions, castles, etc...
+        stats[max_depth - depth].node_count++;
 
         perft_internal(game, max_depth, depth - 1, stats);
         memcpy(&game, &game_premove_copy, sizeof(Game));

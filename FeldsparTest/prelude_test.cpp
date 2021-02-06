@@ -5,6 +5,25 @@ import prelude;
 import bitboard;
 import print;
 
+TEST(Prelude, CastlingRights)
+{
+    CastlingRights rights = 0b1111;
+
+    remove_castling_rights(rights, CASTLE_RIGHTS_WHITE_KINGSIDE);
+    EXPECT_EQ(rights, 0b1110);
+    remove_castling_rights(rights, CASTLE_RIGHTS_WHITE_QUEENSIDE);
+    EXPECT_EQ(rights, 0b1100);
+    remove_castling_rights(rights, CASTLE_RIGHTS_BLACK_KINGSIDE);
+    EXPECT_EQ(rights, 0b1000);
+    remove_castling_rights(rights, CASTLE_RIGHTS_BLACK_QUEENSIDE);
+    EXPECT_EQ(rights, 0b0000);
+
+    rights = 0b1111;
+    remove_castling_rights(rights, CASTLE_RIGHTS_WHITE_KINGSIDE | CASTLE_RIGHTS_WHITE_QUEENSIDE);
+    EXPECT_EQ(rights, 0b1100);
+    remove_castling_rights(rights, CASTLE_RIGHTS_BLACK_KINGSIDE | CASTLE_RIGHTS_BLACK_QUEENSIDE);
+    EXPECT_EQ(rights, 0b0000);
+}
 TEST(Prelude, SquareRankFile)
 {
     for (Square sq = 0; sq < 64; sq++) {

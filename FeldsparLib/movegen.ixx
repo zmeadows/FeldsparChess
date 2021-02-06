@@ -89,6 +89,7 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
 
     const Bitboard king_danger_squares = attacked<true>(board, opponent_color);
     const Bitboard safe_king_moves = get_king_moves(king_square) & ~king_danger_squares;
+    DEBUG_PRINT_BB(safe_king_moves);
     build_moves(king_square, safe_king_moves, King);
 
     // If the king is in double+ check, the only legal moves are king moves, so return early.
@@ -381,22 +382,34 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
     if constexpr (!CAPTURES_ONLY) {
         const bool castle_possible =
             check_multiplicity == 0 &&
-            ((friendly_color == Color::White) ? (game.castling_rights & WHITE_CASTLE_MASK)
-                                              : (game.castling_rights & BLACK_CASTLE_MASK));
+            ((friendly_color == Color::White) ? (game.castling_rights & CASTLE_RIGHTS_WHITE_BOTH)
+                                              : (game.castling_rights & CASTLE_RIGHTS_BLACK_BOTH));
+
+        if constexpr (friendly_color == Color::White) {
+            if (castle_possible && king_square != e1) {
+                printf("ASDF\n");
+            }
+        }
+
+        if constexpr (friendly_color == Color::White) {
+            if (castle_possible && king_square != e1) {
+                printf("ASDF\n");
+            }
+        }
 
         if (castle_possible) [[unlikely]] {
             bool can_kingside_castle;
             bool can_queenside_castle;
             Square king_castle_square, queen_castle_square;
 
-            if (friendly_color == Color::White) {
+            if constexpr (friendly_color == Color::White) {
                 can_kingside_castle =
-                    (game.castling_rights & WHITE_KINGSIDE) &&
+                    (game.castling_rights & CASTLE_RIGHTS_WHITE_KINGSIDE) &&
                     bitboard_is_empty(occupied_squares & WHITE_KINGSIDE_CASTLE_PATH) &&
                     bitboard_is_empty(king_danger_squares & WHITE_KINGSIDE_CASTLE_PATH);
 
                 can_queenside_castle =
-                    (game.castling_rights & WHITE_QUEENSIDE) &&
+                    (game.castling_rights & CASTLE_RIGHTS_WHITE_QUEENSIDE) &&
                     bitboard_is_empty(occupied_squares & WHITE_QUEENSIDE_CASTLE_PATH) &&
                     bitboard_is_empty(king_danger_squares & WHITE_QUEENSIDE_CASTLE_SAFETY_REQ);
 
@@ -405,12 +418,12 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
             }
             else {
                 can_kingside_castle =
-                    (game.castling_rights & BLACK_KINGSIDE) &&
+                    (game.castling_rights & CASTLE_RIGHTS_BLACK_KINGSIDE) &&
                     bitboard_is_empty(occupied_squares & BLACK_KINGSIDE_CASTLE_PATH) &&
                     bitboard_is_empty(king_danger_squares & BLACK_KINGSIDE_CASTLE_PATH);
 
                 can_queenside_castle =
-                    (game.castling_rights & BLACK_QUEENSIDE) &&
+                    (game.castling_rights & CASTLE_RIGHTS_BLACK_QUEENSIDE) &&
                     bitboard_is_empty(occupied_squares & BLACK_QUEENSIDE_CASTLE_PATH) &&
                     bitboard_is_empty(king_danger_squares & BLACK_QUEENSIDE_CASTLE_SAFETY_REQ);
 

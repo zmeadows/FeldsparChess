@@ -23,7 +23,7 @@ TEST(Game, Initialization)
     EXPECT_EQ(g.to_move, Color::White);
     EXPECT_EQ(g.fullmoves, 0);
     EXPECT_EQ(g.halfmove_clock, 0);
-    EXPECT_EQ(g.castling_rights, NO_CASTLING_RIGHTS);
+    EXPECT_EQ(g.castling_rights, 0);
 }
 
 TEST(Game, ComparisonOperator)
@@ -203,7 +203,7 @@ TEST(Game, GameFromFEN)
                                                               "00000000"));
 
         EXPECT_FALSE(g.ep_square.has_value());
-        EXPECT_EQ(g.castling_rights, FULL_CASTLING_RIGHTS);
+        EXPECT_EQ(g.castling_rights, CASTLE_RIGHTS_WHITE_BOTH | CASTLE_RIGHTS_BLACK_BOTH);
         EXPECT_EQ(g.fullmoves, 1);
         EXPECT_EQ(g.halfmove_clock, 0);
     }
