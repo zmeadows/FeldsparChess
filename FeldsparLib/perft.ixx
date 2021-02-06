@@ -54,12 +54,18 @@ void perft_internal(Game& game, const U64 max_depth, U64 depth, std::vector<Perf
     }
 }
 
-std::vector<PerftStats> perft(const Game& game, U64 depth)
+export std::vector<PerftStats> perft(const Game& game, U64 depth)
 {
     std::vector<PerftStats> stats(depth);
     Game game_copy = game;
     perft_internal(game_copy, depth, depth, stats);
     return stats;
+}
+
+export std::vector<PerftStats> perft(const std::string& fen, U64 depth)
+{
+    const Game game = *game_from_fen(fen);
+    return perft(game, depth);
 }
 
 export void perft_(const Game& game, U64 depth)
@@ -94,7 +100,6 @@ export std::map<std::string, int> perft_divide(const std::string& fen, U64 depth
 
 export std::map<std::string, int> qperft_divide(const char* fen, U64 depth)
 {
-    // TODO: use SOLUTION_DIR macro
     std::string qperft_cmd(SOLUTION_DIR);
     qperft_cmd += "Resources\\qperft.exe";
     qperft_cmd += " ";

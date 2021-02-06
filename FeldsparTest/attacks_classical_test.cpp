@@ -371,6 +371,7 @@ TEST(ClassicalAttacks, QueenAttackRays)
 
 TEST(ClassicalAttacks, RayBetweenSquares)
 {
+    // TODO: make these rays compile time generated
     init_rays_between_squares();
 
     {
