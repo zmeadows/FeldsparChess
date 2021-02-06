@@ -33,9 +33,6 @@
     <ClCompile Include="prelude.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="logger.h">
-      <Filter>Source Files\unstd</Filter>
-    </ClCompile>
     <ClCompile Include="move.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -83,6 +80,9 @@
     </ClCompile>
     <ClCompile Include="unstd\string_util.ixx">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unstd\logger.h">
+      <Filter>Source Files\unstd</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -92,6 +92,7 @@ export __forceinline constexpr PieceType moved_piece_type(Move move)
 // NOTE: this will be equal to PieceType::Pawn if the move is not a capture. How bad is that...?
 export __forceinline constexpr PieceType captured_piece_type(Move move)
 {
+    assert(move_is_capture(move) && "Called captured_piece_type on non-capture move.");
     return static_cast<PieceType>((move >> 19) & 0x7);
 }
 
@@ -132,13 +133,6 @@ void make_move_internal(Game& game, Move move)
     get_pieces_mut(game.board, moved_ptype, MOVING_COLOR) ^= from_to_bit;
     get_occupied_mut(game.board, MOVING_COLOR) ^= from_to_bit;
 
-    // En Passant square will always change or disappear each move, if it exists
-    if constexpr (UPDATE_HASH) {
-        if (game.ep_square.has_value()) {
-            hash_update_ep_square(game.hash, *game.ep_square);
-        }
-    }
-
     if (is_capture) [[unlikely]] {
         Bitboard captured_bit;
         Square captured_sq;
@@ -169,18 +163,18 @@ void make_move_internal(Game& game, Move move)
         // remove castling rights if rook captured
         if (captured_ptype == Rook) [[unlikely]] {
             if constexpr (MOVING_COLOR == Color::White) {
-                if ((to_sq == 56) && (game.castling_rights & BLACK_KINGSIDE)) [[unlikely]] {
+                if (to_sq == 56) [[unlikely]] {
                     remove_castling_rights(REMOVE_BLACK_KINGSIDE);
                 }
-                else if ((to_sq == 63) && (game.castling_rights & BLACK_QUEENSIDE)) [[unlikely]] {
+                else if (to_sq == 63) [[unlikely]] {
                     remove_castling_rights(REMOVE_BLACK_QUEENSIDE);
                 }
             }
             else { // MOVING_COLOR == Color::Black
-                if ((to_sq == 0) && (game.castling_rights & WHITE_KINGSIDE)) [[unlikely]] {
+                if (to_sq == 0) [[unlikely]] {
                     remove_castling_rights(REMOVE_WHITE_KINGSIDE);
                 }
-                else if ((to_sq == 7) && (game.castling_rights & WHITE_QUEENSIDE)) [[unlikely]] {
+                else if (to_sq == 7) [[unlikely]] {
                     remove_castling_rights(REMOVE_WHITE_QUEENSIDE);
                 }
             }
@@ -190,6 +184,12 @@ void make_move_internal(Game& game, Move move)
     switch (moved_ptype) {
         case Pawn: {
             if (flag == DOUBLE_PAWN_PUSH_FLAG) {
+                if constexpr (UPDATE_HASH) {
+                    if (game.ep_square.has_value()) {
+                        hash_update_ep_square(game.hash, *game.ep_square);
+                    }
+                }
+
                 if constexpr (MOVING_COLOR == Color::White) {
                     game.ep_square = to_sq - 8;
                 }
@@ -203,12 +203,16 @@ void make_move_internal(Game& game, Move move)
             }
             else if (move_is_pawn_promotion(move)) [[unlikely]] {
                 if (flag == KNIGHT_PROMO_FLAG || flag == KNIGHT_PROMO_CAPTURE_FLAG) {
+                    // TODO!
                 }
                 else if (flag == BISHOP_PROMO_FLAG || flag == BISHOP_PROMO_CAPTURE_FLAG) {
+                    // TODO!
                 }
                 else if (flag == ROOK_PROMO_FLAG || flag == ROOK_PROMO_CAPTURE_FLAG) {
+                    // TODO!
                 }
                 else if (flag == QUEEN_PROMO_FLAG || flag == QUEEN_PROMO_CAPTURE_FLAG) {
+                    // TODO!
                 }
             }
             break;
@@ -256,6 +260,13 @@ void make_move_internal(Game& game, Move move)
         }
     }
 
+    if (game.ep_square.has_value() && flag != DOUBLE_PAWN_PUSH_FLAG) {
+        if constexpr (UPDATE_HASH) {
+            hash_update_ep_square(game.hash, *game.ep_square);
+        }
+        game.ep_square = {};
+    }
+
     if (is_capture || moved_ptype == Pawn) {
         game.halfmove_clock = 0;
     }
@@ -289,20 +300,17 @@ export std::string move_to_algebraic(Move m)
     const Square from = move_from_square(m);
     const Square to = move_to_square(m);
 
-    const char* from_alg = square_to_algebraic(from);
-    const char* to_alg = square_to_algebraic(to);
-
-    // TODO: create String::concat method
     std::string alg_str;
-    alg_str.push_back(from_alg[0]);
-    alg_str.push_back(from_alg[1]);
-    alg_str.push_back(to_alg[0]);
-    alg_str.push_back(to_alg[1]);
+    alg_str.reserve(4);
+
+    alg_str += square_to_algebraic(from);
+    alg_str += square_to_algebraic(to);
 
     return alg_str;
 }
 
-export std::optional<Move> move_from_algebraic(const MoveBuffer& moves, const std::string& alg)
+export inline std::optional<Move> move_from_algebraic(const MoveBuffer& moves,
+                                                      const std::string& alg)
 {
     for (const Move m : moves) {
         if (move_to_algebraic(m) == alg) return m;

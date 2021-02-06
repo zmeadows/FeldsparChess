@@ -199,7 +199,7 @@
     <ClCompile Include="unstd\random.ixx" />
     <ClCompile Include="attacks\classical.ixx" />
     <ClCompile Include="attacks\magic.ixx" />
-    <ClCompile Include="logger.h" />
+    <ClCompile Include="unstd\logger.h" />
     <ClCompile Include="move.ixx" />
     <ClCompile Include="movegen.ixx" />
     <ClCompile Include="prelude.ixx" />

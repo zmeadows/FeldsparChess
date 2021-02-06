@@ -15,6 +15,7 @@ import attacks.util;
 
 import<cassert>;
 import<cstdio>;
+import<cstring>;
 
 using enum PieceType;
 
@@ -34,15 +35,13 @@ using enum PieceType;
         }                                                                                          \
     } while (0)
 
-// TODO: add MOVING_COLOR as template parameter similar to make_move
-export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
-[[msvc::forceinline_calls]] void generate_moves(const Game& game, MoveBuffer& moves)
+template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
+[[msvc::forceinline_calls]] void generate_moves_internal(const Game& game, MoveBuffer& moves)
 {
     moves.clear();
 
     const Board& board = game.board;
-    const Color friendly_color = game.to_move;
-    const Color opponent_color = !friendly_color;
+    constexpr Color opponent_color = !friendly_color;
 
     const Bitboard friendly_pieces = get_occupied(board, friendly_color);
     const Bitboard opponent_pieces = get_occupied(board, opponent_color);
@@ -193,36 +192,34 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
     S64 promotion_rank;
 
     { // Unpinned pawns
-        if (game.to_move == Color::White) {
+        if constexpr (friendly_color == Color::White) {
             pawn_move_delta = 8;
+            promotion_rank = 8;
 
             singly_advanced_pawns =
                 empty_squares & bitboard_shifted(friendly_pawns & unpinned, Direction::North);
 
-            doubly_advanced_pawns =
-                bitboard_shifted(singly_advanced_pawns, Direction::North) & FOURTH_RANK;
+            doubly_advanced_pawns = bitboard_shifted(singly_advanced_pawns, Direction::North) &
+                                    FOURTH_RANK & quiet_mask;
 
             singly_advanced_pawns &= quiet_mask;
-            doubly_advanced_pawns &= quiet_mask;
 
-            promotion_rank = 8;
             attacking_pawns_mask = bitboard_shifted(capture_mask, Direction::SouthWest);
             attacking_pawns_mask |= bitboard_shifted(capture_mask, Direction::SouthEast);
             attacking_pawns_mask &= friendly_pawns;
         }
         else {
             pawn_move_delta = -8;
+            promotion_rank = 1;
 
             singly_advanced_pawns =
                 empty_squares & bitboard_shifted(friendly_pawns & unpinned, Direction::South);
 
             doubly_advanced_pawns =
-                bitboard_shifted(singly_advanced_pawns, Direction::South) & FIFTH_RANK;
+                bitboard_shifted(singly_advanced_pawns, Direction::South) & FIFTH_RANK & quiet_mask;
 
             singly_advanced_pawns &= quiet_mask;
-            doubly_advanced_pawns &= quiet_mask;
 
-            promotion_rank = 1;
             attacking_pawns_mask = bitboard_shifted(capture_mask, Direction::NorthWest);
             attacking_pawns_mask |= bitboard_shifted(capture_mask, Direction::NorthEast);
             attacking_pawns_mask &= friendly_pawns;
@@ -247,24 +244,27 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
         });
     }
 
-    // TODO: this is BUGGGGGGGGGGGGGGGGGGGGGED like above !!!!
     { // Non-diagonally pinned pawns
-        if (game.to_move == Color::White) {
+        if constexpr (friendly_color == Color::White) {
+
             singly_advanced_pawns =
-                quiet_mask &
+                empty_squares &
                 bitboard_shifted(friendly_pawns & pinned_only_nondiagonally, Direction::North);
 
-            doubly_advanced_pawns = quiet_mask &
-                                    bitboard_shifted(singly_advanced_pawns, Direction::North) &
-                                    FOURTH_RANK;
+            doubly_advanced_pawns = bitboard_shifted(singly_advanced_pawns, Direction::North) &
+                                    FOURTH_RANK & quiet_mask;
+
+            singly_advanced_pawns &= quiet_mask;
         }
         else {
             singly_advanced_pawns =
-                quiet_mask &
+                empty_squares &
                 bitboard_shifted(friendly_pawns & pinned_only_nondiagonally, Direction::South);
 
             doubly_advanced_pawns =
-                quiet_mask & bitboard_shifted(singly_advanced_pawns, Direction::South) & FIFTH_RANK;
+                bitboard_shifted(singly_advanced_pawns, Direction::South) & FIFTH_RANK & quiet_mask;
+
+            singly_advanced_pawns &= quiet_mask;
         }
 
         serialize(singly_advanced_pawns, [&](Square to) {
@@ -302,10 +302,6 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
     { // fully unpinned pawn attacks
         const Bitboard pawns_that_can_capture = friendly_pawns & unpinned & attacking_pawns_mask;
 
-        // TODO: optimize by applying a mask to pawns_that_can_capture to check
-        // that there even is an opposing piece there.
-        // In many cases this will remove most/all pawns from the serialization step below
-
         serialize(pawns_that_can_capture, [&](Square from) {
             const Bitboard pawn_attack_pattern = get_pawn_attacks(from, friendly_color);
             serialize(pawn_attack_pattern & capture_mask,
@@ -329,22 +325,71 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
     }
 
     if (game.ep_square.has_value()) [[unlikely]] {
-        // TODO
+        const Square to = *game.ep_square;
+        const Bitboard to_bit = square_bitrep(to);
+
+        Bitboard from_bits;
+        if constexpr (friendly_color == Color::White) {
+            from_bits = bitboard_shifted(to_bit, Direction::SouthWest) |
+                        bitboard_shifted(to_bit, Direction::SouthEast);
+        }
+        else {
+            from_bits = bitboard_shifted(to_bit, Direction::NorthWest) |
+                        bitboard_shifted(to_bit, Direction::NorthEast);
+        }
+
+        serialize(from_bits, [&](Square from) {
+            assert(is_valid_square(from));
+
+            const Bitboard from_bit = square_bitrep(from);
+            if (bitboard_is_empty(from_bit & friendly_pawns)) [[likely]] {
+                return;
+            }
+
+            const Bitboard to_bit = square_bitrep(to);
+            const Bitboard from_to_bit = from_bit | to_bit;
+
+            Bitboard captured_bit;
+            if constexpr (friendly_color == Color::White) {
+                captured_bit = square_bitrep(to - 8);
+            }
+            else {
+                captured_bit = square_bitrep(to + 8);
+            }
+            assert(captured_bit & get_pieces(game.board, Pawn, opponent_color));
+
+            // An en-passant capture removes two pieces from the board at once,
+            // so we cannot rely on our previous pin calculations to account for the
+            // rare case in which this move will expose an attack on the player's own king.
+            // So we do a mini make_move here and re-calculate attacks on the king.
+            Board board_copy;
+            memcpy(&board_copy[0], &game.board[0], sizeof(Board));
+
+            get_pieces_mut(board_copy, Pawn, friendly_color) ^= from_to_bit;
+            get_occupied_mut(board_copy, friendly_color) ^= from_to_bit;
+            get_pieces_mut(board_copy, Pawn, opponent_color) ^= captured_bit;
+            get_occupied_mut(board_copy, opponent_color) ^= captured_bit;
+
+            const Bitboard king_attackers = attackers(board_copy, opponent_color, king_square);
+            if (bitboard_is_empty(king_attackers)) {
+                moves.append(create_capture_move(from, to, EP_CAPTURE_FLAG, Pawn, Pawn));
+            }
+        });
     }
 
     // Castle Moves
     if constexpr (!CAPTURES_ONLY) {
         const bool castle_possible =
             check_multiplicity == 0 &&
-            ((game.to_move == Color::White) ? (game.castling_rights & WHITE_CASTLE_MASK)
-                                            : (game.castling_rights & BLACK_CASTLE_MASK));
+            ((friendly_color == Color::White) ? (game.castling_rights & WHITE_CASTLE_MASK)
+                                              : (game.castling_rights & BLACK_CASTLE_MASK));
 
         if (castle_possible) [[unlikely]] {
             bool can_kingside_castle;
             bool can_queenside_castle;
             Square king_castle_square, queen_castle_square;
 
-            if (game.to_move == Color::White) {
+            if (friendly_color == Color::White) {
                 can_kingside_castle =
                     (game.castling_rights & WHITE_KINGSIDE) &&
                     bitboard_is_empty(occupied_squares & WHITE_KINGSIDE_CASTLE_PATH) &&
@@ -383,6 +428,19 @@ export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
                     create_quiet_move(king_square, queen_castle_square, QUEEN_CASTLE_FLAG, King));
             }
         }
+    }
+}
+
+export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
+void generate_moves(const Game& game, MoveBuffer& moves)
+{
+    using enum Color;
+
+    if (game.to_move == White) {
+        generate_moves_internal<White, CAPTURES_ONLY, DEBUG_PRINT>(game, moves);
+    }
+    else {
+        generate_moves_internal<Black, CAPTURES_ONLY, DEBUG_PRINT>(game, moves);
     }
 }
 
