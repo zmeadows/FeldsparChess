@@ -13,4 +13,32 @@ struct EvalParams {
     S64 queen_value = 900;
 };
 
-export float eval(const Game& game) { return 0.0; }
+S64 eval_piece_value(const Board& board, const EvalParams& p)
+{
+    using enum PieceType;
+
+    S64 score = 0;
+
+    score += p.pawn_value * bitboard_popcount(get_pieces(board, Pawn, Color::White));
+    score += p.knight_value * bitboard_popcount(get_pieces(board, Knight, Color::White));
+    score += p.bishop_value * bitboard_popcount(get_pieces(board, Bishop, Color::White));
+    score += p.rook_value * bitboard_popcount(get_pieces(board, Rook, Color::White));
+    score += p.queen_value * bitboard_popcount(get_pieces(board, Queen, Color::White));
+
+    score -= p.pawn_value * bitboard_popcount(get_pieces(board, Pawn, Color::Black));
+    score -= p.knight_value * bitboard_popcount(get_pieces(board, Knight, Color::Black));
+    score -= p.bishop_value * bitboard_popcount(get_pieces(board, Bishop, Color::Black));
+    score -= p.rook_value * bitboard_popcount(get_pieces(board, Rook, Color::Black));
+    score -= p.queen_value * bitboard_popcount(get_pieces(board, Queen, Color::Black));
+
+    return score;
+}
+
+export S64 eval(const Game& game, const EvalParams& p)
+{
+    S64 score = 0;
+
+    score += eval_piece_value(game.board, p);
+
+    return score;
+}

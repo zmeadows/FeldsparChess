@@ -1,6 +1,6 @@
 AccessModifierOffset : -4
 AllowShortIfStatementsOnASingleLine : true
-BreakBeforeBraces : Stroustrup
+BreakBeforeBraces : WebKit
 ColumnLimit : 100
 DerivePointerAlignment : false
 PointerAlignment : Left

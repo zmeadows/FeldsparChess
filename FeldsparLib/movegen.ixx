@@ -10,6 +10,8 @@ import pins;
 import print;
 import quad;
 
+#include "unstd/macros.h"
+
 import attacks.classical;
 import attacks.util;
 
@@ -18,22 +20,6 @@ import<cstdio>;
 import<cstring>;
 
 using enum PieceType;
-
-#define DEBUG_PRINT_BB(x)                                                                          \
-    do {                                                                                           \
-        if constexpr (DEBUG_PRINT) {                                                               \
-            printf("%s:\n", #x);                                                                   \
-            print_bitboard(x);                                                                     \
-        }                                                                                          \
-    } while (0)
-
-#define DEBUG_PRINT_BB2(x, descr)                                                                  \
-    do {                                                                                           \
-        if constexpr (DEBUG_PRINT) {                                                               \
-            printf("%s (%s):\n", #x, descr);                                                       \
-            print_bitboard(x);                                                                     \
-        }                                                                                          \
-    } while (0)
 
 template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
 [[msvc::forceinline_calls]] void generate_moves_internal(const Game& game, MoveBuffer& moves)
@@ -95,15 +81,13 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
     // If the king is in double+ check, the only legal moves are king moves, so return early.
     if (check_multiplicity > 1) [[unlikely]] {
         return;
-    }
-    else if (check_multiplicity == 1) [[unlikely]] {
+    } else if (check_multiplicity == 1) [[unlikely]] {
         capture_mask = king_attackers;
         const Square checker_square = bitboard_bsf(king_attackers);
 
         if (is_slider(opponent_piece_type_at(checker_square))) {
             quiet_mask &= ray_between_squares(king_square, checker_square);
-        }
-        else {
+        } else {
             quiet_mask = BITBOARD_EMPTY;
         }
     }
@@ -208,8 +192,7 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
             attacking_pawns_mask = bitboard_shifted(capture_mask, Direction::SouthWest);
             attacking_pawns_mask |= bitboard_shifted(capture_mask, Direction::SouthEast);
             attacking_pawns_mask &= friendly_pawns;
-        }
-        else {
+        } else {
             pawn_move_delta = -8;
             promotion_rank = 1;
 
@@ -233,8 +216,7 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
                 moves.append(create_quiet_move(from, to, BISHOP_PROMO_FLAG, Pawn));
                 moves.append(create_quiet_move(from, to, ROOK_PROMO_FLAG, Pawn));
                 moves.append(create_quiet_move(from, to, QUEEN_PROMO_FLAG, Pawn));
-            }
-            else [[likely]] {
+            } else [[likely]] {
                 moves.append(create_quiet_move(from, to, QUIET_FLAG, Pawn));
             }
         });
@@ -256,8 +238,7 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
                                     FOURTH_RANK & quiet_mask;
 
             singly_advanced_pawns &= quiet_mask;
-        }
-        else {
+        } else {
             singly_advanced_pawns =
                 empty_squares &
                 bitboard_shifted(friendly_pawns & pinned_only_nondiagonally, Direction::South);
@@ -293,8 +274,7 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
                                              opponent_piece_type_at(to)));
             moves.append(create_capture_move(from, to, QUEEN_PROMO_CAPTURE_FLAG, Pawn,
                                              opponent_piece_type_at(to)));
-        }
-        else [[likely]] {
+        } else [[likely]] {
             moves.append(
                 create_capture_move(from, to, CAPTURE_FLAG, Pawn, opponent_piece_type_at(to)));
         }
@@ -333,8 +313,7 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
         if constexpr (friendly_color == Color::White) {
             from_bits = bitboard_shifted(to_bit, Direction::SouthWest) |
                         bitboard_shifted(to_bit, Direction::SouthEast);
-        }
-        else {
+        } else {
             from_bits = bitboard_shifted(to_bit, Direction::NorthWest) |
                         bitboard_shifted(to_bit, Direction::NorthEast);
         }
@@ -353,8 +332,7 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
             Bitboard captured_bit;
             if constexpr (friendly_color == Color::White) {
                 captured_bit = square_bitrep(to - 8);
-            }
-            else {
+            } else {
                 captured_bit = square_bitrep(to + 8);
             }
             assert(captured_bit & get_pieces(game.board, Pawn, opponent_color));
@@ -415,8 +393,7 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
 
                 king_castle_square = 1;
                 queen_castle_square = 5;
-            }
-            else {
+            } else {
                 can_kingside_castle =
                     (game.castling_rights & CASTLE_RIGHTS_BLACK_KINGSIDE) &&
                     bitboard_is_empty(occupied_squares & BLACK_KINGSIDE_CASTLE_PATH) &&
@@ -451,8 +428,7 @@ void generate_moves(const Game& game, MoveBuffer& moves)
 
     if (game.to_move == White) {
         generate_moves_internal<White, CAPTURES_ONLY, DEBUG_PRINT>(game, moves);
-    }
-    else {
+    } else {
         generate_moves_internal<Black, CAPTURES_ONLY, DEBUG_PRINT>(game, moves);
     }
 }

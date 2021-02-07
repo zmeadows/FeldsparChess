@@ -556,7 +556,7 @@ inline constexpr bool is_positive_direction(Direction dir)
 }
 
 // TODO: East/West seem to be reversed here?
-template <Direction DIR>
+export template <Direction DIR>
 __forceinline constexpr Bitboard get_ray_attacks(Square sq, Bitboard occupied)
 {
     constexpr S64 DIR_IDX = 64 * static_cast<S64>(DIR);
@@ -569,8 +569,7 @@ __forceinline constexpr Bitboard get_ray_attacks(Square sq, Bitboard occupied)
             sq = bitboard_bsf(occupied);
             attacks ^= RAY_TABLE[DIR_IDX + sq];
         }
-    }
-    else {
+    } else {
         if (occupied) [[likely]] {
             sq = bitboard_bsr(occupied);
             attacks ^= RAY_TABLE[DIR_IDX + sq];

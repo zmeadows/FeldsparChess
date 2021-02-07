@@ -14,8 +14,7 @@ constexpr Bitboard BB_helper(const char* input)
 
     if constexpr (I == 0) {
         return (static_cast<Bitboard>(input[0]) - '0') << (N);
-    }
-    else {
+    } else {
         return (static_cast<Bitboard>(input[I]) - '0') << (N - I) | BB_helper<N, I - 1>(input);
     }
 }

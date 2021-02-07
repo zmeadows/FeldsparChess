@@ -16,7 +16,7 @@ import<cstring>;
 import<string>;
 import<vector>;
 import<optional>;
-#include "unstd/logger.h"
+#include "unstd/macros.h"
 
 export struct Game {
     Board board = {BITBOARD_EMPTY};
@@ -60,8 +60,7 @@ Optional<Game> game_from_fen_internal(const std::string& fen)
     constexpr auto decrement_square = [&](Square n) -> void {
         if (current_square >= n) [[likely]] {
             current_square -= n;
-        }
-        else [[unlikely]] {
+        } else [[unlikely]] {
             current_square = 0;
         }
     };
@@ -105,14 +104,11 @@ Optional<Game> game_from_fen_internal(const std::string& fen)
                     break;
                 }
             }
-        }
-        else if (isdigit(ch)) {
+        } else if (isdigit(ch)) {
             decrement_square(static_cast<Square>(ch) - static_cast<Square>('0'));
-        }
-        else if (ch == '/') {
+        } else if (ch == '/') {
             continue;
-        }
-        else [[unlikely]] {
+        } else [[unlikely]] {
             WARN("Invalid character encountered in FEN board representation.");
             return {};
         }
@@ -146,8 +142,7 @@ Optional<Game> game_from_fen_internal(const std::string& fen)
 
     if (fen_castle == "-") {
         game.castling_rights = 0;
-    }
-    else {
+    } else {
         for (const char ch : fen_castle) {
             switch (ch) {
                 case 'K': {
@@ -187,8 +182,7 @@ Optional<Game> game_from_fen_internal(const std::string& fen)
 
         if (MaybeSquare sq = square_from_algebraic(fen_ep); sq.has_value()) {
             game.ep_square = sq;
-        }
-        else {
+        } else {
             WARN("Couldn't convert En Passant target square from algebraic notation.");
             return {};
         }
@@ -196,15 +190,13 @@ Optional<Game> game_from_fen_internal(const std::string& fen)
 
     if (fen_pieces.size() >= 5) [[likely]] {
         game.halfmove_clock = atoi(fen_pieces[4].c_str());
-    }
-    else [[unlikely]] {
+    } else [[unlikely]] {
         game.halfmove_clock = 0;
     }
 
     if (fen_pieces.size() >= 6) [[likely]] {
         game.fullmoves = atoi(fen_pieces[5].c_str());
-    }
-    else [[unlikely]] {
+    } else [[unlikely]] {
         game.fullmoves = 1;
     }
 
@@ -218,12 +210,10 @@ export Optional<Game> game_from_fen(const std::string& fen)
     if (fen.length() == 0) [[unlikely]] {
         WARN("Passed empty FEN string to Game::create.");
         return {};
-    }
-    else if (fen.length() > 92) [[unlikely]] {
+    } else if (fen.length() > 92) [[unlikely]] {
         WARN("Passed invalid FEN string that was too long to Game::create.");
         return {};
-    }
-    else [[likely]] {
+    } else [[likely]] {
         return game_from_fen_internal(fen);
     }
 }
@@ -285,8 +275,7 @@ export std::string game_to_fen(const Game& game)
             }
 
             fen.push_back(letter);
-        }
-        else {
+        } else {
             empty_tally++;
         }
     }
@@ -297,15 +286,13 @@ export std::string game_to_fen(const Game& game)
 
     if (game.to_move == Color::White) {
         fen += " w ";
-    }
-    else {
+    } else {
         fen += " b ";
     }
 
     if (game.castling_rights == 0) {
         fen += "- ";
-    }
-    else {
+    } else {
         if (game.castling_rights & CASTLE_RIGHTS_WHITE_KINGSIDE) fen.push_back('K');
         if (game.castling_rights & CASTLE_RIGHTS_WHITE_QUEENSIDE) fen.push_back('Q');
         if (game.castling_rights & CASTLE_RIGHTS_BLACK_KINGSIDE) fen.push_back('k');
@@ -315,8 +302,7 @@ export std::string game_to_fen(const Game& game)
 
     if (game.ep_square.has_value()) {
         fen += square_to_algebraic(*(game.ep_square));
-    }
-    else {
+    } else {
         fen.push_back('-');
     }
 
@@ -330,6 +316,3 @@ export std::string game_to_fen(const Game& game)
 
 // tactical positions
 // 3q1r1k/2r2ppp/2p1b3/1p2P2R/p1pP2Nb/P3Q2P/1P2B1P1/5RK1 w - - 5 27 (N -> F6)
-
-// export inline const Game START_POSITION_GAME =
-//     *build_game_from_fen_string("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");

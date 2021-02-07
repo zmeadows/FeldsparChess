@@ -54,9 +54,6 @@
     <ClCompile Include="print.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="util.ixx">
-      <Filter>Source Files\attacks</Filter>
-    </ClCompile>
     <ClCompile Include="unstd\core.ixx">
       <Filter>Source Files\unstd</Filter>
     </ClCompile>
@@ -81,11 +78,14 @@
     <ClCompile Include="unstd\string_util.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="unstd\logger.h">
-      <Filter>Source Files\unstd</Filter>
-    </ClCompile>
     <ClCompile Include="eval.ixx">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="attacks\util.ixx">
+      <Filter>Source Files\attacks</Filter>
+    </ClCompile>
+    <ClCompile Include="unstd\macros.h">
+      <Filter>Source Files\unstd</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
