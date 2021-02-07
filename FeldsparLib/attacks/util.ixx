@@ -7,6 +7,7 @@ import quad;
 
 import attacks.classical;
 
+// TODO: performance benefit from separate bool is_attacked function that returns early?
 export constexpr Bitboard attackers(const Board& board, Color color, Square sq)
 {
     using enum PieceType;

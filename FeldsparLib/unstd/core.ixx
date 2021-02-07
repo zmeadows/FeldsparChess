@@ -57,65 +57,6 @@ struct EnumRange {
     constexpr __forceinline Iterator end() const { return Iterator(static_cast<int>(T::LAST) + 1); }
 };
 
-// TODO: replace with std::optional
-export template <typename T>
-class alignas(alignof(T)) [[nodiscard]] Optional {
-    U8 m_data[sizeof(T)];
-    bool m_filled;
-
-    __forceinline T* cast_data(void) { return reinterpret_cast<T*>(&m_data); }
-    __forceinline const T* cast_data(void) const { return reinterpret_cast<const T*>(&m_data); }
-
-public:
-    [[nodiscard]] __forceinline bool has_value() const { return m_filled; }
-
-    __forceinline void clear() { m_filled = false; }
-
-    [[nodiscard]] __forceinline T& operator*()
-    {
-        assert(m_filled);
-        return *cast_data();
-    }
-
-    [[nodiscard]] __forceinline const T& operator*() const
-    {
-        assert(m_filled);
-        const T* data = cast_data();
-        return *data;
-    }
-
-    // TODO: add move assignment/constructor that use std::move or memcpy
-
-    __forceinline constexpr Optional(void) : m_filled(false) {}
-    __forceinline constexpr Optional(const T& value) { new (cast_data()) T(value); }
-
-    __forceinline constexpr Optional(const Optional<T>& other)
-    {
-        if (m_filled = other.m_filled) {
-            new (cast_data()) T(*other);
-        }
-    }
-
-    __forceinline Optional& operator=(const Optional& other)
-    {
-        if (m_filled = other.m_filled) {
-            memcpy(&m_data, &other.m_data, sizeof(T));
-        }
-        return *this;
-    }
-
-    __forceinline bool operator==(const Optional<T>& other) const
-    {
-        if (this->m_filled != other.m_filled) {
-            return false;
-        }
-
-        if (!this->m_filled) return true;
-
-        return this->m_data == other.m_data;
-    }
-};
-
 // Same behavior as Optional<T>, but for small types where one can easily define a
 // 'sentinel' value to represent an empty state. This allows for the same size/alignment
 // for both T and Maybe<T> and thus efficient processing in arrays.

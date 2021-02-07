@@ -71,14 +71,13 @@ TEST(Game, ComparisonOperator)
 TEST(Game, GameFromFEN)
 {
     { // starting position
-        const Optional<Game> og =
-            game_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+        const auto og = game_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
         ASSERT_TRUE(og.has_value());
 
         const Game g = *og;
 
-        const Optional<Game> og_nomoves =
+        const auto og_nomoves =
             game_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -");
 
         ASSERT_TRUE(og_nomoves.has_value());
@@ -87,7 +86,7 @@ TEST(Game, GameFromFEN)
 
         EXPECT_EQ(g_nomoves, g);
 
-        const Optional<Game> og_only_halfmoves =
+        const auto og_only_halfmoves =
             game_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0");
 
         EXPECT_FALSE(og_only_halfmoves.has_value());

@@ -89,13 +89,14 @@ export __forceinline constexpr PieceType moved_piece_type(Move move)
     return static_cast<PieceType>((move >> 16) & 0x7);
 }
 
-// NOTE: this will be equal to PieceType::Pawn if the move is not a capture. How bad is that...?
+// TODO: this will be equal to PieceType::Pawn if the move is not a capture. How bad is that...?
 export __forceinline constexpr PieceType captured_piece_type(Move move)
 {
     // assert(move_is_capture(move) && "Called captured_piece_type on non-capture move.");
     return static_cast<PieceType>((move >> 19) & 0x7);
 }
 
+// TODO: convert bool template parameters to named enums to avoid mixups
 template <Color MOVING_COLOR, bool UPDATE_HASH>
 void make_move_internal(Game& game, Move move)
 {
@@ -135,15 +136,13 @@ void make_move_internal(Game& game, Move move)
         if (flag != EP_CAPTURE_FLAG) [[likely]] {
             captured_bit = to_bit;
             captured_sq = to_sq;
-        }
-        else {
+        } else {
             assert(game.ep_square.has_value() &&
                    "En Passant capture move attempted when Game has no ep_square.");
 
             if constexpr (MOVING_COLOR == Color::White) {
                 captured_sq = (*game.ep_square) - 8;
-            }
-            else { // MOVING_COLOR == Color::Black
+            } else { // MOVING_COLOR == Color::Black
                 captured_sq = (*game.ep_square) + 8;
             }
             captured_bit = square_bitrep(captured_sq);
@@ -160,16 +159,13 @@ void make_move_internal(Game& game, Move move)
             if constexpr (MOVING_COLOR == Color::White) {
                 if (to_sq == 56) [[unlikely]] {
                     cancel_castling_rights(CASTLE_RIGHTS_BLACK_KINGSIDE);
-                }
-                else if (to_sq == 63) [[unlikely]] {
+                } else if (to_sq == 63) [[unlikely]] {
                     cancel_castling_rights(CASTLE_RIGHTS_BLACK_QUEENSIDE);
                 }
-            }
-            else { // MOVING_COLOR == Color::Black
+            } else { // MOVING_COLOR == Color::Black
                 if (to_sq == 0) [[unlikely]] {
                     cancel_castling_rights(CASTLE_RIGHTS_WHITE_KINGSIDE);
-                }
-                else if (to_sq == 7) [[unlikely]] {
+                } else if (to_sq == 7) [[unlikely]] {
                     cancel_castling_rights(CASTLE_RIGHTS_WHITE_QUEENSIDE);
                 }
             }
@@ -188,16 +184,14 @@ void make_move_internal(Game& game, Move move)
 
                 if constexpr (MOVING_COLOR == Color::White) {
                     game.ep_square = to_sq - 8;
-                }
-                else { // MOVING_COLOR == Color::Black
+                } else { // MOVING_COLOR == Color::Black
                     game.ep_square = to_sq + 8;
                 }
 
                 if constexpr (UPDATE_HASH) {
                     hash_update_ep_square(game.hash, *game.ep_square);
                 }
-            }
-            else if (move_is_pawn_promotion(move)) [[unlikely]] {
+            } else if (move_is_pawn_promotion(move)) [[unlikely]] {
                 get_pieces_mut(game.board, Pawn, MOVING_COLOR) ^= to_bit;
                 if constexpr (UPDATE_HASH) {
                     hash_update_piece_square(game.hash, MOVING_COLOR, Pawn, to_sq);
@@ -208,20 +202,17 @@ void make_move_internal(Game& game, Move move)
                     if constexpr (UPDATE_HASH) {
                         hash_update_piece_square(game.hash, MOVING_COLOR, Knight, to_sq);
                     }
-                }
-                else if (flag == BISHOP_PROMO_FLAG || flag == BISHOP_PROMO_CAPTURE_FLAG) {
+                } else if (flag == BISHOP_PROMO_FLAG || flag == BISHOP_PROMO_CAPTURE_FLAG) {
                     get_pieces_mut(game.board, Bishop, MOVING_COLOR) |= to_bit;
                     if constexpr (UPDATE_HASH) {
                         hash_update_piece_square(game.hash, MOVING_COLOR, Bishop, to_sq);
                     }
-                }
-                else if (flag == ROOK_PROMO_FLAG || flag == ROOK_PROMO_CAPTURE_FLAG) {
+                } else if (flag == ROOK_PROMO_FLAG || flag == ROOK_PROMO_CAPTURE_FLAG) {
                     get_pieces_mut(game.board, Rook, MOVING_COLOR) |= to_bit;
                     if constexpr (UPDATE_HASH) {
                         hash_update_piece_square(game.hash, MOVING_COLOR, Rook, to_sq);
                     }
-                }
-                else if (flag == QUEEN_PROMO_FLAG || flag == QUEEN_PROMO_CAPTURE_FLAG) {
+                } else if (flag == QUEEN_PROMO_FLAG || flag == QUEEN_PROMO_CAPTURE_FLAG) {
                     get_pieces_mut(game.board, Queen, MOVING_COLOR) |= to_bit;
                     if constexpr (UPDATE_HASH) {
                         hash_update_piece_square(game.hash, MOVING_COLOR, Queen, to_sq);
@@ -234,16 +225,13 @@ void make_move_internal(Game& game, Move move)
             if constexpr (MOVING_COLOR == Color::White) {
                 if (from_sq == h1) [[unlikely]] {
                     cancel_castling_rights(CASTLE_RIGHTS_WHITE_KINGSIDE);
-                }
-                else if (from_sq == a1) [[unlikely]] {
+                } else if (from_sq == a1) [[unlikely]] {
                     cancel_castling_rights(CASTLE_RIGHTS_WHITE_QUEENSIDE);
                 }
-            }
-            else { // MOVING_COLOR == Color::Black
+            } else { // MOVING_COLOR == Color::Black
                 if (from_sq == h8) [[unlikely]] {
                     cancel_castling_rights(CASTLE_RIGHTS_BLACK_KINGSIDE);
-                }
-                else if (from_sq == a8) [[unlikely]] {
+                } else if (from_sq == a8) [[unlikely]] {
                     cancel_castling_rights(CASTLE_RIGHTS_BLACK_QUEENSIDE);
                 }
             }
@@ -255,8 +243,7 @@ void make_move_internal(Game& game, Move move)
             if constexpr (MOVING_COLOR == Color::White) {
                 cancel_castling_rights(CASTLE_RIGHTS_WHITE_KINGSIDE);
                 cancel_castling_rights(CASTLE_RIGHTS_WHITE_QUEENSIDE);
-            }
-            else {
+            } else {
                 cancel_castling_rights(CASTLE_RIGHTS_BLACK_KINGSIDE);
                 cancel_castling_rights(CASTLE_RIGHTS_BLACK_QUEENSIDE);
             }
@@ -270,20 +257,17 @@ void make_move_internal(Game& game, Move move)
                         assert(from_sq == e1);
                         rook_from_sq = h1;
                         rook_to_sq = f1;
-                    }
-                    else if (flag == QUEEN_CASTLE_FLAG) [[unlikely]] {
+                    } else if (flag == QUEEN_CASTLE_FLAG) [[unlikely]] {
                         assert(from_sq == e1);
                         rook_from_sq = a1;
                         rook_to_sq = d1;
                     }
-                }
-                else { // MOVING_COLOR == Color::Black
+                } else { // MOVING_COLOR == Color::Black
                     if (flag == KING_CASTLE_FLAG) [[unlikely]] {
                         assert(from_sq == e8);
                         rook_from_sq = h8;
                         rook_to_sq = f8;
-                    }
-                    else if (flag == QUEEN_CASTLE_FLAG) [[unlikely]] {
+                    } else if (flag == QUEEN_CASTLE_FLAG) [[unlikely]] {
                         assert(from_sq == e8);
                         rook_from_sq = a8;
                         rook_to_sq = d8;
@@ -317,8 +301,7 @@ void make_move_internal(Game& game, Move move)
 
     if (is_capture || moved_ptype == Pawn) {
         game.halfmove_clock = 0;
-    }
-    else {
+    } else {
         game.halfmove_clock++;
     }
 
@@ -337,8 +320,7 @@ __forceinline void make_move(Game& game, Move move)
 {
     if (game.to_move == Color::White) {
         make_move_internal<Color::White, UPDATE_HASH>(game, move);
-    }
-    else {
+    } else {
         make_move_internal<Color::Black, UPDATE_HASH>(game, move);
     }
 }

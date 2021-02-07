@@ -40,7 +40,7 @@ export GameHash create_game_hash(const Game& game)
     return hash;
 }
 
-Optional<Game> game_from_fen_internal(const std::string& fen)
+std::optional<Game> game_from_fen_internal(const std::string& fen)
 {
     if (fen.length() == 0) [[unlikely]] {
         return {};
@@ -205,7 +205,7 @@ Optional<Game> game_from_fen_internal(const std::string& fen)
     return game;
 }
 
-export Optional<Game> game_from_fen(const std::string& fen)
+export std::optional<Game> game_from_fen(const std::string& fen)
 {
     if (fen.length() == 0) [[unlikely]] {
         WARN("Passed empty FEN string to Game::create.");

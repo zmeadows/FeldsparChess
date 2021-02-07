@@ -641,6 +641,7 @@ export constexpr __forceinline Bitboard xray_bishop_attacks(Bitboard occ, Bitboa
     return attacks ^ get_bishop_attacks(bishop_square, occ ^ blockers);
 }
 
+// convert to constexpr array
 Bitboard RAYS_BETWEEN_SQUARES[64 * 64];
 
 // TODO: convert to smaller hash table?

@@ -149,7 +149,7 @@ export __forceinline Square bitboard_bsr(Bitboard bb)
     return static_cast<Square>(idx);
 }
 
-export __forceinline U64 bitboard_popcount(Bitboard bb) { return __popcnt64(bb); }
+export __forceinline S64 bitboard_popcount(Bitboard bb) { return static_cast<S64>(__popcnt64(bb)); }
 
 export template <typename Callable>
 __forceinline void serialize(Bitboard bb, Callable&& f)

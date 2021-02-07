@@ -7,7 +7,6 @@ import attacks.classical;
 
 import<cassert>;
 
-// TODO: perhaps replace these with small stack-based hash tables?
 export struct Pins {
     Bitboard diagonal = BITBOARD_EMPTY;
     Bitboard nondiagonal = BITBOARD_EMPTY;
