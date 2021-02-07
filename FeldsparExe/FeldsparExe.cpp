@@ -19,7 +19,7 @@ int main()
     feldspar_init();
 
     const Game game = *game_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    const auto results = perft(game, 4);
+    const auto results = perft(game, 6);
 
     return 0;
 }

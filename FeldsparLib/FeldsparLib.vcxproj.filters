@@ -84,5 +84,8 @@
     <ClCompile Include="unstd\logger.h">
       <Filter>Source Files\unstd</Filter>
     </ClCompile>
+    <ClCompile Include="eval.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

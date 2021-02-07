@@ -165,7 +165,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableModules>true</EnableModules>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <StringPooling>true</StringPooling>
@@ -176,6 +176,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <ExceptionHandling>false</ExceptionHandling>
+      <AdditionalOptions>/Ob3 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -188,6 +189,7 @@
   <ItemGroup>
     <ClCompile Include="bitboard.ixx" />
     <ClCompile Include="board.ixx" />
+    <ClCompile Include="eval.ixx" />
     <ClCompile Include="init.ixx" />
     <ClCompile Include="unstd\core.ixx" />
     <ClCompile Include="unstd\io.ixx" />
