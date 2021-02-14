@@ -5,44 +5,30 @@ import bitboard;
 import board;
 import quad;
 
-#include "../unstd/macros.h"
-
 import<cstdio>;
 
 import attacks.classical;
 
 // qsliders = {rq,rq,bq,bq}
 // TODO: replace -1 with BITBOARD_FULL
-template <bool DEBUG_PRINT = false>
 QuadBitboard quadfill_sliders1(QuadBitboard qsliders, Bitboard empty)
 {
     const QuadBitboard qmask = pack(NOT_H_FILE, BITBOARD_FULL, NOT_A_FILE, NOT_H_FILE);
     const QuadBitboard qshift = pack(1, 8, 7, 9);
     QuadBitboard qflood = qsliders;
     QuadBitboard qempty = pack(empty) & qmask;
-    if (DEBUG_PRINT) DEBUG_PRINT_QBB2(qflood, "qflood start");
     qflood |= qsliders = (qsliders << qshift) & qempty;
-    if (DEBUG_PRINT) DEBUG_PRINT_QBB2(qflood, "qflood 1");
     qflood |= qsliders = (qsliders << qshift) & qempty;
-    if (DEBUG_PRINT) DEBUG_PRINT_QBB2(qflood, "qflood 2");
     qflood |= qsliders = (qsliders << qshift) & qempty;
-    if (DEBUG_PRINT) DEBUG_PRINT_QBB2(qflood, "qflood 3");
     qflood |= qsliders = (qsliders << qshift) & qempty;
-    if (DEBUG_PRINT) DEBUG_PRINT_QBB2(qflood, "qflood 4");
     qflood |= qsliders = (qsliders << qshift) & qempty;
-    if (DEBUG_PRINT) DEBUG_PRINT_QBB2(qflood, "qflood 5");
     qflood |= (qsliders << qshift) & qempty;
-    if (DEBUG_PRINT) DEBUG_PRINT_QBB2(qflood, "qflood 6");
     return (qflood << qshift) & qmask;
 }
 
 // qsliders = {rq,rq,bq,bq}
-template <bool DEBUG_PRINT = false>
 QuadBitboard quadfill_sliders2(QuadBitboard qsliders, Bitboard empty)
 {
-    if (DEBUG_PRINT) {
-        printf("west_sout_soEa_soWe_Attacks:\n");
-    }
     const QuadBitboard qmask = pack(NOT_A_FILE, -1, NOT_H_FILE, NOT_A_FILE);
     const QuadBitboard qshift = pack(1, 8, 7, 9);
     QuadBitboard qflood = qsliders;
@@ -56,7 +42,7 @@ QuadBitboard quadfill_sliders2(QuadBitboard qsliders, Bitboard empty)
     return (qflood >> qshift) & qmask;
 }
 
-export template <bool REMOVE_KING, bool USE_QUAD_FILL = false, bool DEBUG_PRINT = false>
+export template <bool REMOVE_KING, bool USE_QUAD_FILL = true>
 Bitboard attacked(const Board& board, Color attacking_color)
 {
     using enum PieceType;
@@ -97,8 +83,8 @@ Bitboard attacked(const Board& board, Color attacking_color)
         const Bitboard bq = q | get_pieces(board, Bishop, attacking_color);
         const QuadBitboard sliders = pack(rq, rq, bq, bq);
 
-        QuadBitboard sliding_attacks = quadfill_sliders1<DEBUG_PRINT>(sliders, empty);
-        sliding_attacks |= quadfill_sliders2<DEBUG_PRINT>(sliders, empty);
+        QuadBitboard sliding_attacks = quadfill_sliders1(sliders, empty);
+        sliding_attacks |= quadfill_sliders2(sliders, empty);
         attacked |= reduceOR(sliding_attacks);
     } else {
         serialize(get_pieces(board, Bishop, attacking_color),
