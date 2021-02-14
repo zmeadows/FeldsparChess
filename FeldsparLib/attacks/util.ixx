@@ -5,6 +5,10 @@ import bitboard;
 import board;
 import quad;
 
+// #include "unstd/macros.h"
+
+import<cstdio>;
+
 import attacks.classical;
 
 // TODO: performance benefit from separate bool is_attacked function that returns early?
@@ -46,8 +50,15 @@ Bitboard attacked(const Board& board, Color attacking_color)
     const Bitboard attacking_pieces = get_occupied(board, attacking_color);
     const Bitboard all_pieces = defending_pieces | attacking_pieces;
 
-    serialize(get_pieces(board, Pawn, attacking_color),
-              [&](Square sq) { attacked |= get_pawn_attacks(sq, attacking_color); });
+    const Bitboard attacking_pawns = get_pieces(board, Pawn, attacking_color);
+
+    if (attacking_color == Color::White) {
+        attacked |= bitboard_shifted(attacking_pawns, Direction::NorthWest);
+        attacked |= bitboard_shifted(attacking_pawns, Direction::NorthEast);
+    } else {
+        attacked |= bitboard_shifted(attacking_pawns, Direction::SouthWest);
+        attacked |= bitboard_shifted(attacking_pawns, Direction::SouthEast);
+    }
 
     serialize(get_pieces(board, Knight, attacking_color),
               [&](Square sq) { attacked |= get_knight_moves(sq); });
@@ -69,7 +80,8 @@ Bitboard attacked(const Board& board, Color attacking_color)
 
 // qsliders = {rq,rq,bq,bq}
 // TODO: replace -1 with BITBOARD_FULL
-export QuadBitboard east_nort_noWe_noEa_Attacks(QuadBitboard qsliders, Bitboard empty)
+template <bool DEBUG_PRINT = false>
+QuadBitboard east_nort_noWe_noEa_Attacks(QuadBitboard qsliders, Bitboard empty)
 {
     const QuadBitboard qmask = pack(NOT_A_FILE, -1, NOT_H_FILE, NOT_A_FILE);
     const QuadBitboard qshift = pack(1, 8, 7, 9);
@@ -85,8 +97,12 @@ export QuadBitboard east_nort_noWe_noEa_Attacks(QuadBitboard qsliders, Bitboard 
 }
 
 // qsliders = {rq,rq,bq,bq}
-export QuadBitboard west_sout_soEa_soWe_Attacks(QuadBitboard qsliders, Bitboard empty)
+template <bool DEBUG_PRINT = false>
+QuadBitboard west_sout_soEa_soWe_Attacks(QuadBitboard qsliders, Bitboard empty)
 {
+    if (DEBUG_PRINT) {
+        printf("west_sout_soEa_soWe_Attacks:\n");
+    }
     const QuadBitboard qmask = pack(NOT_H_FILE, -1, NOT_A_FILE, NOT_H_FILE);
     const QuadBitboard qshift = pack(1, 8, 7, 9);
     QuadBitboard qflood = qsliders;
@@ -100,7 +116,7 @@ export QuadBitboard west_sout_soEa_soWe_Attacks(QuadBitboard qsliders, Bitboard 
     return (qflood >> qshift) & qmask;
 }
 
-export template <bool REMOVE_KING>
+export template <bool REMOVE_KING, bool DEBUG_PRINT = false>
 Bitboard quad_attacked(const Board& board, Color attacking_color)
 {
     using enum PieceType;
@@ -115,8 +131,8 @@ Bitboard quad_attacked(const Board& board, Color attacking_color)
     const Bitboard bq = q | get_pieces(board, Bishop, attacking_color);
     const QuadBitboard sliders = pack(rq, rq, bq, bq);
 
-    QuadBitboard attacks = east_nort_noWe_noEa_Attacks(sliders, empty);
-    attacks |= west_sout_soEa_soWe_Attacks(sliders, empty);
+    QuadBitboard attacks = east_nort_noWe_noEa_Attacks<DEBUG_PRINT>(sliders, empty);
+    attacks |= west_sout_soEa_soWe_Attacks<DEBUG_PRINT>(sliders, empty);
 
     return reduceOR(attacks);
 }

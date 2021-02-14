@@ -57,7 +57,7 @@ struct EnumRange {
     constexpr __forceinline Iterator end() const { return Iterator(static_cast<int>(T::LAST) + 1); }
 };
 
-// Same behavior as Optional<T>, but for small types where one can easily define a
+// Same idea as std::optional<T>, but for small types where one can easily define a
 // 'sentinel' value to represent an empty state. This allows for the same size/alignment
 // for both T and Maybe<T> and thus efficient processing in arrays.
 export template <typename T, T SENTINEL>
