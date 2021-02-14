@@ -6,6 +6,8 @@ import game;
 import move;
 import prelude;
 
+// TODO: do away with this module and move print functions to obvious location
+
 import<cstdio>;
 
 export void print_move(Move m)

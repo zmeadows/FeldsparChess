@@ -73,7 +73,7 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
         });
     };
 
-    const Bitboard king_danger_squares = attacked<true>(board, opponent_color);
+    const Bitboard king_danger_squares = attacked<true, true>(board, opponent_color);
     const Bitboard safe_king_moves = get_king_moves(king_square) & ~king_danger_squares;
     DEBUG_PRINT_BB(safe_king_moves);
     build_moves(king_square, safe_king_moves, King);

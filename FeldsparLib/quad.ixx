@@ -5,6 +5,7 @@ import bitboard;
 import board;
 
 import<immintrin.h>;
+import<cstdio>;
 
 export using QuadBitboard = __m256i;
 
@@ -46,4 +47,28 @@ export __forceinline Bitboard reduceOR(QuadBitboard x)
     alignas(alignof(QuadBitboard)) Bitboard bbs[4];
     unpack(x, bbs);
     return bbs[0] | bbs[1] | bbs[2] | bbs[3];
+}
+
+export void print_quad_bitboard(QuadBitboard qbb)
+{
+    alignas(alignof(QuadBitboard)) Bitboard bbs[4];
+    unpack(qbb, bbs);
+
+    bool bits[4][64] = {false};
+
+    for (size_t i = 0; i < 4; i++) {
+        serialize(bbs[i], [&](Square sq) { bits[i][63 - sq] = true; });
+    }
+
+    for (size_t i = 0; i < 8; i++) {
+        for (size_t k = 0; k < 4; k++) {
+            for (size_t j = 0; j < 8; j++) {
+                const size_t idx = 8 * i + j;
+                printf("%c", (bits[k][idx] ? '1' : '0'));
+            }
+            printf("  ");
+        }
+        printf("\n");
+    }
+    printf("\n");
 }
