@@ -87,5 +87,11 @@
     <ClCompile Include="unstd\macros.h">
       <Filter>Source Files\unstd</Filter>
     </ClCompile>
+    <ClCompile Include="uci.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mcts.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -11,16 +11,16 @@ import<cassert>;
 import<optional>;
 
 export class MoveBuffer {
-    Move moves[256];
-    U64 m_count = 0;
+    Move moves[255];
+    U32 m_count = 0;
 
 public:
-    constexpr __forceinline void append(Move m) { moves[m_count++] = m; }
-    constexpr __forceinline U64 length() const { return m_count; }
-    constexpr __forceinline void clear() { m_count = 0; }
+    constexpr void append(Move m) { moves[m_count++] = m; }
+    constexpr U32 length() const { return m_count; }
+    constexpr void clear() { m_count = 0; }
 
-    constexpr __forceinline const Move* const begin() const { return &moves[0]; }
-    constexpr __forceinline const Move* const end() const { return &moves[0] + m_count; }
+    constexpr const Move* const begin() const { return &moves[0]; }
+    constexpr const Move* const end() const { return &moves[0] + m_count; }
 };
 
 export inline constexpr U32 QUIET_FLAG = 0b0000;
@@ -42,8 +42,7 @@ export inline constexpr Move NULL_MOVE = 0x0;
 
 // TODO: check if these const intermediate variables are stored in registers or optimized out
 // TODO: add assert statements to validate these function inputs
-export __forceinline constexpr Move create_quiet_move(Square from, Square to, U32 flag,
-                                                      PieceType moved_ptype)
+export constexpr Move create_quiet_move(Square from, Square to, U32 flag, PieceType moved_ptype)
 {
     const U32 to_bits = static_cast<U32>(to);
     const U32 from_bits = (static_cast<U32>(from) << 6);
@@ -54,9 +53,8 @@ export __forceinline constexpr Move create_quiet_move(Square from, Square to, U3
 }
 
 // TODO: add assert statements to validate these function inputs
-export __forceinline constexpr Move create_capture_move(Square from, Square to, U32 flag,
-                                                        PieceType moved_ptype,
-                                                        PieceType captured_ptype)
+export constexpr Move create_capture_move(Square from, Square to, U32 flag, PieceType moved_ptype,
+                                          PieceType captured_ptype)
 {
     const U32 to_bits = static_cast<U32>(to);
     const U32 from_bits = (static_cast<U32>(from) << 6);
@@ -68,29 +66,23 @@ export __forceinline constexpr Move create_capture_move(Square from, Square to, 
 }
 
 // TODO: add tests for all of these
-export __forceinline constexpr U32 move_flag(Move move) { return (move >> 12) & 0xF; }
+export constexpr U32 move_flag(Move move) { return (move >> 12) & 0xF; }
 
-export __forceinline constexpr bool move_is_capture(Move move)
-{
-    return (move_flag(move) & 0b0100) != 0;
-}
+export constexpr bool move_is_capture(Move move) { return (move_flag(move) & 0b0100) != 0; }
 
-export __forceinline constexpr bool move_is_pawn_promotion(Move move)
-{
-    return (move_flag(move) & 0b1000) != 0;
-}
+export constexpr bool move_is_pawn_promotion(Move move) { return (move_flag(move) & 0b1000) != 0; }
 
-export __forceinline constexpr Square move_from_square(Move move) { return (move >> 6) & 0x3F; }
+export constexpr Square move_from_square(Move move) { return (move >> 6) & 0x3F; }
 
-export __forceinline constexpr Square move_to_square(Move move) { return move & 0x3F; }
+export constexpr Square move_to_square(Move move) { return move & 0x3F; }
 
-export __forceinline constexpr PieceType moved_piece_type(Move move)
+export constexpr PieceType moved_piece_type(Move move)
 {
     return static_cast<PieceType>((move >> 16) & 0x7);
 }
 
 // TODO: this will be equal to PieceType::Pawn if the move is not a capture. How bad is that...?
-export __forceinline constexpr PieceType captured_piece_type(Move move)
+export constexpr PieceType captured_piece_type(Move move)
 {
     // assert(move_is_capture(move) && "Called captured_piece_type on non-capture move.");
     return static_cast<PieceType>((move >> 19) & 0x7);
@@ -111,9 +103,7 @@ void make_move_internal(Game& game, Move move)
     const Bitboard to_bit = square_bitrep(to_sq);
     const Bitboard from_to_bit = from_bit | to_bit;
 
-    const bool is_capture = move_is_capture(move);
     const PieceType moved_ptype = moved_piece_type(move);
-    const PieceType captured_ptype = captured_piece_type(move);
 
     const auto cancel_castling_rights = [&](CastlingRights to_remove) {
         if constexpr (UPDATE_HASH) hash_update_castling_rights(game.hash, game.castling_rights);
@@ -129,7 +119,10 @@ void make_move_internal(Game& game, Move move)
     get_pieces_mut(game.board, moved_ptype, MOVING_COLOR) ^= from_to_bit;
     get_occupied_mut(game.board, MOVING_COLOR) ^= from_to_bit;
 
+    const bool is_capture = flag & 0b0100;
     if (is_capture) [[unlikely]] {
+        const PieceType captured_ptype = captured_piece_type(move);
+
         Bitboard captured_bit;
         Square captured_sq;
 
@@ -316,7 +309,7 @@ void make_move_internal(Game& game, Move move)
 }
 
 export template <bool UPDATE_HASH>
-__forceinline void make_move(Game& game, Move move)
+void make_move(Game& game, Move move)
 {
     if (game.to_move == Color::White) {
         make_move_internal<Color::White, UPDATE_HASH>(game, move);

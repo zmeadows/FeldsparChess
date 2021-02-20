@@ -13,10 +13,10 @@ export struct Pins {
     Bitboard diagonal_constraints[64];
     Bitboard nondiagonal_constraints[64];
 
-    static __forceinline Pins create(const Board& board, const Color friendly_color);
+    static Pins create(const Board& board, const Color friendly_color);
 };
 
-export __forceinline Pins Pins::create(const Board& board, const Color friendly_color)
+export Pins Pins::create(const Board& board, const Color friendly_color)
 {
     using enum PieceType;
 
