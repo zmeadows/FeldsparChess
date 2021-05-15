@@ -45,5 +45,6 @@
         }                                                                                          \
     } while (0)
 
+// Due to an unspecified MSVC error I cannot define these as const Bitboard type. Strange.
 #define BITBOARD_EMPTY 0x0ULL
 #define BITBOARD_FULL 0xFFFFFFFFFFFFFFFFULL
