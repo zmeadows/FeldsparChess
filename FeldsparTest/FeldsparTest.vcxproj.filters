@@ -13,6 +13,7 @@
     <ClCompile Include="attacks_util_test.cpp" />
     <ClCompile Include="prelude_test.cpp" />
     <ClCompile Include="attacks_base_test.cpp" />
+    <ClCompile Include="perft_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

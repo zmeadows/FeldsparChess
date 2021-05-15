@@ -1,6 +1,8 @@
 #define _HAS_EXCEPTIONS 0
 #include "gtest/gtest.h"
 
+#include "unstd/macros.h"
+
 import prelude;
 import bitboard;
 

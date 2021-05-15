@@ -1,5 +1,7 @@
 export module bitboard;
 
+#include "unstd/macros.h"
+
 import prelude;
 
 import<cassert>;
@@ -32,8 +34,8 @@ constexpr Bitboard BB(const char (&input)[N])
 
 export constexpr Bitboard square_bitrep(Square sq) { return static_cast<Bitboard>(1) << sq; }
 
-export inline constexpr const Bitboard BITBOARD_FULL = 0xFFFFFFFFFFFFFFFF;
-export inline constexpr const Bitboard BITBOARD_EMPTY = 0x0;
+// export inline constexpr const Bitboard BITBOARD_FULL = 0xFFFFFFFFFFFFFFFF;
+// export inline constexpr const Bitboard BITBOARD_EMPTY = 0x0;
 
 export inline constexpr const Bitboard H_FILE = BB("00000001"
                                                    "00000001"

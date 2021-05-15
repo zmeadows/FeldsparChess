@@ -4,6 +4,7 @@ import prelude;
 import bitboard;
 import board;
 import quad;
+#include "../unstd/macros.h"
 
 import<cstdio>;
 
@@ -42,6 +43,7 @@ QuadBitboard quadfill_sliders2(QuadBitboard qsliders, Bitboard empty)
     return (qflood >> qshift) & qmask;
 }
 
+// TODO: Add attacking_color as template argument
 export template <bool REMOVE_KING, bool USE_QUAD_FILL = true>
 Bitboard attacked(const Board& board, Color attacking_color)
 {

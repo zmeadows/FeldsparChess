@@ -3,6 +3,7 @@ export module attacks.classical;
 import prelude;
 import bitboard;
 import board;
+#include "../unstd/macros.h"
 
 export import attacks.base;
 

@@ -90,7 +90,7 @@ export constexpr PieceType captured_piece_type(Move move)
 
 // TODO: convert bool template parameters to named enums to avoid mixups
 template <Color MOVING_COLOR, bool UPDATE_HASH>
-void make_move_internal(Game& game, Move move)
+__forceinline void make_move_internal(Game& game, Move move)
 {
     using enum PieceType;
 
@@ -309,7 +309,7 @@ void make_move_internal(Game& game, Move move)
 }
 
 export template <bool UPDATE_HASH>
-void make_move(Game& game, Move move)
+[[msvc::forceinline_calls]] void make_move(Game& game, Move move)
 {
     if (game.to_move == Color::White) {
         make_move_internal<Color::White, UPDATE_HASH>(game, move);

@@ -44,3 +44,6 @@
             print_quad_bitboard(x);                                                                \
         }                                                                                          \
     } while (0)
+
+#define BITBOARD_EMPTY 0x0ULL
+#define BITBOARD_FULL 0xFFFFFFFFFFFFFFFFULL

@@ -12,12 +12,16 @@ void for_each_line_in_process_stdout(const std::string& cmd, Callable&& f)
     char buffer[128] = {'\0'};
 
     std::string result;
-    std::unique_ptr<FILE, decltype(&_pclose)> pipe(_popen(cmd.c_str(), "r"), _pclose);
+    auto pipe = _popen(cmd.c_str(), "r");
     if (!pipe) return;
-    while (fgets(buffer, 128, pipe.get())) {
+    while (fgets(buffer, 128, pipe)) {
         result += buffer;
     }
-    if (result.empty()) return;
+    _pclose(pipe);
+
+    if (result.empty()) {
+        return;
+    }
 
     std::string::size_type pos = 0;
     std::string::size_type prev = 0;

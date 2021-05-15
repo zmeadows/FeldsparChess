@@ -4,6 +4,7 @@ import prelude;
 import bitboard;
 import board;
 import attacks.classical;
+#include "unstd/macros.h"
 
 import<cassert>;
 
