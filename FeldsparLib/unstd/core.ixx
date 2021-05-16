@@ -59,7 +59,8 @@ struct EnumRange {
 
 // Same idea as std::optional<T>, but for small types where one can easily define a
 // 'sentinel' value to represent an empty state. This allows for the same size/alignment
-// for both T and Maybe<T> and thus efficient processing in arrays.
+// for both T and Maybe<T> and thus efficient processing in arrays and less size
+// taken up in structs.
 export template <typename T, T SENTINEL>
 class alignas(alignof(T)) [[nodiscard]] Maybe {
     T m_data;
