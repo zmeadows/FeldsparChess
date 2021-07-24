@@ -2,7 +2,7 @@ export module prelude;
 
 export import unstd.core;
 
-import<cassert>;
+// import<cassert>;
 import<string>;
 
 export using Bitboard = U64;
@@ -16,19 +16,19 @@ export __forceinline constexpr S64 file_of(Square sq) { return 8 - (sq % 8); }
 export __forceinline constexpr Square from_rank_file(S64 rank, S64 file)
 {
     const Square sq = rank * 8 - file;
-    assert(sq >= 0 && sq <= 63);
+    // assert(sq >= 0 && sq <= 63);
     return sq;
 }
 
 export using Move = U32;
 
 export using CastlingRights = U8;
-export constexpr CastlingRights CASTLE_RIGHTS_WHITE_KINGSIDE = 0b0001;
-export constexpr CastlingRights CASTLE_RIGHTS_WHITE_QUEENSIDE = 0b0010;
-export constexpr CastlingRights CASTLE_RIGHTS_WHITE_BOTH = 0b0011;
-export constexpr CastlingRights CASTLE_RIGHTS_BLACK_KINGSIDE = 0b0100;
-export constexpr CastlingRights CASTLE_RIGHTS_BLACK_QUEENSIDE = 0b1000;
-export constexpr CastlingRights CASTLE_RIGHTS_BLACK_BOTH = 0b1100;
+export inline constexpr CastlingRights CASTLE_RIGHTS_WHITE_KINGSIDE = 0b0001;
+export inline constexpr CastlingRights CASTLE_RIGHTS_WHITE_QUEENSIDE = 0b0010;
+export inline constexpr CastlingRights CASTLE_RIGHTS_WHITE_BOTH = 0b0011;
+export inline constexpr CastlingRights CASTLE_RIGHTS_BLACK_KINGSIDE = 0b0100;
+export inline constexpr CastlingRights CASTLE_RIGHTS_BLACK_QUEENSIDE = 0b1000;
+export inline constexpr CastlingRights CASTLE_RIGHTS_BLACK_BOTH = 0b1100;
 
 export __forceinline void remove_castling_rights(CastlingRights& rights, CastlingRights to_remove)
 {
@@ -36,12 +36,12 @@ export __forceinline void remove_castling_rights(CastlingRights& rights, Castlin
 }
 
 // TODO: use bits_set({1,2,...}) function
-export constexpr Bitboard WHITE_KINGSIDE_CASTLE_PATH = 1ULL << 1 | 1ULL << 2;
-export constexpr Bitboard BLACK_KINGSIDE_CASTLE_PATH = 1ULL << 57 | 1ULL << 58;
-export constexpr Bitboard BLACK_QUEENSIDE_CASTLE_PATH = 1ULL << 62 | 1ULL << 61 | 1ULL << 60;
-export constexpr Bitboard WHITE_QUEENSIDE_CASTLE_PATH = 1ULL << 4 | 1ULL << 5 | 1ULL << 6;
-export constexpr Bitboard BLACK_QUEENSIDE_CASTLE_SAFETY_REQ = 1ULL << 61 | 1ULL << 60;
-export constexpr Bitboard WHITE_QUEENSIDE_CASTLE_SAFETY_REQ = 1ULL << 4 | 1ULL << 5;
+export inline constexpr Bitboard WHITE_KINGSIDE_CASTLE_PATH = 1ULL << 1 | 1ULL << 2;
+export inline constexpr Bitboard BLACK_KINGSIDE_CASTLE_PATH = 1ULL << 57 | 1ULL << 58;
+export inline constexpr Bitboard BLACK_QUEENSIDE_CASTLE_PATH = 1ULL << 62 | 1ULL << 61 | 1ULL << 60;
+export inline constexpr Bitboard WHITE_QUEENSIDE_CASTLE_PATH = 1ULL << 4 | 1ULL << 5 | 1ULL << 6;
+export inline constexpr Bitboard BLACK_QUEENSIDE_CASTLE_SAFETY_REQ = 1ULL << 61 | 1ULL << 60;
+export inline constexpr Bitboard WHITE_QUEENSIDE_CASTLE_SAFETY_REQ = 1ULL << 4 | 1ULL << 5;
 
 export enum class Color { White = 0, Black = 1, LAST = Black };
 
@@ -85,70 +85,70 @@ export constexpr __forceinline bool is_slider(const PieceType ptype)
     }
 }
 
-export constexpr Square h1 = 0 * 8 + 0;
-export constexpr Square g1 = 0 * 8 + 1;
-export constexpr Square f1 = 0 * 8 + 2;
-export constexpr Square e1 = 0 * 8 + 3;
-export constexpr Square d1 = 0 * 8 + 4;
-export constexpr Square c1 = 0 * 8 + 5;
-export constexpr Square b1 = 0 * 8 + 6;
-export constexpr Square a1 = 0 * 8 + 7;
-export constexpr Square h2 = 1 * 8 + 0;
-export constexpr Square g2 = 1 * 8 + 1;
-export constexpr Square f2 = 1 * 8 + 2;
-export constexpr Square e2 = 1 * 8 + 3;
-export constexpr Square d2 = 1 * 8 + 4;
-export constexpr Square c2 = 1 * 8 + 5;
-export constexpr Square b2 = 1 * 8 + 6;
-export constexpr Square a2 = 1 * 8 + 7;
-export constexpr Square h3 = 2 * 8 + 0;
-export constexpr Square g3 = 2 * 8 + 1;
-export constexpr Square f3 = 2 * 8 + 2;
-export constexpr Square e3 = 2 * 8 + 3;
-export constexpr Square d3 = 2 * 8 + 4;
-export constexpr Square c3 = 2 * 8 + 5;
-export constexpr Square b3 = 2 * 8 + 6;
-export constexpr Square a3 = 2 * 8 + 7;
-export constexpr Square h4 = 3 * 8 + 0;
-export constexpr Square g4 = 3 * 8 + 1;
-export constexpr Square f4 = 3 * 8 + 2;
-export constexpr Square e4 = 3 * 8 + 3;
-export constexpr Square d4 = 3 * 8 + 4;
-export constexpr Square c4 = 3 * 8 + 5;
-export constexpr Square b4 = 3 * 8 + 6;
-export constexpr Square a4 = 3 * 8 + 7;
-export constexpr Square h5 = 4 * 8 + 0;
-export constexpr Square g5 = 4 * 8 + 1;
-export constexpr Square f5 = 4 * 8 + 2;
-export constexpr Square e5 = 4 * 8 + 3;
-export constexpr Square d5 = 4 * 8 + 4;
-export constexpr Square c5 = 4 * 8 + 5;
-export constexpr Square b5 = 4 * 8 + 6;
-export constexpr Square a5 = 4 * 8 + 7;
-export constexpr Square h6 = 5 * 8 + 0;
-export constexpr Square g6 = 5 * 8 + 1;
-export constexpr Square f6 = 5 * 8 + 2;
-export constexpr Square e6 = 5 * 8 + 3;
-export constexpr Square d6 = 5 * 8 + 4;
-export constexpr Square c6 = 5 * 8 + 5;
-export constexpr Square b6 = 5 * 8 + 6;
-export constexpr Square a6 = 5 * 8 + 7;
-export constexpr Square h7 = 6 * 8 + 0;
-export constexpr Square g7 = 6 * 8 + 1;
-export constexpr Square f7 = 6 * 8 + 2;
-export constexpr Square e7 = 6 * 8 + 3;
-export constexpr Square d7 = 6 * 8 + 4;
-export constexpr Square c7 = 6 * 8 + 5;
-export constexpr Square b7 = 6 * 8 + 6;
-export constexpr Square a7 = 6 * 8 + 7;
-export constexpr Square h8 = 7 * 8 + 0;
-export constexpr Square g8 = 7 * 8 + 1;
-export constexpr Square f8 = 7 * 8 + 2;
-export constexpr Square e8 = 7 * 8 + 3;
-export constexpr Square d8 = 7 * 8 + 4;
-export constexpr Square c8 = 7 * 8 + 5;
-export constexpr Square b8 = 7 * 8 + 6;
-export constexpr Square a8 = 7 * 8 + 7;
+export inline constexpr Square h1 = 0 * 8 + 0;
+export inline constexpr Square g1 = 0 * 8 + 1;
+export inline constexpr Square f1 = 0 * 8 + 2;
+export inline constexpr Square e1 = 0 * 8 + 3;
+export inline constexpr Square d1 = 0 * 8 + 4;
+export inline constexpr Square c1 = 0 * 8 + 5;
+export inline constexpr Square b1 = 0 * 8 + 6;
+export inline constexpr Square a1 = 0 * 8 + 7;
+export inline constexpr Square h2 = 1 * 8 + 0;
+export inline constexpr Square g2 = 1 * 8 + 1;
+export inline constexpr Square f2 = 1 * 8 + 2;
+export inline constexpr Square e2 = 1 * 8 + 3;
+export inline constexpr Square d2 = 1 * 8 + 4;
+export inline constexpr Square c2 = 1 * 8 + 5;
+export inline constexpr Square b2 = 1 * 8 + 6;
+export inline constexpr Square a2 = 1 * 8 + 7;
+export inline constexpr Square h3 = 2 * 8 + 0;
+export inline constexpr Square g3 = 2 * 8 + 1;
+export inline constexpr Square f3 = 2 * 8 + 2;
+export inline constexpr Square e3 = 2 * 8 + 3;
+export inline constexpr Square d3 = 2 * 8 + 4;
+export inline constexpr Square c3 = 2 * 8 + 5;
+export inline constexpr Square b3 = 2 * 8 + 6;
+export inline constexpr Square a3 = 2 * 8 + 7;
+export inline constexpr Square h4 = 3 * 8 + 0;
+export inline constexpr Square g4 = 3 * 8 + 1;
+export inline constexpr Square f4 = 3 * 8 + 2;
+export inline constexpr Square e4 = 3 * 8 + 3;
+export inline constexpr Square d4 = 3 * 8 + 4;
+export inline constexpr Square c4 = 3 * 8 + 5;
+export inline constexpr Square b4 = 3 * 8 + 6;
+export inline constexpr Square a4 = 3 * 8 + 7;
+export inline constexpr Square h5 = 4 * 8 + 0;
+export inline constexpr Square g5 = 4 * 8 + 1;
+export inline constexpr Square f5 = 4 * 8 + 2;
+export inline constexpr Square e5 = 4 * 8 + 3;
+export inline constexpr Square d5 = 4 * 8 + 4;
+export inline constexpr Square c5 = 4 * 8 + 5;
+export inline constexpr Square b5 = 4 * 8 + 6;
+export inline constexpr Square a5 = 4 * 8 + 7;
+export inline constexpr Square h6 = 5 * 8 + 0;
+export inline constexpr Square g6 = 5 * 8 + 1;
+export inline constexpr Square f6 = 5 * 8 + 2;
+export inline constexpr Square e6 = 5 * 8 + 3;
+export inline constexpr Square d6 = 5 * 8 + 4;
+export inline constexpr Square c6 = 5 * 8 + 5;
+export inline constexpr Square b6 = 5 * 8 + 6;
+export inline constexpr Square a6 = 5 * 8 + 7;
+export inline constexpr Square h7 = 6 * 8 + 0;
+export inline constexpr Square g7 = 6 * 8 + 1;
+export inline constexpr Square f7 = 6 * 8 + 2;
+export inline constexpr Square e7 = 6 * 8 + 3;
+export inline constexpr Square d7 = 6 * 8 + 4;
+export inline constexpr Square c7 = 6 * 8 + 5;
+export inline constexpr Square b7 = 6 * 8 + 6;
+export inline constexpr Square a7 = 6 * 8 + 7;
+export inline constexpr Square h8 = 7 * 8 + 0;
+export inline constexpr Square g8 = 7 * 8 + 1;
+export inline constexpr Square f8 = 7 * 8 + 2;
+export inline constexpr Square e8 = 7 * 8 + 3;
+export inline constexpr Square d8 = 7 * 8 + 4;
+export inline constexpr Square c8 = 7 * 8 + 5;
+export inline constexpr Square b8 = 7 * 8 + 6;
+export inline constexpr Square a8 = 7 * 8 + 7;
 
 // TODO: replace with simple version calling 'a' + file
 export constexpr const char* square_to_algebraic(Square sq)

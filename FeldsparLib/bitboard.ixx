@@ -46,24 +46,24 @@ export inline constexpr const Bitboard H_FILE = BB("00000001"
                                                    "00000001"
                                                    "00000001");
 
-export inline constexpr const Bitboard G_FILE = H_FILE << 1;
-export inline constexpr const Bitboard F_FILE = H_FILE << 2;
-export inline constexpr const Bitboard E_FILE = H_FILE << 3;
-export inline constexpr const Bitboard D_FILE = H_FILE << 4;
-export inline constexpr const Bitboard C_FILE = H_FILE << 5;
-export inline constexpr const Bitboard B_FILE = H_FILE << 6;
-export inline constexpr const Bitboard A_FILE = H_FILE << 7;
+export inline constexpr Bitboard G_FILE = H_FILE << 1;
+export inline constexpr Bitboard F_FILE = H_FILE << 2;
+export inline constexpr Bitboard E_FILE = H_FILE << 3;
+export inline constexpr Bitboard D_FILE = H_FILE << 4;
+export inline constexpr Bitboard C_FILE = H_FILE << 5;
+export inline constexpr Bitboard B_FILE = H_FILE << 6;
+export inline constexpr Bitboard A_FILE = H_FILE << 7;
 
-export inline constexpr const Bitboard NOT_A_FILE = ~A_FILE;
-export inline constexpr const Bitboard NOT_B_FILE = ~B_FILE;
-export inline constexpr const Bitboard NOT_C_FILE = ~C_FILE;
-export inline constexpr const Bitboard NOT_D_FILE = ~D_FILE;
-export inline constexpr const Bitboard NOT_E_FILE = ~E_FILE;
-export inline constexpr const Bitboard NOT_F_FILE = ~F_FILE;
-export inline constexpr const Bitboard NOT_G_FILE = ~G_FILE;
-export inline constexpr const Bitboard NOT_H_FILE = ~H_FILE;
+export inline constexpr Bitboard NOT_A_FILE = ~A_FILE;
+export inline constexpr Bitboard NOT_B_FILE = ~B_FILE;
+export inline constexpr Bitboard NOT_C_FILE = ~C_FILE;
+export inline constexpr Bitboard NOT_D_FILE = ~D_FILE;
+export inline constexpr Bitboard NOT_E_FILE = ~E_FILE;
+export inline constexpr Bitboard NOT_F_FILE = ~F_FILE;
+export inline constexpr Bitboard NOT_G_FILE = ~G_FILE;
+export inline constexpr Bitboard NOT_H_FILE = ~H_FILE;
 
-export inline constexpr const Bitboard FIRST_RANK = BB("00000000"
+export inline constexpr Bitboard FIRST_RANK = BB("00000000"
                                                        "00000000"
                                                        "00000000"
                                                        "00000000"
@@ -72,24 +72,24 @@ export inline constexpr const Bitboard FIRST_RANK = BB("00000000"
                                                        "00000000"
                                                        "11111111");
 
-export inline constexpr const Bitboard SECOND_RANK = FIRST_RANK << 8 * 1;
-export inline constexpr const Bitboard THIRD_RANK = FIRST_RANK << 8 * 2;
-export inline constexpr const Bitboard FOURTH_RANK = FIRST_RANK << 8 * 3;
-export inline constexpr const Bitboard FIFTH_RANK = FIRST_RANK << 8 * 4;
-export inline constexpr const Bitboard SIXTH_RANK = FIRST_RANK << 8 * 5;
-export inline constexpr const Bitboard SEVENTH_RANK = FIRST_RANK << 8 * 6;
-export inline constexpr const Bitboard EIGTH_RANK = FIRST_RANK << 8 * 7;
+export inline constexpr Bitboard SECOND_RANK = FIRST_RANK << 8 * 1;
+export inline constexpr Bitboard THIRD_RANK = FIRST_RANK << 8 * 2;
+export inline constexpr Bitboard FOURTH_RANK = FIRST_RANK << 8 * 3;
+export inline constexpr Bitboard FIFTH_RANK = FIRST_RANK << 8 * 4;
+export inline constexpr Bitboard SIXTH_RANK = FIRST_RANK << 8 * 5;
+export inline constexpr Bitboard SEVENTH_RANK = FIRST_RANK << 8 * 6;
+export inline constexpr Bitboard EIGTH_RANK = FIRST_RANK << 8 * 7;
 
-export inline constexpr const Bitboard NOT_FIRST_RANK = ~FIRST_RANK;
-export inline constexpr const Bitboard NOT_SECOND_RANK = ~SECOND_RANK;
-export inline constexpr const Bitboard NOT_THIRD_RANK = ~THIRD_RANK;
-export inline constexpr const Bitboard NOT_FOURTH_RANK = ~FOURTH_RANK;
-export inline constexpr const Bitboard NOT_FIFTH_RANK = ~FIFTH_RANK;
-export inline constexpr const Bitboard NOT_SIXTH_RANK = ~SIXTH_RANK;
-export inline constexpr const Bitboard NOT_SEVENTH_RANK = ~SEVENTH_RANK;
-export inline constexpr const Bitboard NOT_EIGTH_RANK = ~EIGTH_RANK;
+export inline constexpr Bitboard NOT_FIRST_RANK = ~FIRST_RANK;
+export inline constexpr Bitboard NOT_SECOND_RANK = ~SECOND_RANK;
+export inline constexpr Bitboard NOT_THIRD_RANK = ~THIRD_RANK;
+export inline constexpr Bitboard NOT_FOURTH_RANK = ~FOURTH_RANK;
+export inline constexpr Bitboard NOT_FIFTH_RANK = ~FIFTH_RANK;
+export inline constexpr Bitboard NOT_SIXTH_RANK = ~SIXTH_RANK;
+export inline constexpr Bitboard NOT_SEVENTH_RANK = ~SEVENTH_RANK;
+export inline constexpr Bitboard NOT_EIGTH_RANK = ~EIGTH_RANK;
 
-export inline constexpr const Bitboard MAIN_DIAGONAL = BB("00000001"
+export inline constexpr Bitboard MAIN_DIAGONAL = BB("00000001"
                                                           "00000010"
                                                           "00000100"
                                                           "00001000"
@@ -98,7 +98,7 @@ export inline constexpr const Bitboard MAIN_DIAGONAL = BB("00000001"
                                                           "01000000"
                                                           "10000000");
 
-export inline constexpr const Bitboard MAIN_ANTIDIAGONAL = BB("10000000"
+export inline constexpr Bitboard MAIN_ANTIDIAGONAL = BB("10000000"
                                                               "01000000"
                                                               "00100000"
                                                               "00010000"
@@ -137,6 +137,7 @@ constexpr __forceinline Bitboard set_bits(void)
 
 export __forceinline constexpr Bitboard bitboard_flipped(Bitboard bb) { return ~bb; }
 
+// TODO: https://stackoverflow.com/questions/46654836/way-to-effectively-call-bitscanreverse-or-builtin-clz-in-constexpr-functions
 export __forceinline Square bitboard_bsf(Bitboard bb)
 {
     unsigned long idx = 0;

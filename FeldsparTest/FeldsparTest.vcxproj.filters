@@ -16,11 +16,11 @@
     <ClCompile Include="perft_test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="unstd">
       <UniqueIdentifier>{561bb072-9df1-4593-8fe8-1d95767d12ad}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

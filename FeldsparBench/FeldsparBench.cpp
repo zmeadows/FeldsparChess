@@ -43,7 +43,7 @@ int main()
 
     double total = 0.0;
 
-    total += perft_benchmark("Starting Position", 6, 5,
+    total += perft_benchmark("Starting Position", 7, 1,
                              "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
     total += perft_benchmark("Kiwipete", 5, 5,

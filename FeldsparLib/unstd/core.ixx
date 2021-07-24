@@ -62,7 +62,7 @@ struct EnumRange {
 // for both T and Maybe<T> and thus efficient processing in arrays and less size
 // taken up in structs.
 export template <typename T, T SENTINEL>
-class alignas(alignof(T)) [[nodiscard]] Maybe {
+class alignas(alignof(T)) Maybe {
     T m_data;
 
 public:
