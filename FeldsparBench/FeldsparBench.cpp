@@ -15,9 +15,9 @@ double perft_benchmark(const std::string& name, U64 depth, U64 ntimes, const std
     U64 node_count = 0;
 
     for (U64 i = 0; i < ntimes; i++) {
-        const clock_t start = clock();
+        const S64 start = clock();
         const auto results = perft(game, depth);
-        const clock_t stop = clock();
+        const S64 stop = clock();
 
         for (const PerftStats& stats : results) {
             if (stats.node_count == 0) break;

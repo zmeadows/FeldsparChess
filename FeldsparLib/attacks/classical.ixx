@@ -664,7 +664,7 @@ export void init_rays_between_squares(void)
     }
 }
 
-export constexpr Bitboard ray_between_squares(Square a, Square b)
+export Bitboard ray_between_squares(Square a, Square b)
 {
     return RAYS_BETWEEN_SQUARES[a * 64 + b];
 }

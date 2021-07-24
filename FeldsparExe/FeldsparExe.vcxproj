@@ -134,7 +134,7 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <ShowProgress>NotSet</ShowProgress>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
       <OptimizeReferences>false</OptimizeReferences>
