@@ -34,8 +34,8 @@ constexpr Bitboard BB(const char (&input)[N])
 
 export constexpr Bitboard square_bitrep(Square sq) { return static_cast<Bitboard>(1) << sq; }
 
-// export inline constexpr const Bitboard BITBOARD_FULL = 0xFFFFFFFFFFFFFFFF;
-// export inline constexpr const Bitboard BITBOARD_EMPTY = 0x0;
+export inline constexpr const Bitboard BITBOARD_FULL = 0xFFFFFFFFFFFFFFFF;
+export inline constexpr const Bitboard BITBOARD_EMPTY = 0x0;
 
 export inline constexpr const Bitboard H_FILE = BB("00000001"
                                                    "00000001"
@@ -64,13 +64,13 @@ export inline constexpr Bitboard NOT_G_FILE = ~G_FILE;
 export inline constexpr Bitboard NOT_H_FILE = ~H_FILE;
 
 export inline constexpr Bitboard FIRST_RANK = BB("00000000"
-                                                       "00000000"
-                                                       "00000000"
-                                                       "00000000"
-                                                       "00000000"
-                                                       "00000000"
-                                                       "00000000"
-                                                       "11111111");
+                                                 "00000000"
+                                                 "00000000"
+                                                 "00000000"
+                                                 "00000000"
+                                                 "00000000"
+                                                 "00000000"
+                                                 "11111111");
 
 export inline constexpr Bitboard SECOND_RANK = FIRST_RANK << 8 * 1;
 export inline constexpr Bitboard THIRD_RANK = FIRST_RANK << 8 * 2;
@@ -90,26 +90,26 @@ export inline constexpr Bitboard NOT_SEVENTH_RANK = ~SEVENTH_RANK;
 export inline constexpr Bitboard NOT_EIGTH_RANK = ~EIGTH_RANK;
 
 export inline constexpr Bitboard MAIN_DIAGONAL = BB("00000001"
-                                                          "00000010"
-                                                          "00000100"
-                                                          "00001000"
-                                                          "00010000"
-                                                          "00100000"
-                                                          "01000000"
-                                                          "10000000");
+                                                    "00000010"
+                                                    "00000100"
+                                                    "00001000"
+                                                    "00010000"
+                                                    "00100000"
+                                                    "01000000"
+                                                    "10000000");
 
 export inline constexpr Bitboard MAIN_ANTIDIAGONAL = BB("10000000"
-                                                              "01000000"
-                                                              "00100000"
-                                                              "00010000"
-                                                              "00001000"
-                                                              "00000100"
-                                                              "00000010"
-                                                              "00000001");
+                                                        "01000000"
+                                                        "00100000"
+                                                        "00010000"
+                                                        "00001000"
+                                                        "00000100"
+                                                        "00000010"
+                                                        "00000001");
 
-export constexpr bool bitboard_is_empty(const Bitboard bb) { return bb == BITBOARD_EMPTY; }
-export constexpr bool bitboard_is_occupied(const Bitboard bb) { return bb != BITBOARD_EMPTY; }
-export constexpr bool bitboard_is_full(const Bitboard bb) { return bb == BITBOARD_FULL; }
+export __forceinline constexpr bool bitboard_is_empty(const Bitboard bb) { return bb == BITBOARD_EMPTY; }
+export __forceinline constexpr bool bitboard_is_occupied(const Bitboard bb) { return bb != BITBOARD_EMPTY; }
+export __forceinline constexpr bool bitboard_is_full(const Bitboard bb) { return bb == BITBOARD_FULL; }
 
 // TODO: make tests for these
 export __forceinline constexpr Bitboard set_bit(Bitboard bb, Square sq)
@@ -236,3 +236,4 @@ export inline constexpr Bitboard bishop_mask_ex(Square sq)
 {
     return diag_mask_ex(sq) | antidiag_mask_ex(sq);
 }
+

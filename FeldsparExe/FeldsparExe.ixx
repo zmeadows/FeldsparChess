@@ -26,7 +26,7 @@ int main()
         *game_from_fen("1r3r2/p1qbnpkp/2np2p1/2p1p3/2N1P3/2PP2P1/P2QNPBP/2R2RK1 w - - 6 20");
 
     QuadBitboard qbb = pack(set_bits<a1, h1, a8, h8>());
-    print_quad_bitboard(qbb);
+    print(qbb);
 
     return 0;
 }

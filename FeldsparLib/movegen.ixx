@@ -9,15 +9,13 @@ import move;
 import pins;
 import print;
 import quad;
+import unstd.io;
+import<cstring>;
 
 #include "unstd/macros.h"
 
 import attacks.classical;
 import attacks.util;
-
-import<cassert>;
-import<cstdio>;
-import<cstring>;
 
 using enum PieceType;
 
@@ -362,18 +360,6 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
             check_multiplicity == 0 &&
             ((friendly_color == Color::White) ? (game.castling_rights & CASTLE_RIGHTS_WHITE_BOTH)
                                               : (game.castling_rights & CASTLE_RIGHTS_BLACK_BOTH));
-
-        if constexpr (friendly_color == Color::White) {
-            if (castle_possible && king_square != e1) {
-                printf("ASDF\n");
-            }
-        }
-
-        if constexpr (friendly_color == Color::White) {
-            if (castle_possible && king_square != e1) {
-                printf("ASDF\n");
-            }
-        }
 
         if (castle_possible) [[unlikely]] {
             bool can_kingside_castle;

@@ -29,7 +29,7 @@ export struct PerftStats {
 void print_perft_stats(const std::vector<PerftStats>& stats)
 {
     for (U64 i = 0; i < stats.size(); i++) {
-        printf("DEPTH %llu NODES = %llu\n", i + 1, stats[i].node_count);
+        to_stdout("DEPTH {} NODES = {}\n", i + 1, stats[i].node_count);
     }
 }
 
@@ -166,14 +166,14 @@ void qperft_validate_internal(const std::string& fen, U64 max_depth, bool& faile
 
         if (failed) {
             if constexpr (DEBUG_PRINT) {
-                printf("%s\n", fen.c_str());
-                printf("Feldspar failed to generate the following legal moves:\n");
+                to_stdout("{}\n", fen);
+                to_stdout("Feldspar failed to generate the following legal moves:\n");
                 for (const std::string m : missing_moves) {
-                    printf("\t%s\n", m.c_str());
+                    to_stdout("\t{}\n", m);
                 }
-                printf("Feldspar generate the following non-legal moves:\n");
+                to_stdout("Feldspar generate the following non-legal moves:\n");
                 for (const std::string m : illegal_moves) {
-                    printf("\t%s\n", m.c_str());
+                    to_stdout("\t{}\n", m);
                 }
             }
 

@@ -1,24 +1,31 @@
 export module unstd.core;
 
-import<cassert>;
-
 import<cstdint>;
+
+#include "macros.h"
+
 export using U64 = uint64_t;
 export using U32 = uint32_t;
 export using U16 = uint16_t;
 export using U8 = uint8_t;
-export using S64 = int64_t;
-export using S32 = int32_t;
-export using S16 = int16_t;
-export using S8 = int8_t;
-
-export using F32 = float;
-export using F64 = double;
-
 static_assert(sizeof(U64) == 8);
 static_assert(sizeof(U32) == 4);
 static_assert(sizeof(U16) == 2);
 static_assert(sizeof(U8) == 1);
+
+export using S64 = int64_t;
+export using S32 = int32_t;
+export using S16 = int16_t;
+export using S8 = int8_t;
+static_assert(sizeof(S64) == 8);
+static_assert(sizeof(S32) == 4);
+static_assert(sizeof(S16) == 2);
+static_assert(sizeof(S8) == 1);
+
+export using F32 = float;
+export using F64 = double;
+static_assert(sizeof(F64) == 8);
+static_assert(sizeof(F32) == 4);
 
 export template <typename T>
 const T& max(const T& a, const T& b)
@@ -31,13 +38,6 @@ const T& min(const T& a, const T& b)
 {
     return (b >= a) ? a : b;
 }
-
-export template <typename T>
-struct WrappedConstPtr {
-    const T* const p;
-    WrappedConstPtr() = delete;
-    explicit WrappedConstPtr(const T* const _p) : p(_p) {}
-};
 
 // For any enum class that defines a LAST member, this allows us to loop over the enum
 // easily in a range-based for loop: for (const auto x : EnumRange<T>()).

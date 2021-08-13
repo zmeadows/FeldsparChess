@@ -6,8 +6,6 @@ import board;
 import attacks.classical;
 #include "unstd/macros.h"
 
-import<cassert>;
-
 export struct Pins {
     Bitboard diagonal = BITBOARD_EMPTY;
     Bitboard nondiagonal = BITBOARD_EMPTY;

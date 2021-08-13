@@ -2,10 +2,10 @@ import prelude;
 import game;
 import perft;
 import init;
+import unstd.io;
 
-import<string>;
-import<cstdio>;
 #include <time.h>
+import<string>;
 
 double perft_benchmark(const std::string& name, U64 depth, U64 ntimes, const std::string& fen)
 {
@@ -29,10 +29,10 @@ double perft_benchmark(const std::string& name, U64 depth, U64 ntimes, const std
 
     const double mnodes_sec = (static_cast<double>(node_count) / duration) / 1e6;
 
-    printf("%s: %s\n", name.c_str(), fen.c_str());
-    printf("\tNodes Traversed: %llu\n", node_count);
-    printf("\tTotal Time: %f seconds\n", duration);
-    printf("\tMNodes/sec: %f\n\n", mnodes_sec);
+    to_stdout("{}: {}\n", name.c_str(), fen.c_str());
+    to_stdout("\tNodes Traversed: {}\n", node_count);
+    to_stdout("\tTotal Time: {} seconds\n", duration);
+    to_stdout("\tMNodes/sec: {}\n\n", mnodes_sec);
 
     return mnodes_sec;
 }
@@ -61,7 +61,7 @@ int main()
         perft_benchmark("StevenEdwards", 5, 5,
                         "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10");
 
-    printf("AVERAGE MNODES/SEC = %f\n", total / 6.0);
+    to_stdout("AVERAGE MNODES/SEC = {}\n", total / 6.0);
 
     return 0;
 }

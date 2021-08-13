@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FeldsparExe.cpp">
+    <ClCompile Include="FeldsparExe.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

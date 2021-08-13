@@ -2,9 +2,9 @@ export module unstd.io;
 
 import unstd.core;
 
-import<cstdio>;
-import<memory>;
+import<iostream>;
 import<string>;
+import<format>;
 
 export template <typename Callable>
 void for_each_line_in_process_stdout(const std::string& cmd, Callable&& f)
@@ -32,3 +32,10 @@ void for_each_line_in_process_stdout(const std::string& cmd, Callable&& f)
         prev = pos + 1;
     }
 }
+
+export template <typename FmtType, class... Args>
+__forceinline void to_stdout(const FmtType& fmt, Args&& ...args)
+{
+    std::cout << std::format(fmt, std::forward<Args>(args)...);
+}
+

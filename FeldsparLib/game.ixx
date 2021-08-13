@@ -5,6 +5,7 @@ import bitboard;
 import board;
 import zobrist;
 
+import unstd.io;
 import unstd.string_util;
 
 import<cassert>;
