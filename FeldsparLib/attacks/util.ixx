@@ -114,10 +114,11 @@ export constexpr Bitboard attackers(const Board& board, Color color, Square sq)
 
     const Bitboard occupied = get_occupied(board);
 
-    const Bitboard BQ = get_pieces(board, Queen, color) | get_pieces(board, Bishop, color);
+    const Bitboard Q = get_pieces(board, Queen, color);
+    const Bitboard BQ = Q | get_pieces(board, Bishop, color);
     attackers |= get_bishop_attacks(sq, occupied) & BQ;
 
-    const Bitboard RQ = get_pieces(board, Queen, color) | get_pieces(board, Rook, color);
+    const Bitboard RQ = Q | get_pieces(board, Rook, color);
     attackers |= get_rook_attacks(sq, occupied) & RQ;
 
     return attackers;

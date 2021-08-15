@@ -17,9 +17,9 @@
         }                                                                                          \
     } while (0)
 
-#define DEBUG_PRINT_BB(x)                                                                          \
+#define DEBUG_PRINT_BB(flag, x)                                                                          \
     do {                                                                                           \
-        if constexpr (DEBUG_PRINT) {                                                               \
+        if constexpr (flag) {                                                               \
             to_stdout("{}:\n", #x);                                                                   \
             print_bitboard(x);                                                                     \
         }                                                                                          \

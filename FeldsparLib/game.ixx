@@ -1,22 +1,18 @@
 export module game;
 
+import unstd.io;
+import unstd.string_util;
+
 import prelude;
 import bitboard;
 import board;
 import zobrist;
 
-import unstd.io;
-import unstd.string_util;
-
-import<cassert>;
-import<cstdio>;
-import<cctype>;
 import<cstdlib>;
-import<cstring>;
-
+import<optional>;
 import<string>;
 import<vector>;
-import<optional>;
+
 #include "unstd/macros.h"
 
 export struct Game {

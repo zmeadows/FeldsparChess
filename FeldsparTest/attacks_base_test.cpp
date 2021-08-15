@@ -10,8 +10,6 @@ import print;
 import attacks.classical;
 import attacks.util;
 
-import<cstdlib>;
-
 TEST(AttacksBase, KnightMoves)
 {
     for (Square from_sq = 0; from_sq < 64; from_sq++) {

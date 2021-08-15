@@ -6,10 +6,17 @@ import unstd.io;
 
 #include <time.h>
 import<string>;
+import<optional>;
 
 double perft_benchmark(const std::string& name, U64 depth, U64 ntimes, const std::string& fen)
 {
-    const Game game = *game_from_fen(fen);
+    const std::optional<Game> maybe_game = game_from_fen(fen);
+    
+    if (!maybe_game.has_value()) {
+        return -1.0;
+    }
+
+    const Game game = *maybe_game;
 
     double duration = 0.0;
     U64 node_count = 0;

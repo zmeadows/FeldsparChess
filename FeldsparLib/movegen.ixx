@@ -10,43 +10,51 @@ import pins;
 import print;
 import quad;
 import unstd.io;
+
 import<cstring>;
+import<type_traits>;
 
 #include "unstd/macros.h"
 
 import attacks.classical;
 import attacks.util;
 
-using enum PieceType;
+export struct MoveGenFlags {
+    bool CAPTURES_ONLY = false;
+    bool DEBUG_PRINT = false;
+};
 
-template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
-[[msvc::forceinline_calls]] void generate_moves_internal(const Game& game, MoveBuffer& moves)
+template <Color FRIENDLY_COLOR, MoveGenFlags FLAGS>
+void generate_moves_internal(const Game& game, MoveBuffer& moves)
 {
+    using enum PieceType;
+
     moves.clear();
 
-    const Board& board = game.board;
-    constexpr Color opponent_color = !friendly_color;
+    constexpr Color OPPONENT_COLOR = !FRIENDLY_COLOR;
 
-    const Bitboard friendly_pieces = get_occupied(board, friendly_color);
-    const Bitboard opponent_pieces = get_occupied(board, opponent_color);
-    DEBUG_PRINT_BB(friendly_pieces);
-    DEBUG_PRINT_BB(opponent_pieces);
+    const Board& board = game.board;
+
+    const Bitboard friendly_pieces = get_occupied(board, FRIENDLY_COLOR);
+    const Bitboard opponent_pieces = get_occupied(board, OPPONENT_COLOR);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, friendly_pieces);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, opponent_pieces);
 
     const Bitboard occupied_squares = friendly_pieces | opponent_pieces;
     const Bitboard empty_squares = bitboard_flipped(occupied_squares);
-    DEBUG_PRINT_BB(occupied_squares);
-    DEBUG_PRINT_BB(empty_squares);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, occupied_squares);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, empty_squares);
 
-    const Square king_square = bitboard_bsf(get_pieces(board, King, friendly_color));
-    const Bitboard king_attackers = attackers(board, opponent_color, king_square);
+    const Square king_square = bitboard_bsf(get_pieces(board, King, FRIENDLY_COLOR));
+    const Bitboard king_attackers = attackers(board, OPPONENT_COLOR, king_square);
     const U64 check_multiplicity = bitboard_popcount(king_attackers);
-    DEBUG_PRINT_BB(king_attackers);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, king_attackers);
 
     const auto opponent_piece_type_at = [&](Square sq) -> PieceType {
         const Bitboard sqbit = square_bitrep(sq);
 
         for (PieceType ptype : EnumRange<PieceType>()) {
-            if (sqbit & get_pieces(board, ptype, opponent_color)) [[unlikely]] {
+            if (sqbit & get_pieces(board, ptype, OPPONENT_COLOR)) [[unlikely]] {
                 return ptype;
             }
         }
@@ -59,7 +67,7 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
     Bitboard quiet_mask = empty_squares;
 
     const auto build_moves = [&](Square from, Bitboard to_mask, PieceType moved_ptype) {
-        if constexpr (!CAPTURES_ONLY) {
+        if constexpr (!FLAGS.CAPTURES_ONLY) {
             serialize(to_mask & quiet_mask, [&](Square to) {
                 moves.append(create_quiet_move(from, to, QUIET_FLAG, moved_ptype));
             });
@@ -71,9 +79,9 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
         });
     };
 
-    const Bitboard king_danger_squares = attacked<true, true>(board, opponent_color);
+    const Bitboard king_danger_squares = attacked<true, true>(board, OPPONENT_COLOR);
     const Bitboard safe_king_moves = get_king_moves(king_square) & ~king_danger_squares;
-    DEBUG_PRINT_BB(safe_king_moves);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, safe_king_moves);
     build_moves(king_square, safe_king_moves, King);
 
     // If the king is in double+ check, the only legal moves are king moves, so return early.
@@ -90,23 +98,23 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
         }
     }
 
-    DEBUG_PRINT_BB(quiet_mask);
-    DEBUG_PRINT_BB(capture_mask);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, quiet_mask);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, capture_mask);
 
-    const Pins pins = Pins::create(board, friendly_color);
+    const Pins pins = Pins::create(board, FRIENDLY_COLOR);
     const Bitboard pinned = pins.diagonal | pins.nondiagonal;
     const Bitboard unpinned = ~pinned;
     const Bitboard pinned_only_nondiagonally = pinned & ~pins.diagonal;
     const Bitboard pinned_only_diagonally = pinned & ~pins.nondiagonal;
-    DEBUG_PRINT_BB(pinned);
-    DEBUG_PRINT_BB(unpinned);
-    DEBUG_PRINT_BB(pinned_only_diagonally);
-    DEBUG_PRINT_BB(pinned_only_nondiagonally);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, pinned);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, unpinned);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, pinned_only_diagonally);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, pinned_only_nondiagonally);
 
     // Knights
-    const Bitboard friendly_knights = get_pieces(board, Knight, friendly_color);
-    DEBUG_PRINT_BB(friendly_knights);
-    DEBUG_PRINT_BB(friendly_knights & unpinned);
+    const Bitboard friendly_knights = get_pieces(board, Knight, FRIENDLY_COLOR);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, friendly_knights);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, friendly_knights & unpinned);
 
     serialize(friendly_knights & unpinned, [&](Square from) {
         const Bitboard knight_moves = get_knight_moves(from);
@@ -114,9 +122,9 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
     });
 
     // Bishops
-    const Bitboard friendly_bishops = get_pieces(board, Bishop, friendly_color);
-    DEBUG_PRINT_BB(friendly_bishops);
-    DEBUG_PRINT_BB(friendly_bishops & unpinned);
+    const Bitboard friendly_bishops = get_pieces(board, Bishop, FRIENDLY_COLOR);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, friendly_bishops);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, friendly_bishops & unpinned);
 
     serialize(friendly_bishops & unpinned, [&](Square from) {
         const Bitboard bishop_moves = get_bishop_attacks(from, occupied_squares);
@@ -130,9 +138,9 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
     });
 
     // Rooks
-    const Bitboard friendly_rooks = get_pieces(board, Rook, friendly_color);
-    DEBUG_PRINT_BB(friendly_rooks);
-    DEBUG_PRINT_BB(friendly_rooks & unpinned);
+    const Bitboard friendly_rooks = get_pieces(board, Rook, FRIENDLY_COLOR);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, friendly_rooks);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, friendly_rooks & unpinned);
 
     serialize(friendly_rooks & unpinned, [&](Square from) {
         const Bitboard rook_moves = get_rook_attacks(from, occupied_squares);
@@ -146,9 +154,9 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
     });
 
     // Queens
-    const Bitboard friendly_queens = get_pieces(board, Queen, friendly_color);
-    DEBUG_PRINT_BB(friendly_queens);
-    DEBUG_PRINT_BB(friendly_queens & unpinned);
+    const Bitboard friendly_queens = get_pieces(board, Queen, FRIENDLY_COLOR);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, friendly_queens);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, friendly_queens & unpinned);
 
     serialize(friendly_queens & unpinned, [&](Square from) {
         const Bitboard queen_moves = get_queen_attacks(from, occupied_squares);
@@ -167,15 +175,15 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
         build_moves(from, queen_moves, Queen);
     });
 
-    const Bitboard friendly_pawns = get_pieces(board, Pawn, friendly_color);
-    DEBUG_PRINT_BB(friendly_pawns);
+    const Bitboard friendly_pawns = get_pieces(board, Pawn, FRIENDLY_COLOR);
+    DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, friendly_pawns);
 
     Bitboard singly_advanced_pawns, doubly_advanced_pawns, attacking_pawns_mask;
     Square pawn_move_delta;
     S64 promotion_rank;
 
     { // Unpinned pawns
-        if constexpr (friendly_color == Color::White) {
+        if constexpr (FRIENDLY_COLOR == Color::White) {
             pawn_move_delta = 8;
             promotion_rank = 8;
 
@@ -226,7 +234,7 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
     }
 
     { // Non-diagonally pinned pawns
-        if constexpr (friendly_color == Color::White) {
+        if constexpr (FRIENDLY_COLOR == Color::White) {
 
             singly_advanced_pawns =
                 empty_squares &
@@ -282,7 +290,7 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
         const Bitboard pawns_that_can_capture = friendly_pawns & unpinned & attacking_pawns_mask;
 
         serialize(pawns_that_can_capture, [&](Square from) {
-            const Bitboard pawn_attack_pattern = get_pawn_attacks(from, friendly_color);
+            const Bitboard pawn_attack_pattern = get_pawn_attacks(from, FRIENDLY_COLOR);
             serialize(pawn_attack_pattern & capture_mask,
                       [&](Square to) { append_pawn_capture(from, to); });
         });
@@ -293,7 +301,7 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
             friendly_pawns & pinned_only_diagonally & attacking_pawns_mask;
 
         serialize(pawns_that_can_capture, [&](Square from) {
-            const Bitboard pawn_attack_pattern = get_pawn_attacks(from, friendly_color);
+            const Bitboard pawn_attack_pattern = get_pawn_attacks(from, FRIENDLY_COLOR);
             const Bitboard constraint = pins.diagonal_constraints[from];
             serialize(pawn_attack_pattern & capture_mask, [&](Square to) {
                 if (square_bitrep(to) & constraint) [[likely]] {
@@ -308,7 +316,7 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
         const Bitboard to_bit = square_bitrep(to);
 
         Bitboard from_bits;
-        if constexpr (friendly_color == Color::White) {
+        if constexpr (FRIENDLY_COLOR == Color::White) {
             from_bits = bitboard_shifted(to_bit, Direction::SouthWest) |
                         bitboard_shifted(to_bit, Direction::SouthEast);
         } else {
@@ -328,12 +336,12 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
             const Bitboard from_to_bit = from_bit | to_bit;
 
             Bitboard captured_bit;
-            if constexpr (friendly_color == Color::White) {
+            if constexpr (FRIENDLY_COLOR == Color::White) {
                 captured_bit = square_bitrep(to - 8);
             } else {
                 captured_bit = square_bitrep(to + 8);
             }
-            assert(captured_bit & get_pieces(game.board, Pawn, opponent_color));
+            assert(captured_bit & get_pieces(game.board, Pawn, OPPONENT_COLOR));
 
             // An en-passant capture removes two pieces from the board at once,
             // so we cannot rely on our previous pin calculations to account for the
@@ -342,12 +350,12 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
             Board board_copy;
             memcpy(&board_copy[0], &game.board[0], sizeof(Board));
 
-            get_pieces_mut(board_copy, Pawn, friendly_color) ^= from_to_bit;
-            get_occupied_mut(board_copy, friendly_color) ^= from_to_bit;
-            get_pieces_mut(board_copy, Pawn, opponent_color) ^= captured_bit;
-            get_occupied_mut(board_copy, opponent_color) ^= captured_bit;
+            get_pieces_mut(board_copy, Pawn, FRIENDLY_COLOR) ^= from_to_bit;
+            get_occupied_mut(board_copy, FRIENDLY_COLOR) ^= from_to_bit;
+            get_pieces_mut(board_copy, Pawn, OPPONENT_COLOR) ^= captured_bit;
+            get_occupied_mut(board_copy, OPPONENT_COLOR) ^= captured_bit;
 
-            const Bitboard king_attackers = attackers(board_copy, opponent_color, king_square);
+            const Bitboard king_attackers = attackers(board_copy, OPPONENT_COLOR, king_square);
             if (bitboard_is_empty(king_attackers)) {
                 moves.append(create_capture_move(from, to, EP_CAPTURE_FLAG, Pawn, Pawn));
             }
@@ -355,10 +363,10 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
     }
 
     // Castle Moves
-    if constexpr (!CAPTURES_ONLY) {
+    if constexpr (!(FLAGS.CAPTURES_ONLY)) {
         const bool castle_possible =
             check_multiplicity == 0 &&
-            ((friendly_color == Color::White) ? (game.castling_rights & CASTLE_RIGHTS_WHITE_BOTH)
+            ((FRIENDLY_COLOR == Color::White) ? (game.castling_rights & CASTLE_RIGHTS_WHITE_BOTH)
                                               : (game.castling_rights & CASTLE_RIGHTS_BLACK_BOTH));
 
         if (castle_possible) [[unlikely]] {
@@ -366,7 +374,7 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
             bool can_queenside_castle;
             Square king_castle_square, queen_castle_square;
 
-            if constexpr (friendly_color == Color::White) {
+            if constexpr (FRIENDLY_COLOR == Color::White) {
                 can_kingside_castle =
                     (game.castling_rights & CASTLE_RIGHTS_WHITE_KINGSIDE) &&
                     bitboard_is_empty(occupied_squares & WHITE_KINGSIDE_CASTLE_PATH) &&
@@ -407,22 +415,21 @@ template <Color friendly_color, bool CAPTURES_ONLY = false, bool DEBUG_PRINT = f
     }
 }
 
-export template <bool CAPTURES_ONLY = false, bool DEBUG_PRINT = false>
-void generate_moves(const Game& game, MoveBuffer& moves)
+export template <MoveGenFlags FLAGS = {}>
+void __forceinline generate_moves(const Game& game, MoveBuffer& moves)
 {
     using enum Color;
-
     if (game.to_move == White) {
-        generate_moves_internal<White, CAPTURES_ONLY, DEBUG_PRINT>(game, moves);
+        generate_moves_internal<White, FLAGS>(game, moves);
     } else {
-        generate_moves_internal<Black, CAPTURES_ONLY, DEBUG_PRINT>(game, moves);
+        generate_moves_internal<Black, FLAGS>(game, moves);
     }
 }
 
 export void debug_print_movegen(const Game& game)
 {
     MoveBuffer moves;
-    generate_moves<false, true>(game, moves);
+    generate_moves<{.DEBUG_PRINT = true}>(game, moves);
 
     for (const Move m : moves) {
         print_move(m);
