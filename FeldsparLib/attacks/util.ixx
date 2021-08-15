@@ -43,27 +43,33 @@ QuadBitboard quadfill_sliders2(QuadBitboard qsliders, Bitboard empty)
     return (qflood >> qshift) & qmask;
 }
 
-// TODO: Add attacking_color as template argument
-export template <bool REMOVE_KING, bool USE_QUAD_FILL = true>
-Bitboard attacked(const Board& board, Color attacking_color)
+export struct AttackedFlags {
+    Color ATTACKING_COLOR = Color::White;
+    bool REMOVE_KING = false;
+    bool USE_QUAD_FILL = true;
+};
+
+export template <AttackedFlags FLAGS = AttackedFlags()>
+Bitboard attacked(const Board& board)
 {
     using enum PieceType;
 
-    const Color defending_color = !attacking_color;
+    constexpr Color ATTACKING_COLOR = FLAGS.ATTACKING_COLOR;
+    constexpr Color DEFENDING_COLOR = !ATTACKING_COLOR;
     Bitboard attacked = BITBOARD_EMPTY;
 
-    Bitboard defending_pieces = get_occupied(board, defending_color);
+    Bitboard defending_pieces = get_occupied(board, DEFENDING_COLOR);
 
-    if constexpr (REMOVE_KING) {
-        defending_pieces &= bitboard_flipped(get_pieces(board, King, defending_color));
+    if constexpr (FLAGS.REMOVE_KING) {
+        defending_pieces &= bitboard_flipped(get_pieces(board, King, DEFENDING_COLOR));
     }
 
-    const Bitboard attacking_pieces = get_occupied(board, attacking_color);
+    const Bitboard attacking_pieces = get_occupied(board, ATTACKING_COLOR);
     const Bitboard all_pieces = defending_pieces | attacking_pieces;
 
-    const Bitboard attacking_pawns = get_pieces(board, Pawn, attacking_color);
+    const Bitboard attacking_pawns = get_pieces(board, Pawn, ATTACKING_COLOR);
 
-    if (attacking_color == Color::White) {
+    if constexpr (ATTACKING_COLOR == Color::White) {
         attacked |= bitboard_shifted(attacking_pawns, Direction::NorthWest);
         attacked |= bitboard_shifted(attacking_pawns, Direction::NorthEast);
     } else {
@@ -71,31 +77,31 @@ Bitboard attacked(const Board& board, Color attacking_color)
         attacked |= bitboard_shifted(attacking_pawns, Direction::SouthEast);
     }
 
-    serialize(get_pieces(board, Knight, attacking_color),
+    serialize(get_pieces(board, Knight, ATTACKING_COLOR),
               [&](Square sq) { attacked |= get_knight_moves(sq); });
 
-    serialize(get_pieces(board, King, attacking_color),
+    serialize(get_pieces(board, King, ATTACKING_COLOR),
               [&](Square sq) { attacked |= get_king_moves(sq); });
 
-    if constexpr (USE_QUAD_FILL) {
+    if constexpr (FLAGS.USE_QUAD_FILL) {
         const Bitboard empty = bitboard_flipped(all_pieces);
 
-        const Bitboard q = get_pieces(board, Queen, attacking_color);
-        const Bitboard rq = q | get_pieces(board, Rook, attacking_color);
-        const Bitboard bq = q | get_pieces(board, Bishop, attacking_color);
+        const Bitboard q = get_pieces(board, Queen, ATTACKING_COLOR);
+        const Bitboard rq = q | get_pieces(board, Rook, ATTACKING_COLOR);
+        const Bitboard bq = q | get_pieces(board, Bishop, ATTACKING_COLOR);
         const QuadBitboard sliders = pack(rq, rq, bq, bq);
 
         QuadBitboard sliding_attacks = quadfill_sliders1(sliders, empty);
         sliding_attacks |= quadfill_sliders2(sliders, empty);
         attacked |= reduceOR(sliding_attacks);
     } else {
-        serialize(get_pieces(board, Bishop, attacking_color),
+        serialize(get_pieces(board, Bishop, ATTACKING_COLOR),
                   [&](Square sq) { attacked |= get_bishop_attacks(sq, all_pieces); });
 
-        serialize(get_pieces(board, Rook, attacking_color),
+        serialize(get_pieces(board, Rook, ATTACKING_COLOR),
                   [&](Square sq) { attacked |= get_rook_attacks(sq, all_pieces); });
 
-        serialize(get_pieces(board, Queen, attacking_color),
+        serialize(get_pieces(board, Queen, ATTACKING_COLOR),
                   [&](Square sq) { attacked |= get_queen_attacks(sq, all_pieces); });
     }
 

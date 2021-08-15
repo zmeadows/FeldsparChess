@@ -25,7 +25,8 @@ TEST(AttacksUtil, Attacked)
                           "00000000"
                           "10000000"));
 
-    Bitboard atk = attacked<false>(board, Color::White);
+    using enum Color;
+    Bitboard atk = attacked(board);
 
     EXPECT_EQ(atk, BB("00000001"
                       "00000010"
@@ -48,7 +49,7 @@ TEST(AttacksUtil, Attacked)
                           "00000000"
                           "10000001"));
 
-    atk = attacked<false>(board, Color::White);
+    atk = attacked(board);
 
     EXPECT_EQ(atk, BB("10000001"
                       "01000010"

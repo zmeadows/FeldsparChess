@@ -79,19 +79,26 @@ void generate_moves_internal(const Game& game, MoveBuffer& moves)
         });
     };
 
-    const Bitboard king_danger_squares = attacked<true, true>(board, OPPONENT_COLOR);
+    constexpr AttackedFlags ATTACKED_FLAGS = {.ATTACKING_COLOR = OPPONENT_COLOR,
+                                              .REMOVE_KING = true};
+
+    const Bitboard king_danger_squares = attacked<ATTACKED_FLAGS>(board);
+
     const Bitboard safe_king_moves = get_king_moves(king_square) & ~king_danger_squares;
     DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, safe_king_moves);
     build_moves(king_square, safe_king_moves, King);
 
-    // If the king is in double+ check, the only legal moves are king moves, so return early.
     if (check_multiplicity > 1) [[unlikely]] {
+        // If the king is in double+ check, the only legal moves are king moves.
+        // Since we just added those to the move buffer, we can return early.
         return;
     } else if (check_multiplicity == 1) [[unlikely]] {
         capture_mask = king_attackers;
         const Square checker_square = bitboard_bsf(king_attackers);
 
         if (is_slider(opponent_piece_type_at(checker_square))) {
+            // When in check by sliding piece, the only allowed quiet moves for
+            // non-King pieces must block the attack on the king. 
             quiet_mask &= ray_between_squares(king_square, checker_square);
         } else {
             quiet_mask = BITBOARD_EMPTY;
@@ -415,7 +422,7 @@ void generate_moves_internal(const Game& game, MoveBuffer& moves)
     }
 }
 
-export template <MoveGenFlags FLAGS = {}>
+export template <MoveGenFlags FLAGS = MoveGenFlags()>
 void __forceinline generate_moves(const Game& game, MoveBuffer& moves)
 {
     using enum Color;
