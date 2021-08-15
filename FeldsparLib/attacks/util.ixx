@@ -61,7 +61,7 @@ Bitboard attacked(const Board& board)
     Bitboard defending_pieces = get_occupied(board, DEFENDING_COLOR);
 
     if constexpr (FLAGS.REMOVE_KING) {
-        defending_pieces &= bitboard_flipped(get_pieces(board, King, DEFENDING_COLOR));
+        defending_pieces ^= get_pieces(board, King, DEFENDING_COLOR);
     }
 
     const Bitboard attacking_pieces = get_occupied(board, ATTACKING_COLOR);
