@@ -68,7 +68,7 @@ constexpr inline Bitboard KNIGHT_ATTACKS[64] = {132096,
                                                 4679521487814656,
                                                 9077567998918656};
 
-export constexpr inline Bitboard get_knight_moves(Square sq) { return KNIGHT_ATTACKS[sq]; }
+export constexpr __forceinline Bitboard get_knight_moves(Square sq) { return KNIGHT_ATTACKS[sq]; }
 
 constexpr inline Bitboard KING_ATTACKS[64] = {770,
                                               1797,
@@ -135,7 +135,7 @@ constexpr inline Bitboard KING_ATTACKS[64] = {770,
                                               11592265440851656704,
                                               4665729213955833856};
 
-export constexpr inline Bitboard get_king_moves(Square sq) { return KING_ATTACKS[sq]; }
+export constexpr __forceinline Bitboard get_king_moves(Square sq) { return KING_ATTACKS[sq]; }
 
 constexpr inline Bitboard PAWN_ATTACKS[2 * 64] = {512,
                                                   1280,
@@ -266,7 +266,7 @@ constexpr inline Bitboard PAWN_ATTACKS[2 * 64] = {512,
                                                   45035996273704960,
                                                   18014398509481984};
 
-export constexpr Bitboard get_pawn_attacks(Square sq, Color color)
+export constexpr __forceinline Bitboard get_pawn_attacks(Square sq, Color color)
 {
     return PAWN_ATTACKS[static_cast<S64>(color) * 64 + sq];
 }

@@ -12,6 +12,7 @@ import attacks.base;
 import attacks.util;
 
 import unstd.io;
+import unstd.random;
 
 import<cstdlib>;
 import<cstdio>;
@@ -27,6 +28,21 @@ int main()
 
     QuadBitboard qbb = pack(set_bits<a1, h1, a8, h8>());
     print(qbb);
+
+    constexpr auto numbers = crand<1000>(123454345);
+
+    auto odd_count = 0;
+    auto even_count = 0;
+    for (const U64 x : numbers) {
+        to_stdout("{}\n", x);
+        if (x % 2 == 0) {
+            even_count++;
+        } else {
+            odd_count++;
+        }
+    }
+
+    to_stdout("odd = {}, even = {}", odd_count, even_count);
 
     return 0;
 }

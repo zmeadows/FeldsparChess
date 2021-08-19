@@ -89,7 +89,7 @@ void generate_moves_internal(const Game& game, MoveBuffer& moves)
     build_moves(king_square, safe_king_moves, King);
 
     if (check_multiplicity > 1) [[unlikely]] {
-        // If the king is in double+ check, the only legal moves are king moves.
+        // If the king is in double check, the only legal moves are king moves.
         // Since we just added those to the move buffer, we can return early.
         return;
     } else if (check_multiplicity == 1) [[unlikely]] {

@@ -540,7 +540,7 @@ const Bitboard RAY_TABLE[8 * 64] = {
     0,
 };
 
-inline constexpr bool is_positive_direction(Direction dir)
+constexpr __forceinline bool is_positive_direction(Direction dir)
 {
     switch (dir) {
         case Direction::East:
@@ -558,7 +558,7 @@ inline constexpr bool is_positive_direction(Direction dir)
 
 // TODO: East/West seem to be reversed here?
 export template <Direction DIR>
-constexpr Bitboard get_ray_attacks(Square sq, Bitboard occupied)
+constexpr inline Bitboard get_ray_attacks(Square sq, Bitboard occupied)
 {
     constexpr S64 DIR_IDX = 64 * static_cast<S64>(DIR);
 
@@ -580,7 +580,7 @@ constexpr Bitboard get_ray_attacks(Square sq, Bitboard occupied)
     return attacks;
 }
 
-Bitboard get_ray_attacks(Square sq, Bitboard occupied, Direction dir)
+Bitboard __forceinline get_ray_attacks(Square sq, Bitboard occupied, Direction dir)
 {
     using enum Direction;
     switch (dir) {
@@ -605,7 +605,7 @@ Bitboard get_ray_attacks(Square sq, Bitboard occupied, Direction dir)
     }
 }
 
-export constexpr Bitboard get_bishop_attacks(Square sq, Bitboard occupied)
+export constexpr __forceinline Bitboard get_bishop_attacks(Square sq, Bitboard occupied)
 {
     return get_ray_attacks<Direction::NorthEast>(sq, occupied) |
            get_ray_attacks<Direction::SouthEast>(sq, occupied) |
@@ -613,7 +613,7 @@ export constexpr Bitboard get_bishop_attacks(Square sq, Bitboard occupied)
            get_ray_attacks<Direction::SouthWest>(sq, occupied);
 }
 
-export constexpr Bitboard get_rook_attacks(Square sq, Bitboard occupied)
+export constexpr __forceinline Bitboard get_rook_attacks(Square sq, Bitboard occupied)
 {
     return get_ray_attacks<Direction::North>(sq, occupied) |
            get_ray_attacks<Direction::South>(sq, occupied) |
@@ -621,19 +621,19 @@ export constexpr Bitboard get_rook_attacks(Square sq, Bitboard occupied)
            get_ray_attacks<Direction::West>(sq, occupied);
 }
 
-export constexpr Bitboard get_queen_attacks(Square sq, Bitboard occupied)
+export constexpr __forceinline Bitboard get_queen_attacks(Square sq, Bitboard occupied)
 {
     return get_bishop_attacks(sq, occupied) | get_rook_attacks(sq, occupied);
 }
 
-export constexpr Bitboard xray_rook_attacks(Bitboard occ, Bitboard blockers, Square rook_square)
+export constexpr __forceinline Bitboard xray_rook_attacks(Bitboard occ, Bitboard blockers, Square rook_square)
 {
     Bitboard attacks = get_rook_attacks(rook_square, occ);
     blockers &= attacks;
     return attacks ^ get_rook_attacks(rook_square, occ ^ blockers);
 }
 
-export constexpr Bitboard xray_bishop_attacks(Bitboard occ, Bitboard blockers, Square bishop_square)
+export constexpr __forceinline Bitboard xray_bishop_attacks(Bitboard occ, Bitboard blockers, Square bishop_square)
 {
     Bitboard attacks = get_bishop_attacks(bishop_square, occ);
     blockers &= attacks;

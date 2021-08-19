@@ -1,6 +1,7 @@
 export module unstd.random;
 
 import unstd.core;
+import<array>;
 
 export template <typename T>
 T rand()
@@ -44,3 +45,34 @@ U64 rand<U64>(const U64 min, const U64 max)
 {
     return min + (rand<U64>() % (max - min + 1));
 }
+
+// en.wikipedia.org/wiki/Permuted_congruential_generator
+export template <size_t N>
+constexpr std::array<U64,N> crand(U64 seed) {
+    std::array<U64, N> numbers;
+
+    constexpr U64 multiplier = 6364136223846793005u;
+    constexpr U64 increment = 1442695040888963407u; // arbitrary odd constant
+    U64 state = seed + increment;
+
+    constexpr auto rotr32 = [](uint32_t x, unsigned r) -> U32 { return x >> r | x << (-r & 31); };
+
+    constexpr auto pcg32 = [&]() -> U32 {
+        uint64_t x = state;
+        unsigned count = (unsigned)(x >> 59); // 59 = 64 - 5
+
+        state = x * multiplier + increment;
+        x ^= x >> 18;                              // 18 = (64 - 27)/2
+        return rotr32((uint32_t)(x >> 27), count); // 27 = 32 - 5
+    };
+
+    // Use combination of two 32-bit random numbers to create a random 64-bit number.
+    for (auto i = 0; i < N; i++) {
+        const U64 msbs = static_cast<U64>(pcg32());
+        const U64 lsbs = static_cast<U64>(pcg32());
+        numbers[i] = (msbs << 32) | lsbs;
+    }
+
+    return numbers;
+}
+
