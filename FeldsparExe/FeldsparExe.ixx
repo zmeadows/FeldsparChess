@@ -29,7 +29,7 @@ int main()
     QuadBitboard qbb = pack(set_bits<a1, h1, a8, h8>());
     print(qbb);
 
-    constexpr auto numbers = crand<1000>(123454345);
+    constexpr auto numbers = comptime_randoms<1000>(123454345);
 
     auto odd_count = 0;
     auto even_count = 0;
