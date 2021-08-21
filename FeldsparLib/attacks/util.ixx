@@ -8,6 +8,7 @@ import quad;
 
 import<cstdio>;
 
+import attacks.base;
 import attacks.classical;
 
 // qsliders = {rq,rq,bq,bq}

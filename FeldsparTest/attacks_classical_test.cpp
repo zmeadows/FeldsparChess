@@ -372,9 +372,6 @@ TEST(ClassicalAttacks, QueenAttackRays)
 
 TEST(ClassicalAttacks, RayBetweenSquares)
 {
-    // TODO: make these rays compile time generated
-    init_rays_between_squares();
-
     {
         const Bitboard ray = ray_between_squares(0, 7);
 

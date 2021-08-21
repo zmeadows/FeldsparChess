@@ -4,7 +4,7 @@ import unstd.core;
 import<array>;
 
 export template <typename T>
-T rand()
+T rand(void)
 {
     static_assert(false, "unstd.rand not implemented for type.");
     return T();
@@ -52,31 +52,32 @@ U64 rand<U64>(const U64 min, const U64 max)
 export template <size_t N>
 constexpr std::array<U64,N> comptime_randoms(U64 seed)
 {
-    constexpr U64 multiplier = 6364136223846793005u;
-    constexpr U64 increment = 1442695040888963407u; // arbitrary odd constant
+    constexpr U64 multiplier = 6364136223846793005ULL;
+    constexpr U64 increment = 1442695040888963407ULL; // arbitrary odd constant
 
-    constexpr auto rotr32 = [](uint32_t x, U32 r) -> U32 {
+    // bit permutation
+    constexpr auto rotr32 = [](U32 x, U32 r) -> U32 {
         return x >> r | x << ((~r + 1) & 31);
     };
 
     U64 state = seed + increment;
     constexpr auto pcg32 = [&]() -> U32 {
-        uint64_t x = state;
+        U64 x = state;
         const U32 count = static_cast<U32>(x >> 59); // 59 = 64 - 5
         state = x * multiplier + increment;
         x ^= x >> 18;                              // 18 = (64 - 27)/2
-        return rotr32((uint32_t)(x >> 27), count); // 27 = 32 - 5
+        return rotr32(static_cast<U32>(x >> 27), count); // 27 = 32 - 5
     };
 
-    std::array<U64, N> numbers;
+    std::array<U64, N> results;
 
-    // Use combination of two 32-bit random numbers to create a random 64-bit number.
+    // Use OR of two 32-bit random numbers to construct a random 64-bit number.
     for (auto i = 0; i < N; i++) {
-        const U64 left = static_cast<U64>(pcg32());
-        const U64 right = static_cast<U64>(pcg32());
-        numbers[i] = (left << 32) | right;
+        const U64 left32 = static_cast<U64>(pcg32());
+        const U64 right32 = static_cast<U64>(pcg32());
+        results[i] = (left32 << 32) | right32;
     }
 
-    return numbers;
+    return results;
 }
 

@@ -8,8 +8,6 @@ import attacks.classical;
 
 TEST(Perft, ChessProgrammingResults)
 {
-    init_rays_between_squares();
-
     {
         const auto results = perft("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 6);
         EXPECT_EQ(results[0].node_count, 20);

@@ -6,15 +6,6 @@ import attacks.base;
 
 import unstd.core;
 
-constexpr const Bitboard INNER_SQUARES = BB("00000000"
-                                            "01111110"
-                                            "01111110"
-                                            "01111110"
-                                            "01111110"
-                                            "01111110"
-                                            "01111110"
-                                            "00000000");
-
 struct MagicSquare {
     Bitboard* table_chunk = nullptr;
     Bitboard mask = 0;

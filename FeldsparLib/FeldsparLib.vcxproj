@@ -188,6 +188,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="attacks\rays.ixx" />
     <ClCompile Include="bitboard.ixx" />
     <ClCompile Include="board.ixx" />
     <ClCompile Include="mcts.ixx" />

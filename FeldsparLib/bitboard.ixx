@@ -4,8 +4,9 @@ export module bitboard;
 
 import prelude;
 
-import<cassert>;
-import<intrin.h>;
+import <cassert>;
+import <intrin.h>;
+import <type_traits>;
 
 template <U64 N, U64 I>
 constexpr Bitboard BB_helper(const char* input)
@@ -107,6 +108,24 @@ export inline constexpr Bitboard MAIN_ANTIDIAGONAL = BB("10000000"
                                                         "00000010"
                                                         "00000001");
 
+export inline constexpr Bitboard INNER_SQUARES = BB("00000000"
+                                                    "01111110"
+                                                    "01111110"
+                                                    "01111110"
+                                                    "01111110"
+                                                    "01111110"
+                                                    "01111110"
+                                                    "00000000");
+
+export inline constexpr Bitboard OUTER_SQUARES = BB("11111111"
+                                                    "10000001"
+                                                    "10000001"
+                                                    "10000001"
+                                                    "10000001"
+                                                    "10000001"
+                                                    "10000001"
+                                                    "11111111");
+
 export __forceinline constexpr bool bitboard_is_empty(const Bitboard bb) { return bb == BITBOARD_EMPTY; }
 export __forceinline constexpr bool bitboard_is_occupied(const Bitboard bb) { return bb != BITBOARD_EMPTY; }
 export __forceinline constexpr bool bitboard_is_full(const Bitboard bb) { return bb == BITBOARD_FULL; }
@@ -138,18 +157,46 @@ constexpr __forceinline Bitboard set_bits(void)
 export __forceinline constexpr Bitboard bitboard_flipped(Bitboard bb) { return ~bb; }
 
 // TODO: https://stackoverflow.com/questions/46654836/way-to-effectively-call-bitscanreverse-or-builtin-clz-in-constexpr-functions
-export __forceinline Square bitboard_bsf(Bitboard bb)
+export constexpr __forceinline Square bitboard_bsf(Bitboard bb)
 {
-    unsigned long idx = 0;
-    _BitScanForward64(&idx, bb);
-    return static_cast<Square>(idx);
+    if constexpr (std::is_constant_evaluated()) {
+        constexpr int index64[64] = {0,  1,  48, 2,  57, 49, 28, 3,  61, 58, 50, 42, 38, 29, 17, 4,
+                                     62, 55, 59, 36, 53, 51, 43, 22, 45, 39, 33, 30, 24, 18, 12, 5,
+                                     63, 47, 56, 27, 60, 41, 37, 16, 54, 35, 52, 21, 44, 32, 23, 11,
+                                     46, 26, 40, 15, 34, 20, 31, 10, 25, 14, 19, 9,  13, 8,  7,  6};
+
+        const U64 debruijn64 = 0x03f79d71b4cb0a89ULL;
+        assert(bb != 0);
+        return index64[((bb & -bb) * debruijn64) >> 58];
+    } else {
+        unsigned long idx = 0;
+        _BitScanForward64(&idx, bb);
+        return static_cast<Square>(idx);
+    }
 }
 
-export __forceinline Square bitboard_bsr(Bitboard bb)
+export constexpr __forceinline Square bitboard_bsr(Bitboard bb)
 {
-    unsigned long idx = 0;
-    _BitScanReverse64(&idx, bb);
-    return static_cast<Square>(idx);
+    if constexpr (std::is_constant_evaluated()) {
+        constexpr int index64[64] = {0,  47, 1,  56, 48, 27, 2,  60, 57, 49, 41, 37, 28, 16, 3,  61,
+                                     54, 58, 35, 52, 50, 42, 21, 44, 38, 32, 29, 23, 17, 11, 4,  62,
+                                     46, 55, 26, 59, 40, 36, 15, 53, 34, 51, 20, 43, 31, 22, 10, 45,
+                                     25, 39, 14, 33, 19, 30, 9,  24, 13, 18, 8,  12, 7,  6,  5,  63};
+
+        const U64 debruijn64 = 0x03f79d71b4cb0a89ULL;
+        assert(bb != 0);
+        bb |= bb >> 1;
+        bb |= bb >> 2;
+        bb |= bb >> 4;
+        bb |= bb >> 8;
+        bb |= bb >> 16;
+        bb |= bb >> 32;
+        return index64[(bb * debruijn64) >> 58];
+    } else {
+        unsigned long idx = 0;
+        _BitScanReverse64(&idx, bb);
+        return static_cast<Square>(idx);
+    }
 }
 
 export __forceinline S64 bitboard_popcount(Bitboard bb) { return static_cast<S64>(__popcnt64(bb)); }

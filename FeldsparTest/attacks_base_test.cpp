@@ -7,6 +7,7 @@ import bitboard;
 import board;
 import print;
 
+import attacks.base;
 import attacks.classical;
 import attacks.util;
 
