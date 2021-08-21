@@ -2,8 +2,9 @@ export module prelude;
 
 export import unstd.core;
 
-// import<cassert>;
 import<string>;
+
+#include "unstd/macros.h"
 
 export using Bitboard = U64;
 
@@ -16,7 +17,7 @@ export __forceinline constexpr S64 file_of(Square sq) { return 8 - (sq % 8); }
 export __forceinline constexpr Square from_rank_file(S64 rank, S64 file)
 {
     const Square sq = rank * 8 - file;
-    // assert(sq >= 0 && sq <= 63);
+    assert(sq >= 0 && sq <= 63);
     return sq;
 }
 
@@ -287,14 +288,14 @@ export constexpr const char* square_to_algebraic(Square sq)
     }
 }
 
-export __forceinline MaybeSquare square_from_algebraic(const std::string& alg)
+export __forceinline MaybeSquare square_from_algebraic(const char* alg)
 {
-    if (alg.size() != 2) [[unlikely]] {
+    if (strlen(alg) != 2) [[unlikely]] {
         return {};
     }
 
     const S64 rank = static_cast<S64>(alg[1] - '0');
-    const S64 file = 1 + alg[0] - 'a';
+    const S64 file = static_cast<S64>(1 + alg[0] - 'a');
 
     return from_rank_file(rank, file);
 }

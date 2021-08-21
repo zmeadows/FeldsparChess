@@ -7,7 +7,7 @@ import attacks.rays;
 
 #include "../unstd/macros.h"
 
-// export import attacks.base;
+export import attacks.base;
 
 export constexpr __forceinline Bitboard get_bishop_attacks(Square sq, Bitboard occupied)
 {

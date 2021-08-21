@@ -106,16 +106,22 @@ __forceinline void make_move_internal(Game& game, Move move)
     const PieceType moved_ptype = moved_piece_type(move);
 
     const auto cancel_castling_rights = [&](CastlingRights to_remove) {
-        if constexpr (UPDATE_HASH) hash_update_castling_rights(game.hash, game.castling_rights);
+        if constexpr (UPDATE_HASH) {
+            hash_update_castling_rights(game.hash, game.castling_rights);
+        }
+
         remove_castling_rights(game.castling_rights, to_remove);
-        if constexpr (UPDATE_HASH) hash_update_castling_rights(game.hash, game.castling_rights);
+
+        if constexpr (UPDATE_HASH) {
+            hash_update_castling_rights(game.hash, game.castling_rights);
+        }
     };
 
-    // TODO: should we not be updating hash for the to_sq on pawn promotion?
     if constexpr (UPDATE_HASH) {
         hash_update_piece_square(game.hash, MOVING_COLOR, moved_ptype, from_sq);
         hash_update_piece_square(game.hash, MOVING_COLOR, moved_ptype, to_sq);
     }
+
     get_pieces_mut(game.board, moved_ptype, MOVING_COLOR) ^= from_to_bit;
     get_occupied_mut(game.board, MOVING_COLOR) ^= from_to_bit;
 
@@ -166,7 +172,8 @@ __forceinline void make_move_internal(Game& game, Move move)
     }
 
     // handle special cases, e.g. castling
-    switch (moved_ptype) {
+    switch (moved_ptype)
+    {
         case Pawn: {
             if (flag == DOUBLE_PAWN_PUSH_FLAG) {
                 if constexpr (UPDATE_HASH) {
@@ -212,8 +219,10 @@ __forceinline void make_move_internal(Game& game, Move move)
                     }
                 }
             }
+
             break;
         }
+
         case Rook: {
             if constexpr (MOVING_COLOR == Color::White) {
                 if (from_sq == h1) [[unlikely]] {
@@ -228,11 +237,11 @@ __forceinline void make_move_internal(Game& game, Move move)
                     cancel_castling_rights(CASTLE_RIGHTS_BLACK_QUEENSIDE);
                 }
             }
+
             break;
         }
-        case King: {
 
-            // TODO: bugged still...?
+        case King: {
             if constexpr (MOVING_COLOR == Color::White) {
                 cancel_castling_rights(CASTLE_RIGHTS_WHITE_KINGSIDE);
                 cancel_castling_rights(CASTLE_RIGHTS_WHITE_QUEENSIDE);
@@ -242,7 +251,6 @@ __forceinline void make_move_internal(Game& game, Move move)
             }
 
             if (flag == KING_CASTLE_FLAG || flag == QUEEN_CASTLE_FLAG) [[unlikely]] {
-
                 Square rook_from_sq, rook_to_sq;
 
                 if constexpr (MOVING_COLOR == Color::White) {
@@ -255,7 +263,7 @@ __forceinline void make_move_internal(Game& game, Move move)
                         rook_from_sq = a1;
                         rook_to_sq = d1;
                     }
-                } else { // MOVING_COLOR == Color::Black
+                } else {
                     if (flag == KING_CASTLE_FLAG) [[unlikely]] {
                         assert(from_sq == e8);
                         rook_from_sq = h8;
@@ -280,6 +288,7 @@ __forceinline void make_move_internal(Game& game, Move move)
 
             break;
         }
+
         default: {
             break;
         }

@@ -2,9 +2,8 @@ export module attacks.magic;
 
 import prelude;
 import bitboard;
-import attacks.base;
 
-import unstd.core;
+export import attacks.base;
 
 struct MagicSquare {
     Bitboard* table_chunk = nullptr;

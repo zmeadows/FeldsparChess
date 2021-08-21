@@ -177,7 +177,7 @@ std::optional<Game> game_from_fen_internal(const std::string& fen)
             return {};
         }
 
-        if (MaybeSquare sq = square_from_algebraic(fen_ep); sq.has_value()) {
+        if (MaybeSquare sq = square_from_algebraic(fen_ep.c_str()); sq.has_value()) {
             game.ep_square = sq;
         } else {
             WARN("Couldn't convert En Passant target square from algebraic notation.");
