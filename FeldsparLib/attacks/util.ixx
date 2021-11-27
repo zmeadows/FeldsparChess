@@ -51,7 +51,7 @@ export struct AttackedFlags {
 };
 
 export template <AttackedFlags FLAGS = AttackedFlags()>
-Bitboard attacked(const Board& board)
+[[msvc::forceinline_calls]] Bitboard attacked(const Board& board)
 {
     using enum PieceType;
 
@@ -109,7 +109,9 @@ Bitboard attacked(const Board& board)
     return attacked;
 }
 
-export constexpr Bitboard attackers(const Board& board, Color color, Square sq)
+
+export [[msvc::forceinline_calls]] constexpr __ALWAYS_INLINE Bitboard attackers(const Board& board, Color color,
+                                                                Square sq)
 {
     using enum PieceType;
 

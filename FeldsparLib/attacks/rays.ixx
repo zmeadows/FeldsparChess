@@ -1,5 +1,7 @@
 export module attacks.rays;
 
+#include "../unstd/macros.h"
+
 import prelude;
 import bitboard;
 
@@ -553,7 +555,7 @@ constexpr bool is_positive_direction(Direction dir)
 
 // TODO: East/West seem to be reversed here?
 export template <Direction DIR>
-constexpr __forceinline Bitboard get_ray_attacks(Square sq, Bitboard occupied)
+constexpr Bitboard get_ray_attacks(Square sq, Bitboard occupied)
 {
     constexpr S64 DIR_IDX = 64 * static_cast<S64>(DIR);
 
@@ -600,8 +602,8 @@ constexpr Bitboard get_ray_attacks(Square sq, Bitboard occupied, Direction dir)
     }
 }
 
-// convert to constexpr array
-constexpr std::array<Bitboard, 64 * 64> RAYS_BETWEEN_SQUARES = []() {
+// TODO: write simple constexpr container alternative without std library overhead.
+export const std::array<Bitboard, 64 * 64> RAYS_BETWEEN_SQUARES = []() {
     std::array<Bitboard, 64 * 64> rays;
 
     U64 idx = 0;
@@ -623,7 +625,7 @@ constexpr std::array<Bitboard, 64 * 64> RAYS_BETWEEN_SQUARES = []() {
     return rays;
 }();
 
-export __forceinline Bitboard ray_between_squares(Square a, Square b)
+export __ALWAYS_INLINE Bitboard ray_between_squares(Square a, Square b)
 {
     return RAYS_BETWEEN_SQUARES[a * 64 + b];
 }

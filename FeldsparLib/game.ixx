@@ -54,7 +54,7 @@ std::optional<Game> game_from_fen_internal(const std::string& fen)
     Game game;
 
     Square current_square = 63;
-    constexpr auto decrement_square = [&](Square n) -> void {
+    auto decrement_square = [&](Square n) -> void {
         if (current_square >= n) [[likely]] {
             current_square -= n;
         } else [[unlikely]] {
@@ -62,7 +62,7 @@ std::optional<Game> game_from_fen_internal(const std::string& fen)
         }
     };
 
-    constexpr auto add_piece = [&](PieceType ptype, Color col) {
+    auto add_piece = [&](PieceType ptype, Color col) {
         const Bitboard bitrep = square_bitrep(current_square);
         get_pieces_mut(game.board, ptype, col) |= bitrep;
         get_occupied_mut(game.board, col) |= bitrep;

@@ -45,16 +45,16 @@ const T& min(const T& a, const T& b)
 export template <class T>
 struct EnumRange {
     struct Iterator {
-        explicit __forceinline constexpr Iterator(int v) : value(v) {}
-        __forceinline constexpr void operator++() { ++value; }
-        __forceinline constexpr bool operator!=(Iterator rhs) { return value != rhs.value; }
-        __forceinline constexpr T operator*() const { return static_cast<T>(value); }
+        explicit constexpr __ALWAYS_INLINE Iterator(int v) : value(v) {}
+        constexpr __ALWAYS_INLINE void operator++() { ++value; }
+        constexpr __ALWAYS_INLINE bool operator!=(Iterator rhs) { return value != rhs.value; }
+        constexpr __ALWAYS_INLINE T operator*() const { return static_cast<T>(value); }
 
         int value = 0;
     };
 
-    constexpr __forceinline Iterator begin() const { return Iterator(0); }
-    constexpr __forceinline Iterator end() const { return Iterator(static_cast<int>(T::LAST) + 1); }
+    constexpr __ALWAYS_INLINE Iterator begin() const { return Iterator(0); }
+    constexpr __ALWAYS_INLINE Iterator end() const { return Iterator(static_cast<int>(T::LAST) + 1); }
 };
 
 // Same idea as std::optional<T>, but for small types where one can easily define a
@@ -66,39 +66,39 @@ class alignas(alignof(T)) Maybe {
     T m_data;
 
 public:
-    [[nodiscard]] __forceinline bool has_value() const { return m_data != SENTINEL; }
+    [[nodiscard]] __ALWAYS_INLINE bool has_value() const { return m_data != SENTINEL; }
 
-    __forceinline void clear() { m_data = SENTINEL; }
+    __ALWAYS_INLINE void clear() { m_data = SENTINEL; }
 
-    [[nodiscard]] __forceinline T& operator*()
+    [[nodiscard]] __ALWAYS_INLINE T& operator*()
     {
         assert(m_data != SENTINEL);
         return m_data;
     }
 
-    [[nodiscard]] __forceinline const T& operator*() const
+    [[nodiscard]] __ALWAYS_INLINE const T& operator*() const
     {
         assert(m_data != SENTINEL);
         return m_data;
     }
 
-    __forceinline constexpr Maybe(void) : m_data(SENTINEL) {}
-    __forceinline constexpr Maybe(const T& value) : m_data(value) {}
-    __forceinline constexpr Maybe(const Maybe<T, SENTINEL>& other) : m_data(other.m_data) {}
+    __ALWAYS_INLINE constexpr Maybe(void) : m_data(SENTINEL) {}
+    __ALWAYS_INLINE constexpr Maybe(const T& value) : m_data(value) {}
+    __ALWAYS_INLINE constexpr Maybe(const Maybe<T, SENTINEL>& other) : m_data(other.m_data) {}
 
-    __forceinline Maybe operator=(const Maybe& other)
+    __ALWAYS_INLINE Maybe operator=(const Maybe& other)
     {
         m_data = other.m_data;
         return *this;
     }
 
-    __forceinline Maybe& operator=(Maybe&& other) noexcept
+    __ALWAYS_INLINE Maybe& operator=(Maybe&& other) noexcept
     {
         m_data = other.m_data;
         return *this;
     }
 
-    __forceinline bool operator==(const Maybe<T, SENTINEL>& other) const
+    __ALWAYS_INLINE bool operator==(const Maybe<T, SENTINEL>& other) const
     {
         return this->m_data == other.m_data;
     }

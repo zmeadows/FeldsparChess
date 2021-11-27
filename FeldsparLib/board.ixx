@@ -1,5 +1,7 @@
 export module board;
 
+#include "unstd/macros.h"
+
 import prelude;
 import bitboard;
 
@@ -22,36 +24,36 @@ export using Board = Bitboard[BOARD_SIZE];
 // Board[12] = White Occupied (OR of all White pieces)
 // Board[13] = Black Occupied (OR of all Black pieces)
 
-export __forceinline constexpr Bitboard get_pieces(const Board& board, const PieceType p,
+export __ALWAYS_INLINE constexpr Bitboard get_pieces(const Board& board, const PieceType p,
                                                    const Color c)
 {
     const size_t idx = 2 * static_cast<size_t>(p) + static_cast<size_t>(c);
     return board[idx];
 }
 
-export __forceinline constexpr Bitboard& get_pieces_mut(Board& board, const PieceType p,
+export __ALWAYS_INLINE constexpr Bitboard& get_pieces_mut(Board& board, const PieceType p,
                                                         const Color c)
 {
     const size_t idx = 2 * static_cast<size_t>(p) + static_cast<size_t>(c);
     return board[idx];
 }
 
-export __forceinline constexpr Bitboard get_occupied(const Board& board, const Color c)
+export __ALWAYS_INLINE constexpr Bitboard get_occupied(const Board& board, const Color c)
 {
     return board[12 + static_cast<size_t>(c)];
 }
 
-export __forceinline constexpr Bitboard& get_occupied_mut(Board& board, const Color c)
+export __ALWAYS_INLINE constexpr Bitboard& get_occupied_mut(Board& board, const Color c)
 {
     return board[12 + static_cast<size_t>(c)];
 }
 
-export __forceinline constexpr Bitboard get_occupied(const Board& board)
+export __ALWAYS_INLINE constexpr Bitboard get_occupied(const Board& board)
 {
     return get_occupied(board, Color::White) | get_occupied(board, Color::Black);
 }
 
-export __forceinline constexpr Bitboard get_unoccupied(const Board& board)
+export __ALWAYS_INLINE constexpr Bitboard get_unoccupied(const Board& board)
 {
     return ~get_occupied(board);
 }

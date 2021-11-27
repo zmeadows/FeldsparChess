@@ -15,7 +15,7 @@ export struct Pins {
     static Pins create(const Board& board, const Color friendly_color);
 };
 
-export Pins Pins::create(const Board& board, const Color friendly_color)
+export [[msvc::forceinline_calls]] __ALWAYS_INLINE Pins Pins::create(const Board& board, const Color friendly_color)
 {
     using enum PieceType;
 

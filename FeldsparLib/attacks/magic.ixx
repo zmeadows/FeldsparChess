@@ -1,5 +1,7 @@
 export module attacks.magic;
 
+#include "../unstd/macros.h"
+
 import prelude;
 import bitboard;
 
@@ -14,7 +16,7 @@ struct MagicSquare {
 
 // TODO: this is just a stub, implement the real permutations
 export template <typename Callable>
-inline void for_each_mask_permutation(Bitboard mask, Callable&& f)
+__ALWAYS_INLINE void for_each_mask_permutation(Bitboard mask, Callable&& f)
 {
     while (mask != 0) {
         f(mask);

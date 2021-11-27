@@ -25,7 +25,7 @@ export struct MoveGenFlags {
 };
 
 template <Color FRIENDLY_COLOR, MoveGenFlags FLAGS>
-void generate_moves_internal(const Game& game, MoveBuffer& moves)
+__FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveBuffer& moves)
 {
     using enum PieceType;
 
@@ -242,7 +242,6 @@ void generate_moves_internal(const Game& game, MoveBuffer& moves)
 
     { // Non-diagonally pinned pawns
         if constexpr (FRIENDLY_COLOR == Color::White) {
-
             singly_advanced_pawns =
                 empty_squares &
                 bitboard_shifted(friendly_pawns & pinned_only_nondiagonally, Direction::North);
@@ -331,16 +330,10 @@ void generate_moves_internal(const Game& game, MoveBuffer& moves)
                         bitboard_shifted(to_bit, Direction::NorthEast);
         }
 
-        serialize(from_bits, [&](Square from) {
+        serialize(from_bits & friendly_pawns, [&](Square from) {
             assert(is_valid_square(from));
 
-            const Bitboard from_bit = square_bitrep(from);
-            if (bitboard_is_empty(from_bit & friendly_pawns)) [[likely]] {
-                return;
-            }
-
-            const Bitboard to_bit = square_bitrep(to);
-            const Bitboard from_to_bit = from_bit | to_bit;
+            const Bitboard from_to_bit = square_bitrep(from) | to_bit;
 
             Bitboard captured_bit;
             if constexpr (FRIENDLY_COLOR == Color::White) {
@@ -423,7 +416,7 @@ void generate_moves_internal(const Game& game, MoveBuffer& moves)
 }
 
 export template <MoveGenFlags FLAGS = MoveGenFlags()>
-void __forceinline generate_moves(const Game& game, MoveBuffer& moves)
+void __ALWAYS_INLINE generate_moves(const Game& game, MoveBuffer& moves)
 {
     using enum Color;
     if (game.to_move == White) {

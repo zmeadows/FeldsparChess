@@ -34,7 +34,7 @@ void for_each_line_in_process_stdout(const std::string& cmd, Callable&& f)
 }
 
 export template <typename FmtType, class... Args>
-__forceinline void to_stdout(const FmtType& fmt, Args&& ...args)
+void to_stdout(const FmtType& fmt, Args&& ...args)
 {
     std::cout << std::format(fmt, std::forward<Args>(args)...);
 }

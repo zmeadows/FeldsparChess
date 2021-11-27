@@ -126,83 +126,89 @@ export inline constexpr Bitboard OUTER_SQUARES = BB("11111111"
                                                     "10000001"
                                                     "11111111");
 
-export __forceinline constexpr bool bitboard_is_empty(const Bitboard bb) { return bb == BITBOARD_EMPTY; }
-export __forceinline constexpr bool bitboard_is_occupied(const Bitboard bb) { return bb != BITBOARD_EMPTY; }
-export __forceinline constexpr bool bitboard_is_full(const Bitboard bb) { return bb == BITBOARD_FULL; }
+export __ALWAYS_INLINE constexpr bool bitboard_is_empty(const Bitboard bb) { return bb == BITBOARD_EMPTY; }
+export __ALWAYS_INLINE constexpr bool bitboard_is_occupied(const Bitboard bb) { return bb != BITBOARD_EMPTY; }
+export __ALWAYS_INLINE constexpr bool bitboard_is_full(const Bitboard bb) { return bb == BITBOARD_FULL; }
 
 // TODO: make tests for these
-export __forceinline constexpr Bitboard set_bit(Bitboard bb, Square sq)
+export __ALWAYS_INLINE constexpr Bitboard set_bit(Bitboard bb, Square sq)
 {
     return bb | (Bitboard(1) << sq);
 }
-export __forceinline constexpr Bitboard clear_bit(Bitboard bb, Square sq)
+export __ALWAYS_INLINE constexpr Bitboard clear_bit(Bitboard bb, Square sq)
 {
     return bb & ~(Bitboard(1) << sq);
 }
-export __forceinline constexpr Bitboard toggle_bit(Bitboard bb, Square sq)
+export __ALWAYS_INLINE constexpr Bitboard toggle_bit(Bitboard bb, Square sq)
 {
     return bb ^ (Bitboard(1) << sq);
 }
-export __forceinline constexpr bool check_bit(Bitboard bb, Square sq)
+export __ALWAYS_INLINE constexpr bool check_bit(Bitboard bb, Square sq)
 {
     return ((bb >> sq) & Bitboard(1)) > 0;
 }
 
 export template <Square... sqs>
-constexpr __forceinline Bitboard set_bits(void)
+constexpr __ALWAYS_INLINE Bitboard set_bits(void)
 {
     return (square_bitrep(sqs) | ...);
 }
 
-export __forceinline constexpr Bitboard bitboard_flipped(Bitboard bb) { return ~bb; }
+export __ALWAYS_INLINE constexpr Bitboard bitboard_flipped(Bitboard bb) { return ~bb; }
 
-// TODO: https://stackoverflow.com/questions/46654836/way-to-effectively-call-bitscanreverse-or-builtin-clz-in-constexpr-functions
-export constexpr __forceinline Square bitboard_bsf(Bitboard bb)
+export __ALWAYS_INLINE Square bitboard_bsf(Bitboard bb)
 {
-    if (std::is_constant_evaluated()) {
-        constexpr Square index64[64] = {
-            0,  1,  48, 2,  57, 49, 28, 3,  61, 58, 50, 42, 38, 29, 17, 4,  62, 55, 59, 36, 53, 51,
-            43, 22, 45, 39, 33, 30, 24, 18, 12, 5,  63, 47, 56, 27, 60, 41, 37, 16, 54, 35, 52, 21,
-            44, 32, 23, 11, 46, 26, 40, 15, 34, 20, 31, 10, 25, 14, 19, 9,  13, 8,  7,  6};
-
-        const U64 debruijn64 = 0x03f79d71b4cb0a89ULL;
-        assert(bb != 0);
-        return index64[((bb & (1ULL + ~bb)) * debruijn64) >> 58];
-    } else {
-        unsigned long idx = 0;
-        _BitScanForward64(&idx, bb);
-        return static_cast<Square>(idx);
-    }
+    unsigned long idx = 0;
+    _BitScanForward64(&idx, bb);
+    return static_cast<Square>(idx);
 }
 
-export constexpr __forceinline Square bitboard_bsr(Bitboard bb)
+export constexpr Square constexpr_bitboard_bsf(Bitboard bb)
 {
-    if (std::is_constant_evaluated()) {
-        constexpr Square index64[64] = {
-            0,  47, 1,  56, 48, 27, 2,  60, 57, 49, 41, 37, 28, 16, 3,  61, 54, 58, 35, 52, 50, 42,
-            21, 44, 38, 32, 29, 23, 17, 11, 4,  62, 46, 55, 26, 59, 40, 36, 15, 53, 34, 51, 20, 43,
-            31, 22, 10, 45, 25, 39, 14, 33, 19, 30, 9,  24, 13, 18, 8,  12, 7,  6,  5,  63};
+    assert(bb != 0);
 
-        const U64 debruijn64 = 0x03f79d71b4cb0a89ULL;
-        assert(bb != 0);
-        bb |= bb >> 1;
-        bb |= bb >> 2;
-        bb |= bb >> 4;
-        bb |= bb >> 8;
-        bb |= bb >> 16;
-        bb |= bb >> 32;
-        return index64[(bb * debruijn64) >> 58];
-    } else {
-        unsigned long idx = 0;
-        _BitScanReverse64(&idx, bb);
-        return static_cast<Square>(idx);
-    }
+    constexpr const Square index64[64] = {
+        0,  1,  48, 2,  57, 49, 28, 3,  61, 58, 50, 42, 38, 29, 17, 4,  62, 55, 59, 36, 53, 51,
+        43, 22, 45, 39, 33, 30, 24, 18, 12, 5,  63, 47, 56, 27, 60, 41, 37, 16, 54, 35, 52, 21,
+        44, 32, 23, 11, 46, 26, 40, 15, 34, 20, 31, 10, 25, 14, 19, 9,  13, 8,  7,  6};
+
+    constexpr U64 debruijn64 = 0x03f79d71b4cb0a89ULL;
+
+    return index64[((bb & (1ULL + ~bb)) * debruijn64) >> 58];
 }
 
-export __forceinline S64 bitboard_popcount(Bitboard bb) { return static_cast<S64>(__popcnt64(bb)); }
+export __ALWAYS_INLINE Square bitboard_bsr(Bitboard bb)
+{
+    unsigned long idx = 0;
+    _BitScanReverse64(&idx, bb);
+    return static_cast<Square>(idx);
+}
+
+export Square constexpr_bitboard_bsr(Bitboard bb)
+{
+    assert(bb != 0);
+
+    constexpr Square index64[64] = {0,  47, 1,  56, 48, 27, 2,  60, 57, 49, 41, 37, 28, 16, 3,  61,
+                                    54, 58, 35, 52, 50, 42, 21, 44, 38, 32, 29, 23, 17, 11, 4,  62,
+                                    46, 55, 26, 59, 40, 36, 15, 53, 34, 51, 20, 43, 31, 22, 10, 45,
+                                    25, 39, 14, 33, 19, 30, 9,  24, 13, 18, 8,  12, 7,  6,  5,  63};
+
+    constexpr U64 debruijn64 = 0x03f79d71b4cb0a89ULL;
+
+    bb |= bb >> 1;
+    bb |= bb >> 2;
+    bb |= bb >> 4;
+    bb |= bb >> 8;
+    bb |= bb >> 16;
+    bb |= bb >> 32;
+
+    return index64[(bb * debruijn64) >> 58];
+}
+
+export __ALWAYS_INLINE S64 bitboard_popcount(Bitboard bb) { return static_cast<S64>(__popcnt64(bb)); }
 
 export template <typename Callable>
-constexpr __forceinline void serialize(Bitboard bb, Callable&& f)
+constexpr __ALWAYS_INLINE void serialize(Bitboard bb, Callable&& f)
 {
     while (bb != 0) {
         f(bitboard_bsf(bb));
@@ -236,21 +242,21 @@ export constexpr Bitboard bitboard_shifted(const Bitboard bb, const Direction di
     }
 }
 
-export __forceinline constexpr Bitboard rank_mask(Square sq) { return FIRST_RANK << (sq & 56); }
-export __forceinline constexpr Bitboard file_mask(Square sq) { return H_FILE << (sq & 7); }
+export __ALWAYS_INLINE constexpr Bitboard rank_mask(Square sq) { return FIRST_RANK << (sq & 56); }
+export __ALWAYS_INLINE constexpr Bitboard file_mask(Square sq) { return H_FILE << (sq & 7); }
 
-export inline constexpr Bitboard rank_mask_ex(Square sq)
+export __ALWAYS_INLINE constexpr Bitboard rank_mask_ex(Square sq)
 {
     return square_bitrep(sq) ^ rank_mask(sq);
 }
 
-export inline constexpr Bitboard file_mask_ex(Square sq)
+export __ALWAYS_INLINE constexpr Bitboard file_mask_ex(Square sq)
 {
     return square_bitrep(sq) ^ file_mask(sq);
 }
 
-// TODO: use algebra of boolean operators to simplify
-export inline constexpr Bitboard diag_mask(Square sq)
+// TODO: use algebra of boolean operators to simplify?
+export __ALWAYS_INLINE constexpr Bitboard diag_mask(Square sq)
 {
     sq = (sq & 56) + 7 - (sq & 7);
     const S64 diag = 8 * (sq & 7) - (sq & 56);
@@ -260,7 +266,7 @@ export inline constexpr Bitboard diag_mask(Square sq)
 }
 
 // TODO: use algebra of boolean operators to simplify
-export inline constexpr Bitboard antidiag_mask(Square sq)
+export __ALWAYS_INLINE constexpr Bitboard antidiag_mask(Square sq)
 {
     sq = (sq & 56) + 7 - (sq & 7);
     const S64 diag = 56 - 8 * (sq & 7) - (sq & 56);
@@ -269,17 +275,17 @@ export inline constexpr Bitboard antidiag_mask(Square sq)
     return (MAIN_ANTIDIAGONAL >> sout) << nort;
 }
 
-export inline constexpr Bitboard diag_mask_ex(Square sq)
+export __ALWAYS_INLINE constexpr Bitboard diag_mask_ex(Square sq)
 {
     return square_bitrep(sq) ^ diag_mask(sq);
 }
 
-export inline constexpr Bitboard antidiag_mask_ex(Square sq)
+export __ALWAYS_INLINE constexpr Bitboard antidiag_mask_ex(Square sq)
 {
     return square_bitrep(sq) ^ antidiag_mask(sq);
 }
 
-export inline constexpr Bitboard bishop_mask_ex(Square sq)
+export __ALWAYS_INLINE constexpr Bitboard bishop_mask_ex(Square sq)
 {
     return diag_mask_ex(sq) | antidiag_mask_ex(sq);
 }

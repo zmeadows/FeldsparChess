@@ -11,10 +11,10 @@ export using Bitboard = U64;
 export using Square = S64;
 export using MaybeSquare = Maybe<Square, -1>;
 
-export constexpr __forceinline bool is_valid_square(Square sq) { return sq >= 0 && sq < 64; }
-export __forceinline constexpr S64 rank_of(Square sq) { return 1 + (sq / 8); }
-export __forceinline constexpr S64 file_of(Square sq) { return 8 - (sq % 8); }
-export __forceinline constexpr Square from_rank_file(S64 rank, S64 file)
+export constexpr __ALWAYS_INLINE bool is_valid_square(Square sq) { return sq >= 0 && sq < 64; }
+export __ALWAYS_INLINE constexpr S64 rank_of(Square sq) { return 1 + (sq / 8); }
+export __ALWAYS_INLINE constexpr S64 file_of(Square sq) { return 8 - (sq % 8); }
+export __ALWAYS_INLINE constexpr Square from_rank_file(S64 rank, S64 file)
 {
     const Square sq = rank * 8 - file;
     assert(sq >= 0 && sq <= 63);
@@ -31,7 +31,7 @@ export inline constexpr CastlingRights CASTLE_RIGHTS_BLACK_KINGSIDE = 0b0100;
 export inline constexpr CastlingRights CASTLE_RIGHTS_BLACK_QUEENSIDE = 0b1000;
 export inline constexpr CastlingRights CASTLE_RIGHTS_BLACK_BOTH = 0b1100;
 
-export __forceinline void remove_castling_rights(CastlingRights& rights, CastlingRights to_remove)
+export __ALWAYS_INLINE void remove_castling_rights(CastlingRights& rights, CastlingRights to_remove)
 {
     rights &= ~(to_remove);
 }
@@ -46,7 +46,7 @@ export inline constexpr Bitboard WHITE_QUEENSIDE_CASTLE_SAFETY_REQ = 1ULL << 4 |
 
 export enum class Color { White = 0, Black = 1, LAST = Black };
 
-export constexpr __forceinline Color operator!(Color c)
+export constexpr __ALWAYS_INLINE Color operator!(Color c)
 {
     return (c == Color::White) ? Color::Black : Color::White;
 }
@@ -72,7 +72,7 @@ export struct Piece {
     PieceType type;
 };
 
-export constexpr __forceinline bool is_slider(const PieceType ptype)
+export constexpr __ALWAYS_INLINE bool is_slider(const PieceType ptype)
 {
     switch (ptype) {
         case PieceType::Bishop:
@@ -288,7 +288,7 @@ export constexpr const char* square_to_algebraic(Square sq)
     }
 }
 
-export __forceinline MaybeSquare square_from_algebraic(const char* alg)
+export __ALWAYS_INLINE MaybeSquare square_from_algebraic(const char* alg)
 {
     if (strlen(alg) != 2) [[unlikely]] {
         return {};

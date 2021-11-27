@@ -8,19 +8,32 @@
 
 #define __SHORT_FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 
+#if USING_WINDOWS
+#define __ALWAYS_INLINE __forceinline
+#else
+#define __ALWAYS_INLINE __attribute__((always_inline))
+#endif
+
+#if USING_WINDOWS
+#define __FLATTEN_CALLS [[msvc::forceinline_calls]]
+#else
+#define __FLATTEN_CALLS __attribute__((flatten))
+#endif
+
 #define WARN(msg)                                                                                  \
     do {                                                                                           \
         if constexpr (USING_WINDOWS) {                                                             \
-            to_stdout("[\x1B[31mWARNING\033[0m] {}:{} :: {}\n", __SHORT_FILENAME__, __LINE__, msg);   \
+            to_stdout("[\x1B[31mWARNING\033[0m] {}:{} :: {}\n", __SHORT_FILENAME__, __LINE__,      \
+                      msg);                                                                        \
         } else {                                                                                   \
-            to_stdout("[WARNING] {}:{} :: {}\n", __SHORT_FILENAME__, __LINE__, msg);                  \
+            to_stdout("[WARNING] {}:{} :: {}\n", __SHORT_FILENAME__, __LINE__, msg);               \
         }                                                                                          \
     } while (0)
 
-#define DEBUG_PRINT_BB(flag, x)                                                                          \
+#define DEBUG_PRINT_BB(flag, x)                                                                    \
     do {                                                                                           \
-        if constexpr (flag) {                                                               \
-            to_stdout("{}:\n", #x);                                                                   \
+        if constexpr (flag) {                                                                      \
+            to_stdout("{}:\n", #x);                                                                \
             print_bitboard(x);                                                                     \
         }                                                                                          \
     } while (0)
@@ -28,7 +41,7 @@
 #define DEBUG_PRINT_BB2(x, descr)                                                                  \
     do {                                                                                           \
         if constexpr (DEBUG_PRINT) {                                                               \
-            to_stdout("{} ({}):\n", #x, descr);                                                       \
+            to_stdout("{} ({}):\n", #x, descr);                                                    \
             print_bitboard(x);                                                                     \
         }                                                                                          \
     } while (0)
@@ -36,7 +49,7 @@
 #define DEBUG_PRINT_QBB(x)                                                                         \
     do {                                                                                           \
         if constexpr (DEBUG_PRINT) {                                                               \
-            to_stdout("{}:\n", #x);                                                                   \
+            to_stdout("{}:\n", #x);                                                                \
             print_quad_bitboard(x);                                                                \
         }                                                                                          \
     } while (0)
@@ -44,7 +57,7 @@
 #define DEBUG_PRINT_QBB2(x, descr)                                                                 \
     do {                                                                                           \
         if constexpr (DEBUG_PRINT) {                                                               \
-            to_stdout("{} ({}):\n", #x, descr);                                                       \
+            to_stdout("{} ({}):\n", #x, descr);                                                    \
             print_quad_bitboard(x);                                                                \
         }                                                                                          \
     } while (0)

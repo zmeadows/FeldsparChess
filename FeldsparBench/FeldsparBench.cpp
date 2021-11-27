@@ -5,8 +5,8 @@ import init;
 import unstd.io;
 
 #include <time.h>
-import<string>;
-import<optional>;
+import <string>;
+import <optional>;
 
 double perft_benchmark(const std::string& name, U64 depth, U64 ntimes, const std::string& fen)
 {

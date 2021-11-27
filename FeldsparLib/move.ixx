@@ -1,5 +1,7 @@
 export module move;
 
+#include "unstd/macros.h"
+
 import prelude;
 import bitboard;
 import board;
@@ -90,7 +92,7 @@ export constexpr PieceType captured_piece_type(Move move)
 
 // TODO: convert bool template parameters to named enums to avoid mixups
 template <Color MOVING_COLOR, bool UPDATE_HASH>
-__forceinline void make_move_internal(Game& game, Move move)
+void __ALWAYS_INLINE make_move_internal(Game& game, Move move)
 {
     using enum PieceType;
 
@@ -341,7 +343,7 @@ export std::string move_to_algebraic(Move m)
     return alg_str;
 }
 
-export inline std::optional<Move> move_from_algebraic(const MoveBuffer& moves,
+export __ALWAYS_INLINE std::optional<Move> move_from_algebraic(const MoveBuffer& moves,
                                                       const std::string& alg)
 {
     for (const Move m : moves) {
