@@ -35,8 +35,6 @@ void print_perft_stats(const std::vector<PerftStats>& stats)
 
 void perft_internal(Game& game, const U64 max_depth, U64 depth, std::vector<PerftStats>& stats)
 {
-    // if (depth == 0) return;
-
     MoveBuffer moves;
     generate_moves(game, moves);
 

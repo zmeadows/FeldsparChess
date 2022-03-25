@@ -14,10 +14,10 @@ struct MagicSquare {
     S64 shift = 0;
 };
 
-// TODO: this is just a stub, implement the real permutations
 export template <typename Callable>
 __ALWAYS_INLINE void for_each_mask_permutation(Bitboard mask, Callable&& f)
 {
+    // TODO: this is just a stub, implement the real permutations
     while (mask != 0) {
         f(mask);
         mask &= (mask - 1);

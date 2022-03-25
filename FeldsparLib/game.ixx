@@ -217,8 +217,8 @@ export std::optional<Game> game_from_fen(const std::string& fen)
 
 export std::string game_to_fen(const Game& game)
 {
-    std::string fen;
-    fen.reserve(92);
+    std::string fen; fen.reserve(92);
+
     int empty_tally = 0;
 
     for (Square sq = 63; sq >= 0; sq--) {

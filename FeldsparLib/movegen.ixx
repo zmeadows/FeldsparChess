@@ -404,12 +404,14 @@ __FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveBuffer& moves
 
             if (can_kingside_castle) [[unlikely]] {
                 moves.append(
-                    create_quiet_move(king_square, king_castle_square, KING_CASTLE_FLAG, King));
+                    create_quiet_move(king_square, king_castle_square, KING_CASTLE_FLAG, King)
+                );
             }
 
             if (can_queenside_castle) [[unlikely]] {
                 moves.append(
-                    create_quiet_move(king_square, queen_castle_square, QUEEN_CASTLE_FLAG, King));
+                    create_quiet_move(king_square, queen_castle_square, QUEEN_CASTLE_FLAG, King)
+                );
             }
         }
     }

@@ -17,7 +17,9 @@ export __ALWAYS_INLINE QuadBitboard pack(Bitboard b1, Bitboard b2, Bitboard b3, 
     return _mm256_set_epi64x(b4, b3, b2, b1);
 }
 
-export __ALWAYS_INLINE QuadBitboard pack(Bitboard bb) { return _mm256_set1_epi64x(bb); }
+export __ALWAYS_INLINE QuadBitboard pack(Bitboard bb) {
+    return _mm256_set1_epi64x(bb);
+}
 
 export __ALWAYS_INLINE void unpack(QuadBitboard qbb, Bitboard* bbs)
 {

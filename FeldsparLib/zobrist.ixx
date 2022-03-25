@@ -15,7 +15,8 @@ U64 CASTLE_KEYS[16];
 U64 EN_PASSANT_KEYS[8];
 U64 BLACK_TO_MOVE_KEY;
 
-export void init_zobrist_hashing()
+export
+void init_zobrist_hashing()
 {
     for (S64 i = 0; i < 12; i++) {
         for (S64 j = 0; j < 64; j++) {
@@ -34,20 +35,24 @@ export void init_zobrist_hashing()
     BLACK_TO_MOVE_KEY = rand<U64>();
 }
 
-export __ALWAYS_INLINE void hash_update_piece_square(GameHash& hash, Color color, PieceType ptype,
+export __ALWAYS_INLINE
+void hash_update_piece_square(GameHash& hash, Color color, PieceType ptype,
                                                    Square sq)
 {
     hash ^= PIECE_KEYS[128 * static_cast<S64>(ptype) + static_cast<S64>(color) * 64 + sq];
 }
 
-export __ALWAYS_INLINE void hash_update_castling_rights(GameHash& hash, CastlingRights rights)
+export __ALWAYS_INLINE
+void hash_update_castling_rights(GameHash& hash, CastlingRights rights)
 {
     hash ^= CASTLE_KEYS[rights];
 }
 
-export __ALWAYS_INLINE void hash_update_ep_square(GameHash& hash, Square epsq)
+export __ALWAYS_INLINE
+void hash_update_ep_square(GameHash& hash, Square epsq)
 {
     hash ^= EN_PASSANT_KEYS[file_of(epsq)];
 }
 
-export __ALWAYS_INLINE void hash_update_color_to_move(GameHash& hash) { hash ^= BLACK_TO_MOVE_KEY; }
+export __ALWAYS_INLINE
+void hash_update_color_to_move(GameHash& hash) { hash ^= BLACK_TO_MOVE_KEY; }

@@ -17,12 +17,11 @@ export class MoveBuffer {
     U32 m_count = 0;
 
 public:
-    constexpr void append(Move m) { moves[m_count++] = m; }
-    constexpr U32 length() const { return m_count; }
-    constexpr void clear() { m_count = 0; }
-
-    constexpr const Move* const begin() const { return &moves[0]; }
-    constexpr const Move* const end() const { return &moves[0] + m_count; }
+    constexpr __ALWAYS_INLINE void append(Move m) { moves[m_count++] = m; }
+    constexpr __ALWAYS_INLINE U32 length() const { return m_count; }
+    constexpr __ALWAYS_INLINE void clear() { m_count = 0; }
+    constexpr __ALWAYS_INLINE const Move* const begin() const { return &moves[0]; }
+    constexpr __ALWAYS_INLINE const Move* const end() const { return &moves[0] + m_count; }
 };
 
 export inline constexpr U32 QUIET_FLAG = 0b0000;
@@ -92,7 +91,7 @@ export constexpr PieceType captured_piece_type(Move move)
 
 // TODO: convert bool template parameters to named enums to avoid mixups
 template <Color MOVING_COLOR, bool UPDATE_HASH>
-void __ALWAYS_INLINE make_move_internal(Game& game, Move move)
+void __FLATTEN_CALLS make_move_internal(Game& game, Move move)
 {
     using enum PieceType;
 
@@ -319,8 +318,10 @@ void __ALWAYS_INLINE make_move_internal(Game& game, Move move)
     }
 }
 
-export template <bool UPDATE_HASH>
-[[msvc::forceinline_calls]] void make_move(Game& game, Move move)
+export
+template <bool UPDATE_HASH>
+__ALWAYS_INLINE
+void make_move(Game& game, Move move)
 {
     if (game.to_move == Color::White) {
         make_move_internal<Color::White, UPDATE_HASH>(game, move);

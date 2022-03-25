@@ -6,7 +6,7 @@ import<array>;
 export template <typename T>
 T rand(void)
 {
-    static_assert(false, "unstd.rand not implemented for type.");
+    // static_assert(false, "unstd.rand not implemented for type.");
     return T();
 }
 
@@ -38,7 +38,7 @@ U64 rand<U64>(void)
 export template <typename T>
 T rand(const T min, const T max)
 {
-    static_assert(false, "rand(min,max) not implemented for type.");
+    // static_assert(false, "rand(min,max) not implemented for type.");
     return T();
 }
 
