@@ -196,7 +196,6 @@
     <ClCompile Include="eval.ixx" />
     <ClCompile Include="init.ixx" />
     <ClCompile Include="unstd\core.ixx" />
-    <ClCompile Include="unstd\file.ixx" />
     <ClCompile Include="unstd\io.ixx" />
     <ClCompile Include="game.ixx" />
     <ClCompile Include="perft.ixx" />

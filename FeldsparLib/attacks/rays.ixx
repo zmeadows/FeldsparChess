@@ -603,7 +603,7 @@ constexpr Bitboard get_ray_attacks(Square sq, Bitboard occupied, Direction dir)
 }
 
 // TODO: write simple constexpr container alternative without std library overhead.
-export const std::array<Bitboard, 64 * 64> RAYS_BETWEEN_SQUARES = []() {
+const std::array<Bitboard, 64 * 64> RAYS_BETWEEN_SQUARES = []() {
     std::array<Bitboard, 64 * 64> rays;
 
     U64 idx = 0;

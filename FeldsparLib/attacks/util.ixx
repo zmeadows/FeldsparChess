@@ -12,7 +12,6 @@ import attacks.base;
 import attacks.classical;
 
 // qsliders = {rq,rq,bq,bq}
-// TODO: replace -1 with BITBOARD_FULL
 QuadBitboard quadfill_sliders1(QuadBitboard qsliders, Bitboard empty)
 {
     const QuadBitboard qmask = pack(NOT_H_FILE, BITBOARD_FULL, NOT_A_FILE, NOT_H_FILE);
@@ -31,7 +30,7 @@ QuadBitboard quadfill_sliders1(QuadBitboard qsliders, Bitboard empty)
 // qsliders = {rq,rq,bq,bq}
 QuadBitboard quadfill_sliders2(QuadBitboard qsliders, Bitboard empty)
 {
-    const QuadBitboard qmask = pack(NOT_A_FILE, -1, NOT_H_FILE, NOT_A_FILE);
+    const QuadBitboard qmask = pack(NOT_A_FILE, BITBOARD_FULL, NOT_H_FILE, NOT_A_FILE);
     const QuadBitboard qshift = pack(1, 8, 7, 9);
     QuadBitboard qflood = qsliders;
     QuadBitboard qempty = pack(empty) & qmask;

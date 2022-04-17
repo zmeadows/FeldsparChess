@@ -184,7 +184,7 @@ export __ALWAYS_INLINE Square bitboard_bsr(Bitboard bb)
     return static_cast<Square>(idx);
 }
 
-export Square constexpr_bitboard_bsr(Bitboard bb)
+export constexpr Square constexpr_bitboard_bsr(Bitboard bb)
 {
     assert(bb != 0);
 
@@ -255,7 +255,6 @@ export __ALWAYS_INLINE constexpr Bitboard file_mask_ex(Square sq)
     return square_bitrep(sq) ^ file_mask(sq);
 }
 
-// TODO: use algebra of boolean operators to simplify?
 export __ALWAYS_INLINE constexpr Bitboard diag_mask(Square sq)
 {
     sq = (sq & 56) + 7 - (sq & 7);
@@ -265,7 +264,6 @@ export __ALWAYS_INLINE constexpr Bitboard diag_mask(Square sq)
     return (MAIN_DIAGONAL >> sout) << nort;
 }
 
-// TODO: use algebra of boolean operators to simplify
 export __ALWAYS_INLINE constexpr Bitboard antidiag_mask(Square sq)
 {
     sq = (sq & 56) + 7 - (sq & 7);
