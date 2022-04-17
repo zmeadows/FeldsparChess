@@ -18,13 +18,21 @@ import <cstdlib>;
 import <cstdio>;
 import <string>;
 import <cassert>;
+import <unordered_set>;
 
 int main()
 {
     feldspar_init();
 
-    const Game game =
-        *game_from_fen("1r3r2/p1qbnpkp/2np2p1/2p1p3/2N1P3/2PP2P1/P2QNPBP/2R2RK1 w - - 6 20");
+    U64 counter = 0;
+    permutations(H_FILE | A_FILE, [&](Bitboard bb) {
+        counter++;
+    });
+
+    to_stdout("{}\n", counter);
+
+    // const Game game =
+    //     *game_from_fen("1r3r2/p1qbnpkp/2np2p1/2p1p3/2N1P3/2PP2P1/P2QNPBP/2R2RK1 w - - 6 20");
 
     // QuadBitboard qbb = pack(set_bits<a1, h1, a8, h8>());
     // print(qbb);

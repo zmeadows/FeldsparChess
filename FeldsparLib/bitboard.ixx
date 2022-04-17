@@ -216,6 +216,30 @@ constexpr __ALWAYS_INLINE void serialize(Bitboard bb, Callable&& f)
     }
 }
 
+template <typename Callable>
+constexpr void _permutations(Bitboard bb, Bitboard mask, Callable&& f)
+{
+    f(bb);
+
+    if (bb == BITBOARD_EMPTY) {
+        return;
+    }
+
+    serialize(bb & mask, [&](Square sq) {
+        bb = clear_bit(bb, sq);
+        _permutations(bb, mask, std::forward<Callable>(f));
+        bb = set_bit(bb, sq);
+        mask = clear_bit(mask, sq);
+    });
+}
+
+
+export template <typename Callable>
+constexpr __ALWAYS_INLINE void permutations(Bitboard bb, Callable&& f)
+{
+    return _permutations(bb, BITBOARD_FULL, std::forward<Callable>(f));
+}
+
 // Any bits shifted 'off the board' disappear rather than wrap around
 // TODO: test fully
 export constexpr Bitboard bitboard_shifted(const Bitboard bb, const Direction dir)

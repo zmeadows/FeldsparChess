@@ -37,7 +37,7 @@ double perft_benchmark(const std::string& name, U64 depth, U64 ntimes, const std
     const double mnodes_sec = (static_cast<double>(node_count) / duration) / 1e6;
 
     to_stdout("{}: {}\n", name.c_str(), fen.c_str());
-    to_stdout("\tNodes Traversed: {}\n", node_count);
+    to_stdout("\tMNodes Traversed: {}\n", node_count);
     to_stdout("\tTotal Time: {} seconds\n", duration);
     to_stdout("\tMNodes/sec: {}\n\n", mnodes_sec);
 
@@ -64,8 +64,7 @@ int main()
     total += perft_benchmark("BugCatcher", 5, 10,
                              "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8");
 
-    total +=
-        perft_benchmark("StevenEdwards", 5, 10,
+    total += perft_benchmark("StevenEdwards", 5, 10,
                         "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10");
 
     to_stdout("AVERAGE MNODES/SEC = {}\n", total / 6.0);
