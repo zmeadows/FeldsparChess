@@ -1,4 +1,6 @@
 import prelude;
+import bitboard;
+import attacks;
 import game;
 import perft;
 import init;

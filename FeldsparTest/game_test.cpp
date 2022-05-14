@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 
+#include "init_fixture.h"
 #include "unstd/macros.h"
 
 import prelude;
@@ -7,7 +8,9 @@ import bitboard;
 import board;
 import game;
 
-TEST(Game, Initialization)
+class GameTest : public InitFixture {};
+
+TEST_F(GameTest, Initialization)
 {
 
     // default 'empty' game state
@@ -27,7 +30,7 @@ TEST(Game, Initialization)
     EXPECT_EQ(g.castling_rights, 0);
 }
 
-TEST(Game, ComparisonOperator)
+TEST_F(GameTest, ComparisonOperator)
 {
     Game g1;
 
@@ -69,7 +72,7 @@ TEST(Game, ComparisonOperator)
     }
 }
 
-TEST(Game, GameFromFEN)
+TEST_F(GameTest, GameFromFEN)
 {
     { // starting position
         const auto og = game_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -214,7 +217,7 @@ TEST(Game, GameFromFEN)
     }
 }
 
-TEST(Game, GameFromToFEN)
+TEST_F(GameTest, GameFromToFEN)
 {
     for (std::string fen : {"r1bq1rk1/ppp1npbp/3p1np1/3Pp3/1PP1P3/2N2N2/P3BPPP/R1BQ1RK1 b - - 0 9",
                             "rn1q1rk1/1pp2pp1/p3pb1p/8/P2Pb3/5NP1/1P2PPBP/RNQR2K1 b - - 1 14",

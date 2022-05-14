@@ -6,7 +6,11 @@ import game;
 import perft;
 import attacks.classical;
 
-TEST(Perft, ChessProgrammingResults)
+#include "init_fixture.h"
+
+class PerftTest : public InitFixture {};
+
+TEST_F(PerftTest, ChessProgrammingResults)
 {
     {
         const auto results = perft("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", 6);

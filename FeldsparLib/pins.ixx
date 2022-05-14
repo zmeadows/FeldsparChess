@@ -3,7 +3,9 @@ export module pins;
 import prelude;
 import bitboard;
 import board;
-import attacks.classical;
+import attacks;
+import attacks.rays;
+
 #include "unstd/macros.h"
 
 export struct Pins {

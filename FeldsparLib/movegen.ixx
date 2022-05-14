@@ -16,7 +16,8 @@ import<type_traits>;
 
 #include "unstd/macros.h"
 
-import attacks.classical;
+import attacks;
+import attacks.rays;
 import attacks.util;
 
 export struct MoveGenFlags {

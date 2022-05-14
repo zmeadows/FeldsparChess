@@ -6,10 +6,15 @@ import prelude;
 import print;
 import quad;
 
+#include "init_fixture.h"
+
 import unstd.random;
 
 #include <limits>
-TEST(QuadBitboard, PackUnpack)
+
+class QuadBitboardTest : public InitFixture {};
+
+TEST(QuadBitboardTest, PackUnpack)
 {
     QuadBitboard qbb =
         pack(0, 1, std::numeric_limits<U64>::max(), (U64)std::numeric_limits<S64>::max() + 1);
@@ -40,7 +45,7 @@ TEST(QuadBitboard, PackUnpack)
     }
 }
 
-TEST(QuadBitboard, OperatorOREquals)
+TEST(QuadBitboardTest, OperatorOREquals)
 {
     for (auto i = 0; i < 1000; i++) {
         const Bitboard b1 = rand<U64>();
@@ -67,7 +72,7 @@ TEST(QuadBitboard, OperatorOREquals)
     }
 }
 
-TEST(QuadBitboard, OperatorAND)
+TEST(QuadBitboardTest, OperatorAND)
 {
     for (auto i = 0; i < 1000; i++) {
         const Bitboard b1 = rand<U64>();
@@ -94,7 +99,7 @@ TEST(QuadBitboard, OperatorAND)
     }
 }
 
-TEST(QuadBitboard, LeftShift)
+TEST(QuadBitboardTest, LeftShift)
 {
     for (auto i = 0; i < 1000; i++) {
         const Bitboard b1 = rand<U64>();

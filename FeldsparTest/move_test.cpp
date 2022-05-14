@@ -1,9 +1,13 @@
 #include "gtest/gtest.h"
 
+#include "init_fixture.h"
+
 import prelude;
 import move;
 
-TEST(Move, ToAlgebraic)
+class MoveTest : public InitFixture {};
+
+TEST_F(MoveTest, ToAlgebraic)
 {
     using enum PieceType;
     EXPECT_EQ(move_to_algebraic(create_quiet_move(a1, h3, 0, Pawn)), "a1h3");

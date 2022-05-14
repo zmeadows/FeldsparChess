@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 
+#include "init_fixture.h"
 #include "unstd/macros.h"
 
 import prelude;
@@ -7,7 +8,9 @@ import bitboard;
 
 import<vector>;
 
-TEST(Bitboard, SetBits)
+class BitboardTest : public InitFixture {};
+
+TEST(BitboardTest, SetBits)
 {
     {
         constexpr Bitboard bb = set_bits<h1, a1>();
@@ -46,7 +49,7 @@ TEST(Bitboard, SetBits)
     }
 }
 
-TEST(Bitboard, StringToBitboardConversion)
+TEST(BitboardTest, StringToBitboardConversion)
 {
     EXPECT_EQ(BITBOARD_EMPTY, BB("00000000"
                                  "00000000"
@@ -103,7 +106,7 @@ TEST(Bitboard, StringToBitboardConversion)
                                                                                      "11001001"));
 }
 
-TEST(Bitboard, BitScanForward)
+TEST(BitboardTest, BitScanForward)
 {
 
     EXPECT_EQ(0, bitboard_bsf(BB("00000000"
@@ -161,7 +164,7 @@ TEST(Bitboard, BitScanForward)
                                   "00000000")));
 }
 
-TEST(Bitboard, BitScanReverse)
+TEST(BitboardTest, BitScanReverse)
 {
 
     EXPECT_EQ(0, bitboard_bsr(BB("00000000"
@@ -219,7 +222,7 @@ TEST(Bitboard, BitScanReverse)
                                   "00000000")));
 }
 
-TEST(Bitboard, PopulationCount)
+TEST(BitboardTest, PopulationCount)
 {
 
     EXPECT_EQ(1, bitboard_popcount(BB("10000000"
@@ -277,7 +280,7 @@ TEST(Bitboard, PopulationCount)
                                        "10101001")));
 }
 
-TEST(Bitboard, EmptyFullOccupiedChecks)
+TEST(BitboardTest, EmptyFullOccupiedChecks)
 {
     EXPECT_TRUE(bitboard_is_full(BITBOARD_FULL));
 
@@ -314,7 +317,7 @@ TEST(Bitboard, EmptyFullOccupiedChecks)
     EXPECT_TRUE(!bitboard_is_occupied(BITBOARD_EMPTY));
 }
 
-TEST(Bitboard, Shifts)
+TEST(BitboardTest, Shifts)
 {
     EXPECT_EQ(BITBOARD_EMPTY, bitboard_shifted(BB("11111111"
                                                   "00000000"
@@ -446,7 +449,7 @@ TEST(Bitboard, Shifts)
                  "00000000"));
 }
 
-TEST(Bitboard, Flip)
+TEST(BitboardTest, Flip)
 {
     EXPECT_EQ(bitboard_flipped(BB("00000000"
                                   "00000000"
@@ -486,7 +489,7 @@ TEST(Bitboard, Flip)
     EXPECT_EQ(bitboard_flipped(BITBOARD_FULL), BITBOARD_EMPTY);
 }
 
-TEST(Bitboard, Serialization)
+TEST(BitboardTest, Serialization)
 {
     {
         const Bitboard bb = BB("01100000"
@@ -524,7 +527,7 @@ TEST(Bitboard, Serialization)
     }
 }
 
-TEST(Bitboard, RankMask)
+TEST(BitboardTest, RankMask)
 {
     for (Square sq = 0; sq < 8; sq++) {
         EXPECT_EQ(rank_mask(sq), FIRST_RANK);
@@ -559,7 +562,7 @@ TEST(Bitboard, RankMask)
     }
 }
 
-TEST(Bitboard, FileMask)
+TEST(BitboardTest, FileMask)
 {
     for (Square sq = 0; sq < 64; sq += 8) {
         EXPECT_EQ(file_mask(sq), H_FILE);

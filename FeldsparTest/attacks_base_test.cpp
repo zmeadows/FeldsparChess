@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 
+#include "init_fixture.h"
 #include "unstd/macros.h"
 
 import prelude;
@@ -11,7 +12,9 @@ import attacks.base;
 import attacks.classical;
 import attacks.util;
 
-TEST(AttacksBase, KnightMoves)
+class AttacksBase : public InitFixture {};
+
+TEST_F(AttacksBase, KnightMoves)
 {
     for (Square from_sq = 0; from_sq < 64; from_sq++) {
         const Bitboard km = get_knight_moves(from_sq);

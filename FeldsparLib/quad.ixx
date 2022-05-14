@@ -7,8 +7,8 @@ import bitboard;
 import board;
 import unstd.io;
 
-import<immintrin.h>;
-import<string>;
+import <immintrin.h>;
+import <string>;
 
 export using QuadBitboard = __m256i;
 

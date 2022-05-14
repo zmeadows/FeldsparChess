@@ -9,7 +9,7 @@ import quad;
 import<cstdio>;
 
 import attacks.base;
-import attacks.classical;
+import attacks;
 
 // qsliders = {rq,rq,bq,bq}
 QuadBitboard quadfill_sliders1(QuadBitboard qsliders, Bitboard empty)
@@ -108,8 +108,7 @@ __FLATTEN_CALLS Bitboard attacked(const Board& board)
     return attacked;
 }
 
-
-export constexpr __FLATTEN_CALLS Bitboard attackers(const Board& board, Color color,
+export __FLATTEN_CALLS Bitboard attackers(const Board& board, Color color,
                                                                 Square sq)
 {
     using enum PieceType;

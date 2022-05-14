@@ -126,6 +126,15 @@ export inline constexpr Bitboard OUTER_SQUARES = BB("11111111"
                                                     "10000001"
                                                     "11111111");
 
+export inline constexpr Bitboard CORNER_SQUARES = BB("10000001"
+                                                     "00000000"
+                                                     "00000000"
+                                                     "00000000"
+                                                     "00000000"
+                                                     "00000000"
+                                                     "00000000"
+                                                     "10000001");
+
 export __ALWAYS_INLINE constexpr bool bitboard_is_empty(const Bitboard bb) { return bb == BITBOARD_EMPTY; }
 export __ALWAYS_INLINE constexpr bool bitboard_is_occupied(const Bitboard bb) { return bb != BITBOARD_EMPTY; }
 export __ALWAYS_INLINE constexpr bool bitboard_is_full(const Bitboard bb) { return bb == BITBOARD_FULL; }

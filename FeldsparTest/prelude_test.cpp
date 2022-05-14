@@ -4,7 +4,11 @@ import prelude;
 import bitboard;
 import print;
 
-TEST(Prelude, CastlingRights)
+#include "init_fixture.h"
+
+class PreludeTest : public InitFixture {};
+
+TEST_F(PreludeTest, CastlingRights)
 {
     CastlingRights rights = 0b1111;
 
@@ -23,7 +27,7 @@ TEST(Prelude, CastlingRights)
     remove_castling_rights(rights, CASTLE_RIGHTS_BLACK_KINGSIDE | CASTLE_RIGHTS_BLACK_QUEENSIDE);
     EXPECT_EQ(rights, 0b0000);
 }
-TEST(Prelude, SquareRankFile)
+TEST_F(PreludeTest, SquareRankFile)
 {
     for (Square sq = 0; sq < 64; sq++) {
         const S64 rank = rank_of(sq);
@@ -33,7 +37,7 @@ TEST(Prelude, SquareRankFile)
     }
 }
 
-TEST(Prelude, SquareFromToAlgebraic)
+TEST_F(PreludeTest, SquareFromToAlgebraic)
 {
     for (Square sq = 0; sq < 64; sq++) {
         const char* alg = square_to_algebraic(sq);
@@ -43,7 +47,7 @@ TEST(Prelude, SquareFromToAlgebraic)
     }
 }
 
-TEST(Prelude, CastlePaths)
+TEST_F(PreludeTest, CastlePaths)
 {
     EXPECT_EQ(WHITE_KINGSIDE_CASTLE_PATH, BB("00000000"
                                              "00000000"

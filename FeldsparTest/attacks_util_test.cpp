@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 
+#include "init_fixture.h"
 #include "unstd/macros.h"
 
 import prelude;
@@ -8,7 +9,9 @@ import board;
 
 import attacks.util;
 
-TEST(AttacksUtil, Attacked)
+class AttacksUtil : public InitFixture {};
+
+TEST_F(AttacksUtil, Attacked)
 {
     Board board = {BITBOARD_EMPTY};
     Bitboard& atkrs = get_occupied_mut(board, Color::White);

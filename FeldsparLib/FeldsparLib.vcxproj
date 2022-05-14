@@ -165,7 +165,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableModules>true</EnableModules>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <StringPooling>true</StringPooling>
@@ -175,7 +175,7 @@
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <AdditionalOptions>/Ob3 %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4530;5244</DisableSpecificWarnings>
     </ClCompile>
@@ -188,6 +188,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="attacks.ixx" />
     <ClCompile Include="attacks\rays.ixx" />
     <ClCompile Include="bitboard.ixx" />
     <ClCompile Include="board.ixx" />
@@ -204,7 +205,7 @@
     <ClCompile Include="quad.ixx" />
     <ClCompile Include="unstd\random.ixx" />
     <ClCompile Include="attacks\classical.ixx" />
-    <ClCompile Include="attacks\magic.ixx" />
+    <ClCompile Include="attacks\pext.ixx" />
     <ClCompile Include="unstd\macros.h" />
     <ClCompile Include="move.ixx" />
     <ClCompile Include="movegen.ixx" />

@@ -66,7 +66,7 @@
     <ClCompile Include="attacks\classical.ixx">
       <Filter>Source Files\attacks</Filter>
     </ClCompile>
-    <ClCompile Include="attacks\magic.ixx">
+    <ClCompile Include="attacks\pext.ixx">
       <Filter>Source Files\attacks</Filter>
     </ClCompile>
     <ClCompile Include="attacks\base.ixx">
@@ -94,6 +94,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="attacks\rays.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="attacks.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

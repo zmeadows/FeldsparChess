@@ -48,14 +48,14 @@
     <ClCompile Include="attacks_base_test.cpp" />
     <ClCompile Include="attacks_util_test.cpp" />
     <ClCompile Include="bitboard_test.cpp" />
-    <ClCompile Include="board_test.cpp" />
     <ClCompile Include="core_test.cpp" />
     <ClCompile Include="game_test.cpp" />
+    <ClCompile Include="init_fixture.cpp" />
     <ClCompile Include="move_test.cpp" />
     <ClCompile Include="perft_test.cpp" />
     <ClCompile Include="prelude_test.cpp" />
     <ClCompile Include="quad_test.cpp" />
-    <ClCompile Include="attacks_classical_test.cpp" />
+    <ClCompile Include="attacks_sliding_test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\FeldsparLib\FeldsparLib.vcxproj">
@@ -64,6 +64,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="init_fixture.h" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
@@ -156,14 +159,14 @@
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <SDLCheck>false</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <EnableModules>true</EnableModules>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
-      <ExceptionHandling>false</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <AdditionalOptions>/Ob3 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalIncludeDirectories>$(SolutionDir)FeldsparLib;$(SolutionDir)packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.4\build\native\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>

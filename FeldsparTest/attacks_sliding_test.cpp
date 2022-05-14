@@ -1,15 +1,19 @@
 #include "gtest/gtest.h"
 
+#include "init_fixture.h"
 #include "unstd/macros.h"
 
 import prelude;
 import bitboard;
 import board;
 
-import attacks.classical;
+import attacks;
+import attacks.rays;
 import attacks.util;
 
-TEST(ClassicalAttacks, BishopAttackRays)
+class ClassicalAttacks : public InitFixture {};
+
+TEST_F(ClassicalAttacks, BishopAttackRays)
 {
     {
         constexpr Square sq = 0;
@@ -128,7 +132,7 @@ TEST(ClassicalAttacks, BishopAttackRays)
     }
 }
 
-TEST(ClassicalAttacks, RookAttackRays)
+TEST_F(ClassicalAttacks, RookAttackRays)
 {
     {
         constexpr Square sq = 0;
@@ -249,7 +253,7 @@ TEST(ClassicalAttacks, RookAttackRays)
 */
 }
 
-TEST(ClassicalAttacks, QueenAttackRays)
+TEST_F(ClassicalAttacks, QueenAttackRays)
 {
     {
         constexpr Square sq = 0;
@@ -370,7 +374,7 @@ TEST(ClassicalAttacks, QueenAttackRays)
 */
 }
 
-TEST(ClassicalAttacks, RayBetweenSquares)
+TEST_F(ClassicalAttacks, RayBetweenSquares)
 {
     {
         const Bitboard ray = ray_between_squares(0, 7);

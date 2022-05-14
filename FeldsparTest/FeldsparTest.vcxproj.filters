@@ -7,13 +7,13 @@
     <ClCompile Include="bitboard_test.cpp" />
     <ClCompile Include="game_test.cpp" />
     <ClCompile Include="quad_test.cpp" />
-    <ClCompile Include="board_test.cpp" />
     <ClCompile Include="move_test.cpp" />
-    <ClCompile Include="attacks_classical_test.cpp" />
+    <ClCompile Include="attacks_sliding_test.cpp" />
     <ClCompile Include="attacks_util_test.cpp" />
     <ClCompile Include="prelude_test.cpp" />
     <ClCompile Include="attacks_base_test.cpp" />
     <ClCompile Include="perft_test.cpp" />
+    <ClCompile Include="init_fixture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="unstd">
@@ -22,5 +22,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="init_fixture.h" />
   </ItemGroup>
 </Project>
