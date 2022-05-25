@@ -46,7 +46,7 @@ QuadBitboard quadfill_sliders2(QuadBitboard qsliders, Bitboard empty)
 export struct AttackedFlags {
     Color ATTACKING_COLOR = Color::White;
     bool REMOVE_KING = false;
-    bool USE_QUAD_FILL = true;
+    bool USE_QUAD_FILL = false;
 };
 
 export template <AttackedFlags FLAGS = AttackedFlags()>

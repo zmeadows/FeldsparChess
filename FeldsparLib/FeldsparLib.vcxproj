@@ -192,7 +192,6 @@
     <ClCompile Include="attacks\rays.ixx" />
     <ClCompile Include="bitboard.ixx" />
     <ClCompile Include="board.ixx" />
-    <ClCompile Include="mcts.ixx" />
     <ClCompile Include="uci.ixx" />
     <ClCompile Include="eval.ixx" />
     <ClCompile Include="init.ixx" />

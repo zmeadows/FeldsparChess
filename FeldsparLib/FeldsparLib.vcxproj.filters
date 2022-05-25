@@ -90,9 +90,6 @@
     <ClCompile Include="uci.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mcts.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="attacks\rays.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
