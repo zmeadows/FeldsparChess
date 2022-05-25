@@ -176,8 +176,8 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <AdditionalOptions>/Ob3 %(AdditionalOptions)</AdditionalOptions>
       <DisableSpecificWarnings>4530;5244</DisableSpecificWarnings>
+      <Optimization>MaxSpeed</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>
