@@ -39,3 +39,8 @@ void to_stdout(std::string_view fmt, Args&& ...args)
     std::cout << std::vformat(fmt, std::make_format_args(args...));
 }
 
+export template <class... Args>
+void to_stderr(std::string_view fmt, Args&& ...args)
+{
+    std::cerr << std::vformat(fmt, std::make_format_args(args...));
+}

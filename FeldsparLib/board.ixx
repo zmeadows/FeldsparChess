@@ -31,7 +31,7 @@ export __ALWAYS_INLINE constexpr Bitboard get_pieces(const Board& board, const P
     return board[idx];
 }
 
-export __ALWAYS_INLINE constexpr Bitboard& get_pieces_mut(Board& board, const PieceType p,
+export __ALWAYS_INLINE Bitboard& get_pieces_mut(Board& board, const PieceType p,
                                                         const Color c)
 {
     const size_t idx = 2 * static_cast<size_t>(p) + static_cast<size_t>(c);
@@ -43,7 +43,7 @@ export __ALWAYS_INLINE constexpr Bitboard get_occupied(const Board& board, const
     return board[12 + static_cast<size_t>(c)];
 }
 
-export __ALWAYS_INLINE constexpr Bitboard& get_occupied_mut(Board& board, const Color c)
+export __ALWAYS_INLINE Bitboard& get_occupied_mut(Board& board, const Color c)
 {
     return board[12 + static_cast<size_t>(c)];
 }

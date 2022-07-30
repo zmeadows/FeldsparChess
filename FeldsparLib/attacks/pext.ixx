@@ -43,8 +43,8 @@ export void init_pext_tables(void)
         BISHOP_OFFSETS[sq] = next_free_table_index;
 
         permutations(BISHOP_MASKS[sq], [&](Bitboard occupied) {
-            auto mask_offset = _pext_u64(occupied, BISHOP_MASKS[sq]);
-            auto table_idx = BISHOP_OFFSETS[sq] + mask_offset;
+            U64 mask_offset = _pext_u64(occupied, BISHOP_MASKS[sq]);
+            U64 table_idx = BISHOP_OFFSETS[sq] + mask_offset;
             ATTACK_TABLE[table_idx] = get_bishop_attacks_classical(sq, occupied);
             next_free_table_index = std::max(BISHOP_OFFSETS[sq] + mask_offset + 1, next_free_table_index);
         });

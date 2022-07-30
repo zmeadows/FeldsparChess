@@ -6,6 +6,8 @@ import<string>;
 
 #include "unstd/macros.h"
 
+export constexpr const char* FELDSPAR_VERSION = "0.0.1";
+
 export using Bitboard = U64;
 
 export using Square = S64;
