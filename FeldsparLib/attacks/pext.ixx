@@ -1,4 +1,7 @@
 export module attacks.pext;
+#include "../unstd/macros.h"
+
+import unstd.core;
 
 import prelude;
 import bitboard;
@@ -6,8 +9,6 @@ import attacks.classical;
 
 import <algorithm>;
 import <immintrin.h>;
-
-#include "../unstd/macros.h"
 
 static Bitboard* ATTACK_TABLE = new Bitboard[156800];
 static Bitboard ROOK_MASKS[64];

@@ -1,6 +1,6 @@
 ﻿import prelude;
-
 import uci;
+
 
 int main()
 {

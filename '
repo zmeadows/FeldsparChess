@@ -1,0 +1,45 @@
+#include "CppUnitTest.h"
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+import unstd.core;
+
+import prelude;
+import bitboard;
+
+namespace feldspar_test
+{
+	TEST_CLASS(prelude_test)
+	{
+	public:
+		
+		TEST_METHOD(castling_rights)
+        {
+            CastlingRights rights = 0b1111;
+
+            remove_castling_rights(rights, CASTLE_RIGHTS_WHITE_KINGSIDE);
+            Assert::AreEqual(rights, (CastlingRights)0b1110);
+            remove_castling_rights(rights, CASTLE_RIGHTS_WHITE_QUEENSIDE);
+            Assert::AreEqual(rights, (CastlingRights)0b1100);
+            remove_castling_rights(rights, CASTLE_RIGHTS_BLACK_KINGSIDE);
+            Assert::AreEqual(rights, (CastlingRights)0b1000);
+            remove_castling_rights(rights, CASTLE_RIGHTS_BLACK_QUEENSIDE);
+            Assert::AreEqual(rights, (CastlingRights)0b0000);
+
+            rights = 0b1111;
+            remove_castling_rights(rights, CASTLE_RIGHTS_WHITE_KINGSIDE | CASTLE_RIGHTS_WHITE_QUEENSIDE);
+            Assert::AreEqual(rights, (CastlingRights)0b1100);
+            remove_castling_rights(rights, CASTLE_RIGHTS_BLACK_KINGSIDE | CASTLE_RIGHTS_BLACK_QUEENSIDE);
+            Assert::AreEqual(rights, (CastlingRights)0b0000);
+		}
+
+        TEST_METHOD(square_rank_file)
+        {
+            for (Square sq = 0; sq < 64; sq++) {
+                const S64 rank = rank_of(sq);
+                const S64 file = file_of(sq);
+                const Square resq = from_rank_file(rank, file);
+                EXPECT_EQ(sq, resq);
+            }
+        }
+	};
+}

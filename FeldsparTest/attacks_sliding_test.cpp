@@ -1,7 +1,8 @@
 #include "gtest/gtest.h"
-
 #include "init_fixture.h"
 #include "unstd/macros.h"
+
+import unstd.core;
 
 import prelude;
 import bitboard;
@@ -13,7 +14,7 @@ import attacks.util;
 
 class ClassicalAttacks : public InitFixture {};
 
-TEST_F(ClassicalAttacks, BishopAttackRays)
+TEST_METHOD(ClassicalAttacks, BishopAttackRays)
 {
     {
         constexpr Square sq = 0;
@@ -29,7 +30,7 @@ TEST_F(ClassicalAttacks, BishopAttackRays)
                                         "00000010"
                                         "00000000");
 
-        EXPECT_EQ(get_bishop_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_bishop_attacks(sq, occ), attacks);
     }
 
     {
@@ -46,7 +47,7 @@ TEST_F(ClassicalAttacks, BishopAttackRays)
                                         "01000000"
                                         "00000000");
 
-        EXPECT_EQ(get_bishop_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_bishop_attacks(sq, occ), attacks);
     }
 
     {
@@ -63,7 +64,7 @@ TEST_F(ClassicalAttacks, BishopAttackRays)
                                         "01000000"
                                         "10000000");
 
-        EXPECT_EQ(get_bishop_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_bishop_attacks(sq, occ), attacks);
     }
 
     {
@@ -80,7 +81,7 @@ TEST_F(ClassicalAttacks, BishopAttackRays)
                                         "00000010"
                                         "00000001");
 
-        EXPECT_EQ(get_bishop_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_bishop_attacks(sq, occ), attacks);
     }
 
     {
@@ -104,7 +105,7 @@ TEST_F(ClassicalAttacks, BishopAttackRays)
                                         "01000100"
                                         "00000000");
 
-        EXPECT_EQ(get_bishop_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_bishop_attacks(sq, occ), attacks);
     }
 
     {
@@ -128,11 +129,11 @@ TEST_F(ClassicalAttacks, BishopAttackRays)
                                         "00000000"
                                         "00000000");
 
-        EXPECT_EQ(get_bishop_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_bishop_attacks(sq, occ), attacks);
     }
 }
 
-TEST_F(ClassicalAttacks, RookAttackRays)
+TEST_METHOD(ClassicalAttacks, RookAttackRays)
 {
     {
         constexpr Square sq = 0;
@@ -148,7 +149,7 @@ TEST_F(ClassicalAttacks, RookAttackRays)
                                         "00000001"
                                         "11111110");
 
-        EXPECT_EQ(get_rook_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_rook_attacks(sq, occ), attacks);
     }
 
     /*
@@ -166,7 +167,7 @@ TEST_F(ClassicalAttacks, RookAttackRays)
                                         "01000000"
                                         "00000000");
 
-        EXPECT_EQ(get_bishop_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_bishop_attacks(sq, occ), attacks);
     }
 
     {
@@ -183,7 +184,7 @@ TEST_F(ClassicalAttacks, RookAttackRays)
                                         "01000000"
                                         "10000000");
 
-        EXPECT_EQ(get_bishop_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_bishop_attacks(sq, occ), attacks);
     }
 
     {
@@ -200,7 +201,7 @@ TEST_F(ClassicalAttacks, RookAttackRays)
                                         "00000010"
                                         "00000001");
 
-        EXPECT_EQ(get_bishop_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_bishop_attacks(sq, occ), attacks);
     }
 
     {
@@ -224,7 +225,7 @@ TEST_F(ClassicalAttacks, RookAttackRays)
                                         "01000100"
                                         "00000000");
 
-        EXPECT_EQ(get_bishop_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_bishop_attacks(sq, occ), attacks);
     }
 
     {
@@ -248,12 +249,12 @@ TEST_F(ClassicalAttacks, RookAttackRays)
                                         "00000000"
                                         "00000000");
 
-        EXPECT_EQ(get_bishop_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_bishop_attacks(sq, occ), attacks);
     }
 */
 }
 
-TEST_F(ClassicalAttacks, QueenAttackRays)
+TEST_METHOD(ClassicalAttacks, QueenAttackRays)
 {
     {
         constexpr Square sq = 0;
@@ -269,7 +270,7 @@ TEST_F(ClassicalAttacks, QueenAttackRays)
                                         "00000011"
                                         "11111110");
 
-        EXPECT_EQ(get_queen_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_queen_attacks(sq, occ), attacks);
     }
 
     {
@@ -286,7 +287,7 @@ TEST_F(ClassicalAttacks, QueenAttackRays)
                                         "11000000"
                                         "01111111");
 
-        EXPECT_EQ(get_queen_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_queen_attacks(sq, occ), attacks);
     }
 
     /*
@@ -304,7 +305,7 @@ TEST_F(ClassicalAttacks, QueenAttackRays)
                                         "01000000"
                                         "10000000");
 
-        EXPECT_EQ(get_queen_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_queen_attacks(sq, occ), attacks);
     }
 
     {
@@ -321,7 +322,7 @@ TEST_F(ClassicalAttacks, QueenAttackRays)
                                         "00000010"
                                         "00000001");
 
-        EXPECT_EQ(get_queen_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_queen_attacks(sq, occ), attacks);
     }
 
     {
@@ -345,7 +346,7 @@ TEST_F(ClassicalAttacks, QueenAttackRays)
                                         "01000100"
                                         "00000000");
 
-        EXPECT_EQ(get_queen_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_queen_attacks(sq, occ), attacks);
     }
 
     {
@@ -369,12 +370,12 @@ TEST_F(ClassicalAttacks, QueenAttackRays)
                                         "00000000"
                                         "00000000");
 
-        EXPECT_EQ(get_queen_attacks(sq, occ), attacks);
+        Assert::AreEqual(get_queen_attacks(sq, occ), attacks);
     }
 */
 }
 
-TEST_F(ClassicalAttacks, RayBetweenSquares)
+TEST_METHOD(ClassicalAttacks, RayBetweenSquares)
 {
     {
         const Bitboard ray = ray_between_squares(0, 7);
@@ -388,7 +389,7 @@ TEST_F(ClassicalAttacks, RayBetweenSquares)
                                    "00000000"
                                    "11111110");
 
-        EXPECT_EQ(ray, bb);
+        Assert::AreEqual(ray, bb);
     }
 
     {
@@ -403,7 +404,7 @@ TEST_F(ClassicalAttacks, RayBetweenSquares)
                                    "00000001"
                                    "00000000");
 
-        EXPECT_EQ(ray, bb);
+        Assert::AreEqual(ray, bb);
     }
 
     {
@@ -418,7 +419,7 @@ TEST_F(ClassicalAttacks, RayBetweenSquares)
                                    "00000010"
                                    "00000000");
 
-        EXPECT_EQ(ray, bb);
+        Assert::AreEqual(ray, bb);
     }
 
     {
@@ -433,6 +434,6 @@ TEST_F(ClassicalAttacks, RayBetweenSquares)
                                    "00000000"
                                    "00000000");
 
-        EXPECT_EQ(ray, bb);
+        Assert::AreEqual(ray, bb);
     }
 }

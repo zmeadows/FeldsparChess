@@ -2,9 +2,9 @@ export module unstd.io;
 
 import unstd.core;
 
-import<iostream>;
-import<string>;
-import<format>;
+import <format>;
+import <iostream>;
+import <string>;
 
 export template <typename Callable>
 void for_each_line_in_process_stdout(const std::string& cmd, Callable&& f)

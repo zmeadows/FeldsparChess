@@ -8,13 +8,8 @@ import game;
 import move;
 import movegen;
 
-import<cassert>;
-import<cstring>;
-import<cstdio>;
-
-import<string>;
-import<vector>;
-import<map>;
+import <vector>;
+import <map>;
 
 export struct PerftStats {
     U64 node_count = 0;
@@ -80,7 +75,7 @@ export std::map<std::string, int> perft_divide(const std::string& fen, U64 depth
     std::map<std::string, int> result;
     auto ogame = game_from_fen(fen);
 
-    assert(ogame.has_value());
+    //assert(ogame.has_value());
 
     Game game = *ogame;
 

@@ -1,10 +1,9 @@
 export module prelude;
-
-export import unstd.core;
-
-import<string>;
-
 #include "unstd/macros.h"
+
+import unstd.core;
+
+import <cstring>;
 
 export constexpr const char* FELDSPAR_VERSION = "0.0.1";
 
@@ -19,7 +18,7 @@ export __ALWAYS_INLINE constexpr S64 file_of(Square sq) { return 8 - (sq % 8); }
 export __ALWAYS_INLINE constexpr Square from_rank_file(S64 rank, S64 file)
 {
     const Square sq = rank * 8 - file;
-    assert(sq >= 0 && sq <= 63);
+    // assert(sq >= 0 && sq <= 63);
     return sq;
 }
 
@@ -153,7 +152,7 @@ export inline constexpr Square c8 = 7 * 8 + 5;
 export inline constexpr Square b8 = 7 * 8 + 6;
 export inline constexpr Square a8 = 7 * 8 + 7;
 
-// TODO: replace with simple version calling 'a' + file
+// TODO: replace with simple version calling 'a' + file, if it can be constexpr
 export constexpr const char* square_to_algebraic(Square sq)
 {
     switch (sq) {

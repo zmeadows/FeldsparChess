@@ -1,20 +1,16 @@
+#define _HAS_EXCEPTIONS 0
 #include "gtest/gtest.h"
 
+import unstd.core;
+import unstd.random;
+
+import prelude;
 import bitboard;
 import board;
-import prelude;
 import print;
 import quad;
 
-#include "init_fixture.h"
-
-import unstd.random;
-
-#include <limits>
-
-class QuadBitboardTest : public InitFixture {};
-
-TEST(QuadBitboardTest, PackUnpack)
+TEST_METHOD(QuadBitboardTest, PackUnpack)
 {
     QuadBitboard qbb =
         pack(0, 1, std::numeric_limits<U64>::max(), (U64)std::numeric_limits<S64>::max() + 1);
@@ -22,10 +18,10 @@ TEST(QuadBitboardTest, PackUnpack)
     alignas(QuadBitboard) Bitboard bbs[4];
     unpack(qbb, bbs);
 
-    EXPECT_EQ(bbs[0], 0);
-    EXPECT_EQ(bbs[1], 1);
-    EXPECT_EQ(bbs[2], std::numeric_limits<U64>::max());
-    EXPECT_EQ(bbs[3], std::numeric_limits<S64>::max() + 1);
+    Assert::AreEqual(bbs[0], 0);
+    Assert::AreEqual(bbs[1], 1);
+    Assert::AreEqual(bbs[2], std::numeric_limits<U64>::max());
+    Assert::AreEqual(bbs[3], std::numeric_limits<S64>::max() + 1);
 
     for (auto i = 0; i < 1000; i++) {
         const Bitboard b1 = rand<U64>();
@@ -38,14 +34,14 @@ TEST(QuadBitboardTest, PackUnpack)
         alignas(QuadBitboard) Bitboard bbs[4];
         unpack(qbb, bbs);
 
-        EXPECT_EQ(bbs[0], b1);
-        EXPECT_EQ(bbs[1], b2);
-        EXPECT_EQ(bbs[2], b3);
-        EXPECT_EQ(bbs[3], b4);
+        Assert::AreEqual(bbs[0], b1);
+        Assert::AreEqual(bbs[1], b2);
+        Assert::AreEqual(bbs[2], b3);
+        Assert::AreEqual(bbs[3], b4);
     }
 }
 
-TEST(QuadBitboardTest, OperatorOREquals)
+TEST_METHOD(QuadBitboardTest, OperatorOREquals)
 {
     for (auto i = 0; i < 1000; i++) {
         const Bitboard b1 = rand<U64>();
@@ -65,14 +61,14 @@ TEST(QuadBitboardTest, OperatorOREquals)
         alignas(QuadBitboard) Bitboard bbs[4];
         unpack(qbb1, bbs);
 
-        EXPECT_EQ(bbs[0], b1 | b5);
-        EXPECT_EQ(bbs[1], b2 | b6);
-        EXPECT_EQ(bbs[2], b3 | b7);
-        EXPECT_EQ(bbs[3], b4 | b8);
+        Assert::AreEqual(bbs[0], b1 | b5);
+        Assert::AreEqual(bbs[1], b2 | b6);
+        Assert::AreEqual(bbs[2], b3 | b7);
+        Assert::AreEqual(bbs[3], b4 | b8);
     }
 }
 
-TEST(QuadBitboardTest, OperatorAND)
+TEST_METHOD(QuadBitboardTest, OperatorAND)
 {
     for (auto i = 0; i < 1000; i++) {
         const Bitboard b1 = rand<U64>();
@@ -92,14 +88,14 @@ TEST(QuadBitboardTest, OperatorAND)
         alignas(QuadBitboard) Bitboard bbs[4];
         unpack(qbb3, bbs);
 
-        EXPECT_EQ(bbs[0], b1 & b5);
-        EXPECT_EQ(bbs[1], b2 & b6);
-        EXPECT_EQ(bbs[2], b3 & b7);
-        EXPECT_EQ(bbs[3], b4 & b8);
+        Assert::AreEqual(bbs[0], b1 & b5);
+        Assert::AreEqual(bbs[1], b2 & b6);
+        Assert::AreEqual(bbs[2], b3 & b7);
+        Assert::AreEqual(bbs[3], b4 & b8);
     }
 }
 
-TEST(QuadBitboardTest, LeftShift)
+TEST_METHOD(QuadBitboardTest, LeftShift)
 {
     for (auto i = 0; i < 1000; i++) {
         const Bitboard b1 = rand<U64>();
@@ -119,9 +115,9 @@ TEST(QuadBitboardTest, LeftShift)
         alignas(QuadBitboard) Bitboard bbs[4];
         unpack(qbb3, bbs);
 
-        EXPECT_EQ(bbs[0], b1 << b5);
-        EXPECT_EQ(bbs[1], b2 << b6);
-        EXPECT_EQ(bbs[2], b3 << b7);
-        EXPECT_EQ(bbs[3], b4 << b8);
+        Assert::AreEqual(bbs[0], b1 << b5);
+        Assert::AreEqual(bbs[1], b2 << b6);
+        Assert::AreEqual(bbs[2], b3 << b7);
+        Assert::AreEqual(bbs[3], b4 << b8);
     }
 }

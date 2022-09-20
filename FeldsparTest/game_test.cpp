@@ -10,7 +10,7 @@ import game;
 
 class GameTest : public InitFixture {};
 
-TEST_F(GameTest, Initialization)
+TEST_METHOD(GameTest, Initialization)
 {
 
     // default 'empty' game state
@@ -19,24 +19,24 @@ TEST_F(GameTest, Initialization)
     for (const PieceType p : EnumRange<PieceType>()) {
         for (const Color c : EnumRange<Color>()) {
             const Bitboard bb = get_pieces(g.board, p, c);
-            EXPECT_EQ(bb, BITBOARD_EMPTY);
+            Assert::AreEqual(bb, BITBOARD_EMPTY);
         }
     }
 
     EXPECT_FALSE(g.ep_square.has_value());
-    EXPECT_EQ(g.to_move, Color::White);
-    EXPECT_EQ(g.fullmoves, 0);
-    EXPECT_EQ(g.halfmove_clock, 0);
-    EXPECT_EQ(g.castling_rights, 0);
+    Assert::AreEqual(g.to_move, Color::White);
+    Assert::AreEqual(g.fullmoves, 0);
+    Assert::AreEqual(g.halfmove_clock, 0);
+    Assert::AreEqual(g.castling_rights, 0);
 }
 
-TEST_F(GameTest, ComparisonOperator)
+TEST_METHOD(GameTest, ComparisonOperator)
 {
     Game g1;
 
     {
         Game g2;
-        EXPECT_EQ(g1, g2);
+        Assert::AreEqual(g1, g2);
     }
 
     {
@@ -62,7 +62,7 @@ TEST_F(GameTest, ComparisonOperator)
         g2.fullmoves += 10;
         EXPECT_NE(g1, g2);
         g2.fullmoves -= 10;
-        EXPECT_EQ(g1, g2);
+        Assert::AreEqual(g1, g2);
     }
 
     {
@@ -72,23 +72,23 @@ TEST_F(GameTest, ComparisonOperator)
     }
 }
 
-TEST_F(GameTest, GameFromFEN)
+TEST_METHOD(GameTest, GameFromFEN)
 {
     { // starting position
         const auto og = game_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 
-        ASSERT_TRUE(og.has_value());
+        Assert::IsTrue(og.has_value());
 
         const Game g = *og;
 
         const auto og_nomoves =
             game_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -");
 
-        ASSERT_TRUE(og_nomoves.has_value());
+        Assert::IsTrue(og_nomoves.has_value());
 
         const Game g_nomoves = *og_nomoves;
 
-        EXPECT_EQ(g_nomoves, g);
+        Assert::AreEqual(g_nomoves, g);
 
         const auto og_only_halfmoves =
             game_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0");
@@ -97,7 +97,7 @@ TEST_F(GameTest, GameFromFEN)
 
         using enum PieceType;
 
-        EXPECT_EQ(get_pieces(g.board, Pawn, Color::White), BB("00000000"
+        Assert::AreEqual(get_pieces(g.board, Pawn, Color::White), BB("00000000"
                                                               "00000000"
                                                               "00000000"
                                                               "00000000"
@@ -106,7 +106,7 @@ TEST_F(GameTest, GameFromFEN)
                                                               "11111111"
                                                               "00000000"));
 
-        EXPECT_EQ(get_pieces(g.board, Pawn, Color::Black), BB("00000000"
+        Assert::AreEqual(get_pieces(g.board, Pawn, Color::Black), BB("00000000"
                                                               "11111111"
                                                               "00000000"
                                                               "00000000"
@@ -115,7 +115,7 @@ TEST_F(GameTest, GameFromFEN)
                                                               "00000000"
                                                               "00000000"));
 
-        EXPECT_EQ(get_pieces(g.board, Knight, Color::White), BB("00000000"
+        Assert::AreEqual(get_pieces(g.board, Knight, Color::White), BB("00000000"
                                                                 "00000000"
                                                                 "00000000"
                                                                 "00000000"
@@ -124,7 +124,7 @@ TEST_F(GameTest, GameFromFEN)
                                                                 "00000000"
                                                                 "01000010"));
 
-        EXPECT_EQ(get_pieces(g.board, Knight, Color::Black), BB("01000010"
+        Assert::AreEqual(get_pieces(g.board, Knight, Color::Black), BB("01000010"
                                                                 "00000000"
                                                                 "00000000"
                                                                 "00000000"
@@ -133,7 +133,7 @@ TEST_F(GameTest, GameFromFEN)
                                                                 "00000000"
                                                                 "00000000"));
 
-        EXPECT_EQ(get_pieces(g.board, Bishop, Color::White), BB("00000000"
+        Assert::AreEqual(get_pieces(g.board, Bishop, Color::White), BB("00000000"
                                                                 "00000000"
                                                                 "00000000"
                                                                 "00000000"
@@ -142,7 +142,7 @@ TEST_F(GameTest, GameFromFEN)
                                                                 "00000000"
                                                                 "00100100"));
 
-        EXPECT_EQ(get_pieces(g.board, Bishop, Color::Black), BB("00100100"
+        Assert::AreEqual(get_pieces(g.board, Bishop, Color::Black), BB("00100100"
                                                                 "00000000"
                                                                 "00000000"
                                                                 "00000000"
@@ -151,7 +151,7 @@ TEST_F(GameTest, GameFromFEN)
                                                                 "00000000"
                                                                 "00000000"));
 
-        EXPECT_EQ(get_pieces(g.board, Rook, Color::White), BB("00000000"
+        Assert::AreEqual(get_pieces(g.board, Rook, Color::White), BB("00000000"
                                                               "00000000"
                                                               "00000000"
                                                               "00000000"
@@ -160,7 +160,7 @@ TEST_F(GameTest, GameFromFEN)
                                                               "00000000"
                                                               "10000001"));
 
-        EXPECT_EQ(get_pieces(g.board, Rook, Color::Black), BB("10000001"
+        Assert::AreEqual(get_pieces(g.board, Rook, Color::Black), BB("10000001"
                                                               "00000000"
                                                               "00000000"
                                                               "00000000"
@@ -169,7 +169,7 @@ TEST_F(GameTest, GameFromFEN)
                                                               "00000000"
                                                               "00000000"));
 
-        EXPECT_EQ(get_pieces(g.board, Queen, Color::White), BB("00000000"
+        Assert::AreEqual(get_pieces(g.board, Queen, Color::White), BB("00000000"
                                                                "00000000"
                                                                "00000000"
                                                                "00000000"
@@ -178,7 +178,7 @@ TEST_F(GameTest, GameFromFEN)
                                                                "00000000"
                                                                "00010000"));
 
-        EXPECT_EQ(get_pieces(g.board, Queen, Color::Black), BB("00010000"
+        Assert::AreEqual(get_pieces(g.board, Queen, Color::Black), BB("00010000"
                                                                "00000000"
                                                                "00000000"
                                                                "00000000"
@@ -187,7 +187,7 @@ TEST_F(GameTest, GameFromFEN)
                                                                "00000000"
                                                                "00000000"));
 
-        EXPECT_EQ(get_pieces(g.board, King, Color::White), BB("00000000"
+        Assert::AreEqual(get_pieces(g.board, King, Color::White), BB("00000000"
                                                               "00000000"
                                                               "00000000"
                                                               "00000000"
@@ -196,7 +196,7 @@ TEST_F(GameTest, GameFromFEN)
                                                               "00000000"
                                                               "00001000"));
 
-        EXPECT_EQ(get_pieces(g.board, King, Color::Black), BB("00001000"
+        Assert::AreEqual(get_pieces(g.board, King, Color::Black), BB("00001000"
                                                               "00000000"
                                                               "00000000"
                                                               "00000000"
@@ -206,9 +206,9 @@ TEST_F(GameTest, GameFromFEN)
                                                               "00000000"));
 
         EXPECT_FALSE(g.ep_square.has_value());
-        EXPECT_EQ(g.castling_rights, CASTLE_RIGHTS_WHITE_BOTH | CASTLE_RIGHTS_BLACK_BOTH);
-        EXPECT_EQ(g.fullmoves, 1);
-        EXPECT_EQ(g.halfmove_clock, 0);
+        Assert::AreEqual(g.castling_rights, CASTLE_RIGHTS_WHITE_BOTH | CASTLE_RIGHTS_BLACK_BOTH);
+        Assert::AreEqual(g.fullmoves, 1);
+        Assert::AreEqual(g.halfmove_clock, 0);
     }
 
     { // invalid FEN strings
@@ -217,7 +217,7 @@ TEST_F(GameTest, GameFromFEN)
     }
 }
 
-TEST_F(GameTest, GameFromToFEN)
+TEST_METHOD(GameTest, GameFromToFEN)
 {
     for (std::string fen : {"r1bq1rk1/ppp1npbp/3p1np1/3Pp3/1PP1P3/2N2N2/P3BPPP/R1BQ1RK1 b - - 0 9",
                             "rn1q1rk1/1pp2pp1/p3pb1p/8/P2Pb3/5NP1/1P2PPBP/RNQR2K1 b - - 1 14",
@@ -225,9 +225,9 @@ TEST_F(GameTest, GameFromToFEN)
                             "rnbqkbnr/p1p2ppp/4p3/1pPp4/3P4/8/PP2PPPP/RNBQKBNR w KQkq b6 0 4"}) {
 
         const auto og = game_from_fen(fen);
-        ASSERT_TRUE(og.has_value());
+        Assert::IsTrue(og.has_value());
         const Game& g = *og;
 
-        EXPECT_EQ(fen, game_to_fen(g));
+        Assert::AreEqual(fen, game_to_fen(g));
     }
 }

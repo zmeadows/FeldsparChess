@@ -1,11 +1,12 @@
 export module attacks.rays;
-
 #include "../unstd/macros.h"
+
+import unstd.core;
 
 import prelude;
 import bitboard;
 
-import<array>;
+import <array>;
 
 constexpr Bitboard RAY_TABLE[8 * 64] = {
     /* NORTH */

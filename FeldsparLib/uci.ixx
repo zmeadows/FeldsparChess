@@ -1,11 +1,14 @@
 export module uci;
 
+import unstd.core;
+
 import unstd.io;
 import unstd.string_util;
 
-import<string>;
-import<iostream>;
-import<unordered_map>;
+import <iostream>;
+import <string>;
+import <unordered_map>;
+import <vector>;
 
 export struct FeldsparUCI {
     int run(void)
@@ -20,7 +23,7 @@ export struct FeldsparUCI {
             std::invoke(DISPATCH_TABLE.at(first_word), *this, words);
         }
 
-        return EXIT_SUCCESS;
+        return 0;
     }
 
  private:

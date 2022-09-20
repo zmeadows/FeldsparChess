@@ -5,10 +5,7 @@ export module quad;
 import prelude;
 import bitboard;
 import board;
-import unstd.io;
-
 import <immintrin.h>;
-import <string>;
 
 export using QuadBitboard = __m256i;
 
@@ -54,29 +51,29 @@ export __ALWAYS_INLINE Bitboard reduceOR(QuadBitboard x)
     return bbs[0] | bbs[1] | bbs[2] | bbs[3];
 }
 
-export void print(QuadBitboard qbb)
-{
-    alignas(alignof(QuadBitboard)) Bitboard bbs[4];
-    unpack(qbb, bbs);
-
-    bool bits[4][64] = {false};
-
-    for (size_t i = 0; i < 4; i++) {
-        serialize(bbs[i], [&](Square sq) { bits[i][63 - sq] = true; });
-    }
-
-    std::string output;
-    output.reserve(8 * 4 * 8 + 4 * 8 + 8 + 1);
-
-    for (size_t i = 0; i < 8; i++) {
-        for (size_t k = 0; k < 4; k++) {
-            for (size_t j = 0; j < 8; j++) {
-                output.push_back(bits[k][8*i+j] ? '1' : '0');
-            }
-            output.push_back(' ');
-        }
-        output.push_back('\n');
-    }
-
-    to_stdout("{}\n", output);
-}
+// export void print(QuadBitboard qbb)
+// {
+//     alignas(alignof(QuadBitboard)) Bitboard bbs[4];
+//     unpack(qbb, bbs);
+// 
+//     bool bits[4][64] = {false};
+// 
+//     for (size_t i = 0; i < 4; i++) {
+//         serialize(bbs[i], [&](Square sq) { bits[i][63 - sq] = true; });
+//     }
+// 
+//     std::string output;
+//     output.reserve(8 * 4 * 8 + 4 * 8 + 8 + 1);
+// 
+//     for (size_t i = 0; i < 8; i++) {
+//         for (size_t k = 0; k < 4; k++) {
+//             for (size_t j = 0; j < 8; j++) {
+//                 output.push_back(bits[k][8*i+j] ? '1' : '0');
+//             }
+//             output.push_back(' ');
+//         }
+//         output.push_back('\n');
+//     }
+// 
+//     to_stdout("{}\n", output);
+// }

@@ -7,7 +7,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="FeldsparExe.ixx">
+    <ClCompile Include="prelude_test.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unstd_core_test.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="quad_test.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

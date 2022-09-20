@@ -1,8 +1,8 @@
 export module unstd.core;
-
-import<cstdint>;
-
+#pragma warning(disable : 5050)
 #include "macros.h"
+
+import <cstdint>;
 
 export using U64 = uint64_t;
 export using U32 = uint32_t;
@@ -26,18 +26,6 @@ export using F32 = float;
 export using F64 = double;
 static_assert(sizeof(F64) == 8);
 static_assert(sizeof(F32) == 4);
-
-export template <typename T>
-const T& max(const T& a, const T& b)
-{
-    return (a < b) ? b : a;
-}
-
-export template <typename T>
-const T& min(const T& a, const T& b)
-{
-    return (b >= a) ? a : b;
-}
 
 // For any enum class that defines a LAST member, this allows us to loop over the enum
 // easily in a range-based for loop: for (const auto x : EnumRange<T>()).
@@ -72,13 +60,13 @@ public:
 
     [[nodiscard]] __ALWAYS_INLINE T& operator*()
     {
-        assert(m_data != SENTINEL);
+        //assert(m_data != SENTINEL);
         return m_data;
     }
 
     [[nodiscard]] __ALWAYS_INLINE const T& operator*() const
     {
-        assert(m_data != SENTINEL);
+        //assert(m_data != SENTINEL);
         return m_data;
     }
 

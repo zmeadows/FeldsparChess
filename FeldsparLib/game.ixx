@@ -1,4 +1,7 @@
 export module game;
+#include "unstd/macros.h"
+
+import unstd.core;
 
 import unstd.io;
 import unstd.string_util;
@@ -8,12 +11,9 @@ import bitboard;
 import board;
 import zobrist;
 
-import<cstdlib>;
-import<optional>;
-import<string>;
-import<vector>;
-
-#include "unstd/macros.h"
+import <optional>;
+import <vector>;
+import <string>;
 
 export struct Game {
     Board board = {BITBOARD_EMPTY};
@@ -227,7 +227,7 @@ export std::string game_to_fen(const Game& game)
         const std::optional<Piece> maybe_piece = get_piece_at(game.board, sq);
 
         if ((maybe_piece.has_value() || wrapped_across_row) && empty_tally > 0) {
-            assert(empty_tally <= 8);
+            //assert(empty_tally <= 8);
             fen.push_back('0' + static_cast<char>(empty_tally));
             empty_tally = 0;
         }

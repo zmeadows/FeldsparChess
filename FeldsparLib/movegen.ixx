@@ -1,5 +1,7 @@
 export module movegen;
+#include "unstd/macros.h"
 
+import unstd.core;
 import prelude;
 
 import bitboard;
@@ -10,11 +12,6 @@ import pins;
 import print;
 import quad;
 import unstd.io;
-
-import<cstring>;
-import<type_traits>;
-
-#include "unstd/macros.h"
 
 import attacks;
 import attacks.rays;
@@ -60,7 +57,7 @@ __FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveBuffer& moves
             }
         }
 
-        assert(false && "Failed to associate square to piece type. Likely invalid capture square.");
+        //assert(false && "Failed to associate square to piece type. Likely invalid capture square.");
         __assume(0);
     };
 
@@ -332,7 +329,7 @@ __FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveBuffer& moves
         }
 
         serialize(from_bits & friendly_pawns, [&](Square from) {
-            assert(is_valid_square(from));
+            //assert(is_valid_square(from));
 
             const Bitboard from_to_bit = square_bitrep(from) | to_bit;
 
@@ -342,7 +339,7 @@ __FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveBuffer& moves
             } else {
                 captured_bit = square_bitrep(to + 8);
             }
-            assert(captured_bit & get_pieces(game.board, Pawn, OPPONENT_COLOR));
+            //assert(captured_bit & get_pieces(game.board, Pawn, OPPONENT_COLOR));
 
             // An en-passant capture removes two pieces from the board at once,
             // so we cannot rely on our previous pin calculations to account for the

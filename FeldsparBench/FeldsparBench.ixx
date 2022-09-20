@@ -1,14 +1,16 @@
+import unstd.core;
+import unstd.io;
+
 import prelude;
 import bitboard;
 import attacks;
 import game;
 import perft;
 import init;
-import unstd.io;
 
-#include <time.h>
-import <string>;
 import <optional>;
+import <string>;
+#include <ctime>
 
 double perft_benchmark(const std::string& name, U64 depth, U64 ntimes, const std::string& fen)
 {

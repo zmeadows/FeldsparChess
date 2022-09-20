@@ -1,7 +1,8 @@
 #include "gtest/gtest.h"
-
 #include "init_fixture.h"
 #include "unstd/macros.h"
+
+import unstd.core;
 
 import prelude;
 import bitboard;
@@ -11,7 +12,7 @@ import attacks.util;
 
 class AttacksUtil : public InitFixture {};
 
-TEST_F(AttacksUtil, Attacked)
+TEST_METHOD(AttacksUtil, Attacked)
 {
     Board board = {BITBOARD_EMPTY};
     Bitboard& atkrs = get_occupied_mut(board, Color::White);
@@ -19,7 +20,7 @@ TEST_F(AttacksUtil, Attacked)
     bishops = set_bits<a1>();
     atkrs = set_bits<a1>();
 
-    EXPECT_EQ(bishops, BB("00000000"
+    Assert::AreEqual(bishops, BB("00000000"
                           "00000000"
                           "00000000"
                           "00000000"
@@ -31,7 +32,7 @@ TEST_F(AttacksUtil, Attacked)
     using enum Color;
     Bitboard atk = attacked(board);
 
-    EXPECT_EQ(atk, BB("00000001"
+    Assert::AreEqual(atk, BB("00000001"
                       "00000010"
                       "00000100"
                       "00001000"
@@ -43,7 +44,7 @@ TEST_F(AttacksUtil, Attacked)
     bishops = set_bit(bishops, h1);
     atkrs = set_bit(atkrs, h1);
 
-    EXPECT_EQ(bishops, BB("00000000"
+    Assert::AreEqual(bishops, BB("00000000"
                           "00000000"
                           "00000000"
                           "00000000"
@@ -54,7 +55,7 @@ TEST_F(AttacksUtil, Attacked)
 
     atk = attacked(board);
 
-    EXPECT_EQ(atk, BB("10000001"
+    Assert::AreEqual(atk, BB("10000001"
                       "01000010"
                       "00100100"
                       "00011000"

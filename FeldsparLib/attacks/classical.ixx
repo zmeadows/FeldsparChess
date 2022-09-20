@@ -1,11 +1,10 @@
 export module attacks.classical;
+#include "../unstd/macros.h"
 
 import prelude;
 import bitboard;
 import board;
 import attacks.rays;
-
-#include "../unstd/macros.h"
 
 export constexpr __ALWAYS_INLINE Bitboard get_bishop_attacks_classical(Square sq, Bitboard occupied)
 {

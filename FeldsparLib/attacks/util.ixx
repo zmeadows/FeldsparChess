@@ -1,12 +1,12 @@
 export module attacks.util;
+#include "../unstd/macros.h"
+
+import unstd.core;
 
 import prelude;
 import bitboard;
 import board;
 import quad;
-#include "../unstd/macros.h"
-
-import<cstdio>;
 
 import attacks.base;
 import attacks;

@@ -1,7 +1,8 @@
 export module unstd.random;
 
 import unstd.core;
-import<array>;
+
+import <array>;
 
 export template <typename T>
 T rand(void)

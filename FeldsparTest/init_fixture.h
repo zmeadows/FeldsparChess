@@ -4,11 +4,11 @@ class InitFixture : public ::testing::Test {
 public:
     InitFixture(){};
 
-    virtual void SetUp();
+    void SetUp();
 
-    virtual void TearDown(){};
+    void TearDown(){};
 
-    virtual ~InitFixture()
+    ~InitFixture()
     {
         // cleanup any pending stuff, but no exceptions allowed
     }

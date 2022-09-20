@@ -1,16 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="core_test.cpp">
-      <Filter>unstd</Filter>
-    </ClCompile>
     <ClCompile Include="bitboard_test.cpp" />
     <ClCompile Include="game_test.cpp" />
     <ClCompile Include="quad_test.cpp" />
     <ClCompile Include="move_test.cpp" />
     <ClCompile Include="attacks_sliding_test.cpp" />
     <ClCompile Include="attacks_util_test.cpp" />
-    <ClCompile Include="prelude_test.cpp" />
     <ClCompile Include="attacks_base_test.cpp" />
     <ClCompile Include="perft_test.cpp" />
     <ClCompile Include="init_fixture.cpp" />
@@ -21,9 +17,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ClInclude Include="init_fixture.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="init_fixture.h" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

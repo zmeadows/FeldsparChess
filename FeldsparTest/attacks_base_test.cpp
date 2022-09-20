@@ -1,20 +1,15 @@
+#define _HAS_EXCEPTIONS 0
 #include "gtest/gtest.h"
 
-#include "init_fixture.h"
-#include "unstd/macros.h"
+import unstd.core;
 
 import prelude;
 import bitboard;
-import board;
 import print;
 
 import attacks.base;
-import attacks.classical;
-import attacks.util;
 
-class AttacksBase : public InitFixture {};
-
-TEST_F(AttacksBase, KnightMoves)
+TEST_METHOD(AttacksBase, KnightMoves)
 {
     for (Square from_sq = 0; from_sq < 64; from_sq++) {
         const Bitboard km = get_knight_moves(from_sq);
@@ -34,6 +29,6 @@ TEST_F(AttacksBase, KnightMoves)
 
         print_bitboard(km);
         print_bitboard(km2);
-        EXPECT_EQ(km, km2);
+        Assert::AreEqual(km, km2);
     }
 }

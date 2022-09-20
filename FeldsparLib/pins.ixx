@@ -1,12 +1,11 @@
 export module pins;
+#include "unstd/macros.h"
 
 import prelude;
 import bitboard;
 import board;
 import attacks;
 import attacks.rays;
-
-#include "unstd/macros.h"
 
 export struct Pins {
     Bitboard diagonal = BITBOARD_EMPTY;
@@ -30,7 +29,7 @@ Pins Pins::create(const Board& board, const Color friendly_color)
     const Bitboard occupied_squares = friendly_pieces | opponent_pieces;
     const Square king_square = bitboard_bsf(get_pieces(board, King, friendly_color));
 
-    assert(is_valid_square(king_square));
+    //assert(is_valid_square(king_square));
 
     { // Find non-diagonal pins
         const Bitboard op_rq =
@@ -42,7 +41,7 @@ Pins Pins::create(const Board& board, const Color friendly_color)
         serialize(pinners, [&](Square pinner_square) {
             const Bitboard connecting_bits = ray_between_squares(king_square, pinner_square);
             const Bitboard pinned_bit = connecting_bits & friendly_pieces;
-            assert(bitboard_popcount(pinned_bit) == 1);
+            //assert(bitboard_popcount(pinned_bit) == 1);
             pins.nondiagonal_constraints[bitboard_bsf(pinned_bit)] = connecting_bits;
             pins.nondiagonal |= pinned_bit;
         });
@@ -58,7 +57,7 @@ Pins Pins::create(const Board& board, const Color friendly_color)
         serialize(pinners, [&](Square pinner_square) {
             const Bitboard connecting_bits = ray_between_squares(king_square, pinner_square);
             const Bitboard pinned_bit = connecting_bits & friendly_pieces;
-            assert(bitboard_popcount(pinned_bit) == 1);
+            //assert(bitboard_popcount(pinned_bit) == 1);
             pins.diagonal_constraints[bitboard_bsf(pinned_bit)] = connecting_bits;
             pins.diagonal |= pinned_bit;
         });

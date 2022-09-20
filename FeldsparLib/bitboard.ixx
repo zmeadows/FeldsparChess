@@ -1,18 +1,16 @@
 export module bitboard;
-
 #include "unstd/macros.h"
 
 import prelude;
 
-import <cassert>;
-import <intrin.h>;
-import <type_traits>;
+import unstd.core;
+import std.core;
 
 template <U64 N, U64 I>
 constexpr Bitboard BB_helper(const char* input)
 {
     if (input[I] != '0' && input[I] != '1') {
-        assert(false);
+        //assert(false);
     }
 
     if constexpr (I == 0) {
@@ -174,7 +172,7 @@ export __ALWAYS_INLINE Square bitboard_bsf(Bitboard bb)
 
 export constexpr Square constexpr_bitboard_bsf(Bitboard bb)
 {
-    assert(bb != 0);
+    //assert(bb != 0);
 
     constexpr const Square index64[64] = {
         0,  1,  48, 2,  57, 49, 28, 3,  61, 58, 50, 42, 38, 29, 17, 4,  62, 55, 59, 36, 53, 51,
@@ -195,7 +193,7 @@ export __ALWAYS_INLINE Square bitboard_bsr(Bitboard bb)
 
 export constexpr Square constexpr_bitboard_bsr(Bitboard bb)
 {
-    assert(bb != 0);
+    //assert(bb != 0);
 
     constexpr Square index64[64] = {0,  47, 1,  56, 48, 27, 2,  60, 57, 49, 41, 37, 28, 16, 3,  61,
                                     54, 58, 35, 52, 50, 42, 21, 44, 38, 32, 29, 23, 17, 11, 4,  62,
