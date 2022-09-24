@@ -213,6 +213,11 @@ export std::optional<Game> game_from_fen(const std::string& fen)
     }
 }
 
+export Game starting_position()
+{
+    return *game_from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+}
+
 export std::string game_to_fen(const Game& game)
 {
     std::string fen; fen.reserve(92);

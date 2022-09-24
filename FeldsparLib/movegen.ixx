@@ -16,6 +16,10 @@ import attacks;
 import attacks.rays;
 import attacks.util;
 
+import <optional>;
+import <vector>;
+import <string>;
+
 export struct MoveGenFlags {
     bool CAPTURES_ONLY = false;
     bool DEBUG_PRINT = false;
@@ -51,7 +55,7 @@ __FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveBuffer& moves
         const Bitboard sqbit = square_bitrep(sq);
 
         for (PieceType ptype : EnumRange<PieceType>()) {
-            if (sqbit & get_pieces(board, ptype, OPPONENT_COLOR)) [[unlikely]] {
+            if (sqbit & get_pieces(board, ptype, OPPONENT_COLOR)) {
                 return ptype;
             }
         }
@@ -291,6 +295,7 @@ __FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveBuffer& moves
 
     { // fully unpinned pawn attacks
         const Bitboard pawns_that_can_capture = friendly_pawns & unpinned & attacking_pawns_mask;
+        DEBUG_PRINT_BB(FLAGS.DEBUG_PRINT, pawns_that_can_capture);
 
         serialize(pawns_that_can_capture, [&](Square from) {
             const Bitboard pawn_attack_pattern = get_pawn_attacks(from, FRIENDLY_COLOR);
@@ -433,4 +438,27 @@ export void debug_print_movegen(const Game& game)
     for (const Move m : moves) {
         print_move(m);
     }
+}
+
+export bool make_moves_algebraic(
+    Game& game,
+    std::vector<std::string>::const_iterator moves_begin,
+    std::vector<std::string>::const_iterator moves_end)
+{
+
+    MoveBuffer moves;
+    for (auto it = moves_begin; it != moves_end; it++) {
+        if (it->back() == 'r') {
+            int x = 1;
+        }
+        generate_moves(game, moves);
+        std::optional<Move> o_move = move_from_algebraic(moves, *it);
+        if (!o_move.has_value()) {
+            return false;
+        }
+        Move move = *o_move;
+        make_move<true>(game, move);
+    }
+
+    return true;
 }

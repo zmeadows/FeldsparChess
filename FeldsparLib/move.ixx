@@ -10,6 +10,7 @@ import zobrist;
 
 import <optional>;
 import <string>;
+import <vector>;
 
 export class MoveBuffer {
     Move moves[255];
@@ -21,6 +22,7 @@ public:
     constexpr __ALWAYS_INLINE void clear() { m_count = 0; }
     constexpr __ALWAYS_INLINE const Move* const begin() const { return &moves[0]; }
     constexpr __ALWAYS_INLINE const Move* const end() const { return &moves[0] + m_count; }
+    constexpr __ALWAYS_INLINE Move operator[](size_t idx) const { return moves[idx]; };
 };
 
 export inline constexpr U32 QUIET_FLAG = 0b0000;
@@ -340,16 +342,40 @@ export std::string move_to_algebraic(Move m)
     alg_str += square_to_algebraic(from);
     alg_str += square_to_algebraic(to);
 
+    auto flag = move_flag(m);
+    if (flag == KNIGHT_PROMO_FLAG || flag == KNIGHT_PROMO_CAPTURE_FLAG) alg_str.push_back('n');
+    if (flag == QUEEN_PROMO_FLAG || flag == QUEEN_PROMO_CAPTURE_FLAG) alg_str.push_back('q');
+    if (flag == ROOK_PROMO_FLAG || flag == ROOK_PROMO_CAPTURE_FLAG) alg_str.push_back('r');
+    if (flag == BISHOP_PROMO_FLAG || flag == BISHOP_PROMO_CAPTURE_FLAG) alg_str.push_back('b');
+
     return alg_str;
 }
 
-//TODO: Use Maybe?
 export __ALWAYS_INLINE std::optional<Move> move_from_algebraic(const MoveBuffer& moves,
-                                                      const std::string& alg)
+                                                               const std::string& alg)
 {
-    for (const Move m : moves) {
-        if (move_to_algebraic(m) == alg) return m;
-    }
+    if (alg.size() == 4) {
+        for (const Move m : moves) {
+            if (move_to_algebraic(m) == alg) return m;
+        }
+    } else if (alg.size() == 5) {
+        const char promo_char = alg[4];
+
+        for (const Move m : moves) {
+            if (move_to_algebraic(m) != alg) continue;
+
+            U32 flag = move_flag(m);
+            if (promo_char == 'n' && (flag == KNIGHT_PROMO_FLAG || flag == KNIGHT_PROMO_CAPTURE_FLAG))
+                return m;
+            else if (promo_char == 'q' && (flag == QUEEN_PROMO_FLAG || flag == QUEEN_PROMO_CAPTURE_FLAG))
+                return m;
+            else if (promo_char == 'b' && (flag == BISHOP_PROMO_FLAG || flag == BISHOP_PROMO_CAPTURE_FLAG))
+                return m;
+            else if (promo_char == 'r' && (flag == ROOK_PROMO_FLAG || flag == ROOK_PROMO_CAPTURE_FLAG))
+                return m;
+        }
+    } 
 
     return {};
 }
+

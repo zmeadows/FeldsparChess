@@ -24,20 +24,3 @@ export std::vector<std::string> split(const std::string& s, char delim = ' ')
     split(s, delim, std::back_inserter(elems));
     return elems;
 }
-
-export void split(
-    std::vector<std::string_view>& output, const std::string& strv, std::string_view delims = " ")
-{
-    output.clear();
-    size_t first = 0;
-
-    while (first < strv.size()) {
-        const auto second = strv.find_first_of(delims, first);
-
-        if (first != second) output.emplace_back(strv.substr(first, second - first));
-
-        if (second == std::string_view::npos) break;
-
-        first = second + 1;
-    }
-}
