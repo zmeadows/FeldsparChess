@@ -1,0 +1,3 @@
+[submodule "FeldsparLiChess/lichess-bot"]
+	path = FeldsparLiChess/lichess-bot
+	url = https://github.com/ShailChoksi/lichess-bot.git
