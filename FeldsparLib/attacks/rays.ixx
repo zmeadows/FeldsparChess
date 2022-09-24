@@ -1,9 +1,8 @@
 export module attacks.rays;
+
 #include "../unstd/macros.h"
-
-import unstd.core;
-
 import prelude;
+
 import bitboard;
 
 import <array>;

@@ -1,13 +1,12 @@
 export module print;
 
-import unstd.core;
+import prelude;
+import unstd.io;
 
 import bitboard;
 import board;
 import game;
 import move;
-import prelude;
-import unstd.io;
 
 export void print_move(Move m)
 {

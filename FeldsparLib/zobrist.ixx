@@ -1,12 +1,10 @@
 export module zobrist;
 
 #include "unstd/macros.h"
-
 import prelude;
-import bitboard;
-
-import unstd.core;
 import unstd.random;
+
+import bitboard;
 
 export using GameHash = U64;
 

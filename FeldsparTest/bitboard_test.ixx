@@ -1,15 +1,15 @@
-#include "gtest/gtest.h"
-#include "init_fixture.h"
-#include "unstd/macros.h"
-
-import unstd.core;
+#include "CppUnitTest.h"
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 import prelude;
+
 import bitboard;
 
-class BitboardTest : public InitFixture {};
+import <vector>;
 
-TEST_METHOD(BitboardTest, SetBits)
+TEST_CLASS(BITBOARD_TEST) {
+ 
+TEST_METHOD(SET_BITS)
 {
     {
         constexpr Bitboard bb = set_bits<h1, a1>();
@@ -48,7 +48,7 @@ TEST_METHOD(BitboardTest, SetBits)
     }
 }
 
-TEST_METHOD(BitboardTest, StringToBitboardConversion)
+TEST_METHOD(STRING_TO_BITBOARD)
 {
     Assert::AreEqual(BITBOARD_EMPTY, BB("00000000"
                                  "00000000"
@@ -86,7 +86,7 @@ TEST_METHOD(BitboardTest, StringToBitboardConversion)
                                     "00000000"
                                     "00000000"));
 
-    Assert::AreEqual(0b1001011110010111100101111001011110010111100101111001011110010111, BB("10010111"
+    Assert::AreEqual(0b1001011110010111100101111001011110010111100101111001011110010111ULL, BB("10010111"
                                                                                      "10010111"
                                                                                      "10010111"
                                                                                      "10010111"
@@ -95,7 +95,7 @@ TEST_METHOD(BitboardTest, StringToBitboardConversion)
                                                                                      "10010111"
                                                                                      "10010111"));
 
-    Assert::AreEqual(0b0100110000010101010001000010111011100000010010101001100011001001, BB("01001100"
+    Assert::AreEqual(0b0100110000010101010001000010111011100000010010101001100011001001ULL, BB("01001100"
                                                                                      "00010101"
                                                                                      "01000100"
                                                                                      "00101110"
@@ -105,10 +105,10 @@ TEST_METHOD(BitboardTest, StringToBitboardConversion)
                                                                                      "11001001"));
 }
 
-TEST_METHOD(BitboardTest, BitScanForward)
+TEST_METHOD(BIT_SCAN_FORWARD)
 {
 
-    Assert::AreEqual(0, bitboard_bsf(BB("00000000"
+    Assert::AreEqual(0LL, bitboard_bsf(BB("00000000"
                                  "00000000"
                                  "00000000"
                                  "00000000"
@@ -117,7 +117,7 @@ TEST_METHOD(BitboardTest, BitScanForward)
                                  "00000000"
                                  "00000000")));
 
-    Assert::AreEqual(0, bitboard_bsf(BB("00000000"
+    Assert::AreEqual(0LL, bitboard_bsf(BB("00000000"
                                  "00000000"
                                  "00000000"
                                  "00000000"
@@ -126,7 +126,7 @@ TEST_METHOD(BitboardTest, BitScanForward)
                                  "00000000"
                                  "00000001")));
 
-    Assert::AreEqual(31, bitboard_bsf(BB("00000000"
+    Assert::AreEqual(31LL, bitboard_bsf(BB("00000000"
                                   "00000000"
                                   "00000000"
                                   "00000000"
@@ -135,7 +135,7 @@ TEST_METHOD(BitboardTest, BitScanForward)
                                   "00000000"
                                   "00000000")));
 
-    Assert::AreEqual(7, bitboard_bsf(BB("00000000"
+    Assert::AreEqual(7LL, bitboard_bsf(BB("00000000"
                                  "00000000"
                                  "00000000"
                                  "00000000"
@@ -144,7 +144,7 @@ TEST_METHOD(BitboardTest, BitScanForward)
                                  "00000000"
                                  "10000000")));
 
-    Assert::AreEqual(7, bitboard_bsf(BB("10000000"
+    Assert::AreEqual(7LL, bitboard_bsf(BB("10000000"
                                  "00010000"
                                  "01001110"
                                  "00000000"
@@ -153,7 +153,7 @@ TEST_METHOD(BitboardTest, BitScanForward)
                                  "00000000"
                                  "10000000")));
 
-    Assert::AreEqual(63, bitboard_bsf(BB("10000000"
+    Assert::AreEqual(63LL, bitboard_bsf(BB("10000000"
                                   "00000000"
                                   "00000000"
                                   "00000000"
@@ -163,10 +163,10 @@ TEST_METHOD(BitboardTest, BitScanForward)
                                   "00000000")));
 }
 
-TEST_METHOD(BitboardTest, BitScanReverse)
+TEST_METHOD(BIT_SCAN_REVERSE)
 {
 
-    Assert::AreEqual(0, bitboard_bsr(BB("00000000"
+    Assert::AreEqual(0LL, bitboard_bsr(BB("00000000"
                                  "00000000"
                                  "00000000"
                                  "00000000"
@@ -175,7 +175,7 @@ TEST_METHOD(BitboardTest, BitScanReverse)
                                  "00000000"
                                  "00000000")));
 
-    Assert::AreEqual(0, bitboard_bsr(BB("00000000"
+    Assert::AreEqual(0LL, bitboard_bsr(BB("00000000"
                                  "00000000"
                                  "00000000"
                                  "00000000"
@@ -184,7 +184,7 @@ TEST_METHOD(BitboardTest, BitScanReverse)
                                  "00000000"
                                  "00000001")));
 
-    Assert::AreEqual(31, bitboard_bsr(BB("00000000"
+    Assert::AreEqual(31LL, bitboard_bsr(BB("00000000"
                                   "00000000"
                                   "00000000"
                                   "00000000"
@@ -193,7 +193,7 @@ TEST_METHOD(BitboardTest, BitScanReverse)
                                   "00000000"
                                   "00000000")));
 
-    Assert::AreEqual(7, bitboard_bsr(BB("00000000"
+    Assert::AreEqual(7LL, bitboard_bsr(BB("00000000"
                                  "00000000"
                                  "00000000"
                                  "00000000"
@@ -202,7 +202,7 @@ TEST_METHOD(BitboardTest, BitScanReverse)
                                  "00000000"
                                  "10000000")));
 
-    Assert::AreEqual(63, bitboard_bsr(BB("10000000"
+    Assert::AreEqual(63LL, bitboard_bsr(BB("10000000"
                                   "00010000"
                                   "01001110"
                                   "00000000"
@@ -211,7 +211,7 @@ TEST_METHOD(BitboardTest, BitScanReverse)
                                   "00000000"
                                   "10000000")));
 
-    Assert::AreEqual(63, bitboard_bsr(BB("10000000"
+    Assert::AreEqual(63LL, bitboard_bsr(BB("10000000"
                                   "00000000"
                                   "00000000"
                                   "00000000"
@@ -221,10 +221,10 @@ TEST_METHOD(BitboardTest, BitScanReverse)
                                   "00000000")));
 }
 
-TEST_METHOD(BitboardTest, PopulationCount)
+TEST_METHOD(POP_COUNT)
 {
 
-    Assert::AreEqual(1, bitboard_popcount(BB("10000000"
+    Assert::AreEqual(1LL, bitboard_popcount(BB("10000000"
                                       "00000000"
                                       "00000000"
                                       "00000000"
@@ -233,7 +233,7 @@ TEST_METHOD(BitboardTest, PopulationCount)
                                       "00000000"
                                       "00000000")));
 
-    Assert::AreEqual(0, bitboard_popcount(BB("00000000"
+    Assert::AreEqual(0LL, bitboard_popcount(BB("00000000"
                                       "00000000"
                                       "00000000"
                                       "00000000"
@@ -242,7 +242,7 @@ TEST_METHOD(BitboardTest, PopulationCount)
                                       "00000000"
                                       "00000000")));
 
-    Assert::AreEqual(8, bitboard_popcount(BB("00010000"
+    Assert::AreEqual(8LL, bitboard_popcount(BB("00010000"
                                       "00010000"
                                       "00010000"
                                       "00010000"
@@ -251,7 +251,7 @@ TEST_METHOD(BitboardTest, PopulationCount)
                                       "00010000"
                                       "00010000")));
 
-    Assert::AreEqual(64, bitboard_popcount(BB("11111111"
+    Assert::AreEqual(64LL, bitboard_popcount(BB("11111111"
                                        "11111111"
                                        "11111111"
                                        "11111111"
@@ -260,7 +260,7 @@ TEST_METHOD(BitboardTest, PopulationCount)
                                        "11111111"
                                        "11111111")));
 
-    Assert::AreEqual(54, bitboard_popcount(BB("11101111"
+    Assert::AreEqual(54LL, bitboard_popcount(BB("11101111"
                                        "10111011"
                                        "11111111"
                                        "10101111"
@@ -269,7 +269,7 @@ TEST_METHOD(BitboardTest, PopulationCount)
                                        "11110111"
                                        "10101101")));
 
-    Assert::AreEqual(44, bitboard_popcount(BB("11101001"
+    Assert::AreEqual(44LL, bitboard_popcount(BB("11101001"
                                        "10111011"
                                        "11001111"
                                        "10101111"
@@ -279,11 +279,11 @@ TEST_METHOD(BitboardTest, PopulationCount)
                                        "10101001")));
 }
 
-TEST_METHOD(BitboardTest, EmptyFullOccupiedChecks)
+TEST_METHOD(EMPTY_FULL_OCCUPIED)
 {
-    EXPECT_TRUE(bitboard_is_full(BITBOARD_FULL));
+    Assert::IsTrue(bitboard_is_full(BITBOARD_FULL));
 
-    EXPECT_TRUE(bitboard_is_full(BB("11111111"
+    Assert::IsTrue(bitboard_is_full(BB("11111111"
                                     "11111111"
                                     "11111111"
                                     "11111111"
@@ -292,9 +292,9 @@ TEST_METHOD(BitboardTest, EmptyFullOccupiedChecks)
                                     "11111111"
                                     "11111111")));
 
-    EXPECT_TRUE(bitboard_is_empty(BITBOARD_EMPTY));
+    Assert::IsTrue(bitboard_is_empty(BITBOARD_EMPTY));
 
-    EXPECT_TRUE(bitboard_is_empty(BB("00000000"
+    Assert::IsTrue(bitboard_is_empty(BB("00000000"
                                      "00000000"
                                      "00000000"
                                      "00000000"
@@ -303,7 +303,7 @@ TEST_METHOD(BitboardTest, EmptyFullOccupiedChecks)
                                      "00000000"
                                      "00000000")));
 
-    EXPECT_TRUE(bitboard_is_occupied(BB("00000000"
+    Assert::IsTrue(bitboard_is_occupied(BB("00000000"
                                         "00000000"
                                         "00000000"
                                         "00000000"
@@ -312,11 +312,11 @@ TEST_METHOD(BitboardTest, EmptyFullOccupiedChecks)
                                         "00000000"
                                         "00000000")));
 
-    EXPECT_TRUE(bitboard_is_occupied(BITBOARD_FULL));
-    EXPECT_TRUE(!bitboard_is_occupied(BITBOARD_EMPTY));
+    Assert::IsTrue(bitboard_is_occupied(BITBOARD_FULL));
+    Assert::IsTrue(!bitboard_is_occupied(BITBOARD_EMPTY));
 }
 
-TEST_METHOD(BitboardTest, Shifts)
+TEST_METHOD(SHIFT)
 {
     Assert::AreEqual(BITBOARD_EMPTY, bitboard_shifted(BB("11111111"
                                                   "00000000"
@@ -448,7 +448,7 @@ TEST_METHOD(BitboardTest, Shifts)
                  "00000000"));
 }
 
-TEST_METHOD(BitboardTest, Flip)
+TEST_METHOD(FLIP)
 {
     Assert::AreEqual(bitboard_flipped(BB("00000000"
                                   "00000000"
@@ -488,7 +488,7 @@ TEST_METHOD(BitboardTest, Flip)
     Assert::AreEqual(bitboard_flipped(BITBOARD_FULL), BITBOARD_EMPTY);
 }
 
-TEST_METHOD(BitboardTest, Serialization)
+TEST_METHOD(SERIALIZE)
 {
     {
         const Bitboard bb = BB("01100000"
@@ -501,13 +501,13 @@ TEST_METHOD(BitboardTest, Serialization)
                                "00000001");
         U64 count = 0;
         serialize(bb, [&](Square sq) -> void { count++; });
-        EXPECT_TRUE(count == 8);
+        Assert::IsTrue(count == 8);
     }
 
     {
         U64 count = 0;
         serialize(BITBOARD_EMPTY, [&](Square sq) -> void { count++; });
-        EXPECT_TRUE(count == 0);
+        Assert::IsTrue(count == 0);
     }
 
     {
@@ -522,11 +522,11 @@ TEST_METHOD(BitboardTest, Serialization)
         std::vector<Square> squares;
         serialize(bb, [&](Square sq) -> void { squares.push_back(sq); });
         const std::vector<Square> result = {0, 9, 18, 27, 36, 45, 54, 63};
-        Assert::AreEqual(squares, result);
+        Assert::IsTrue(squares == result);
     }
 }
 
-TEST_METHOD(BitboardTest, RankMask)
+TEST_METHOD(RANK_MASK)
 {
     for (Square sq = 0; sq < 8; sq++) {
         Assert::AreEqual(rank_mask(sq), FIRST_RANK);
@@ -561,7 +561,7 @@ TEST_METHOD(BitboardTest, RankMask)
     }
 }
 
-TEST_METHOD(BitboardTest, FileMask)
+TEST_METHOD(FILE_MASK)
 {
     for (Square sq = 0; sq < 64; sq += 8) {
         Assert::AreEqual(file_mask(sq), H_FILE);
@@ -595,3 +595,5 @@ TEST_METHOD(BitboardTest, FileMask)
         Assert::AreEqual(file_mask(sq), A_FILE);
     }
 }
+
+};

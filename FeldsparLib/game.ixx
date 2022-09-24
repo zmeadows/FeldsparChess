@@ -1,19 +1,17 @@
 export module game;
+
 #include "unstd/macros.h"
-
-import unstd.core;
-
+import prelude;
 import unstd.io;
 import unstd.string_util;
 
-import prelude;
 import bitboard;
 import board;
 import zobrist;
 
 import <optional>;
-import <vector>;
 import <string>;
+import <vector>;
 
 export struct Game {
     Board board = {BITBOARD_EMPTY};

@@ -1,11 +1,12 @@
 export module pins;
-#include "unstd/macros.h"
 
+#include "unstd/macros.h"
 import prelude;
+
+import attacks.rays;
+import attacks;
 import bitboard;
 import board;
-import attacks;
-import attacks.rays;
 
 export struct Pins {
     Bitboard diagonal = BITBOARD_EMPTY;

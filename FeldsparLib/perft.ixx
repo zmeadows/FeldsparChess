@@ -1,6 +1,6 @@
 export module perft;
 
-import unstd.core;
+import prelude;
 import unstd.io;
 import unstd.string_util;
 
@@ -8,8 +8,8 @@ import game;
 import move;
 import movegen;
 
-import <vector>;
 import <map>;
+import <vector>;
 
 export struct PerftStats {
     U64 node_count = 0;
@@ -58,6 +58,7 @@ export std::vector<PerftStats> perft(const Game& game, U64 depth)
 
 export std::vector<PerftStats> perft(const std::string& fen, U64 depth)
 {
+    to_stdout(fen);
     const Game game = *game_from_fen(fen);
     return perft(game, depth);
 }

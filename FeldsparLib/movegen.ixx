@@ -1,8 +1,8 @@
 export module movegen;
-#include "unstd/macros.h"
 
-import unstd.core;
+#include "unstd/macros.h"
 import prelude;
+import unstd.io;
 
 import bitboard;
 import board;
@@ -11,7 +11,6 @@ import move;
 import pins;
 import print;
 import quad;
-import unstd.io;
 
 import attacks;
 import attacks.rays;

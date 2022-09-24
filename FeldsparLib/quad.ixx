@@ -1,10 +1,11 @@
 export module quad;
 
 #include "unstd/macros.h"
-
 import prelude;
+
 import bitboard;
 import board;
+
 import <immintrin.h>;
 
 export using QuadBitboard = __m256i;

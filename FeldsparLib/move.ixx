@@ -1,9 +1,8 @@
 export module move;
+
 #include "unstd/macros.h"
-
-import unstd.core;
-
 import prelude;
+
 import bitboard;
 import board;
 import game;
@@ -344,6 +343,7 @@ export std::string move_to_algebraic(Move m)
     return alg_str;
 }
 
+//TODO: Use Maybe?
 export __ALWAYS_INLINE std::optional<Move> move_from_algebraic(const MoveBuffer& moves,
                                                       const std::string& alg)
 {

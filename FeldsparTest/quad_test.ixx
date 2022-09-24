@@ -1,16 +1,16 @@
-#define _HAS_EXCEPTIONS 0
-#include "gtest/gtest.h"
-
-import unstd.core;
-import unstd.random;
+#include "CppUnitTest.h"
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 import prelude;
+import unstd.random;
+
 import bitboard;
 import board;
-import print;
 import quad;
 
-TEST_METHOD(QuadBitboardTest, PackUnpack)
+TEST_CLASS(QUAD_TEST) {
+ 
+TEST_METHOD(PACK_UNPACK)
 {
     QuadBitboard qbb =
         pack(0, 1, std::numeric_limits<U64>::max(), (U64)std::numeric_limits<S64>::max() + 1);
@@ -18,10 +18,10 @@ TEST_METHOD(QuadBitboardTest, PackUnpack)
     alignas(QuadBitboard) Bitboard bbs[4];
     unpack(qbb, bbs);
 
-    Assert::AreEqual(bbs[0], 0);
-    Assert::AreEqual(bbs[1], 1);
-    Assert::AreEqual(bbs[2], std::numeric_limits<U64>::max());
-    Assert::AreEqual(bbs[3], std::numeric_limits<S64>::max() + 1);
+    Assert::AreEqual(bbs[0], static_cast<Bitboard>(0));
+    Assert::AreEqual(bbs[1], static_cast<Bitboard>(1));
+    Assert::AreEqual(bbs[2], static_cast<Bitboard>(std::numeric_limits<U64>::max()));
+    Assert::AreEqual(bbs[3], static_cast<Bitboard>(std::numeric_limits<S64>::max() + 1));
 
     for (auto i = 0; i < 1000; i++) {
         const Bitboard b1 = rand<U64>();
@@ -41,7 +41,7 @@ TEST_METHOD(QuadBitboardTest, PackUnpack)
     }
 }
 
-TEST_METHOD(QuadBitboardTest, OperatorOREquals)
+TEST_METHOD(OPERATOR_OR_EQUALS)
 {
     for (auto i = 0; i < 1000; i++) {
         const Bitboard b1 = rand<U64>();
@@ -68,7 +68,7 @@ TEST_METHOD(QuadBitboardTest, OperatorOREquals)
     }
 }
 
-TEST_METHOD(QuadBitboardTest, OperatorAND)
+TEST_METHOD(OPERATOR_AND)
 {
     for (auto i = 0; i < 1000; i++) {
         const Bitboard b1 = rand<U64>();
@@ -95,7 +95,7 @@ TEST_METHOD(QuadBitboardTest, OperatorAND)
     }
 }
 
-TEST_METHOD(QuadBitboardTest, LeftShift)
+TEST_METHOD(LEFT_SHIFT)
 {
     for (auto i = 0; i < 1000; i++) {
         const Bitboard b1 = rand<U64>();
@@ -121,3 +121,4 @@ TEST_METHOD(QuadBitboardTest, LeftShift)
         Assert::AreEqual(bbs[3], b4 << b8);
     }
 }
+};

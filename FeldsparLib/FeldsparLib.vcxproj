@@ -146,6 +146,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <AdditionalOptions>/wd5050 %(AdditionalOptions)</AdditionalOptions>
       <ControlFlowGuard>Guard</ControlFlowGuard>
+      <StringPooling>false</StringPooling>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -183,6 +184,7 @@
       <AdditionalOptions>/wd5050 %(AdditionalOptions)</AdditionalOptions>
       <FloatingPointExceptions>false</FloatingPointExceptions>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
     </ClCompile>
     <Link>
       <SubSystem>

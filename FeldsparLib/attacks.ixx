@@ -1,12 +1,11 @@
 export module attacks;
-#include "unstd/macros.h"
 
+#include "unstd/macros.h"
 import prelude;
 
 export import attacks.base;
 import attacks.classical;
 import attacks.pext;
-
 
 export enum class SliderAlgo {
     Classical,

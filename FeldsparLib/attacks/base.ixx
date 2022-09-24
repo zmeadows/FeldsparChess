@@ -1,8 +1,8 @@
 export module attacks.base;
-#include "../unstd/macros.h"
 
-import unstd.core;
+#include "../unstd/macros.h"
 import prelude;
+
 import bitboard;
 
 constexpr inline Bitboard KNIGHT_ATTACKS[64] = {132096,

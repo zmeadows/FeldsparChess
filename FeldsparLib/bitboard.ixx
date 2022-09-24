@@ -1,16 +1,15 @@
 export module bitboard;
-#include "unstd/macros.h"
 
+#include "unstd/macros.h"
 import prelude;
 
-import unstd.core;
-import std.core;
+import <utility>;
 
 template <U64 N, U64 I>
 constexpr Bitboard BB_helper(const char* input)
 {
     if (input[I] != '0' && input[I] != '1') {
-        //assert(false);
+        assert(false);
     }
 
     if constexpr (I == 0) {

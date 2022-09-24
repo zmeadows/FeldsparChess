@@ -1,4 +1,5 @@
 export module unstd.core;
+
 #pragma warning(disable : 5050)
 #include "macros.h"
 

@@ -1,11 +1,11 @@
 export module eval;
 
+#include "unstd/macros.h"
 import prelude;
+
 import bitboard;
 import board;
 import game;
-
-#include "unstd/macros.h"
 
 import<utility>;
 

@@ -1,12 +1,11 @@
-import unstd.core;
-import unstd.io;
-
 import prelude;
 import bitboard;
 import attacks;
 import game;
 import perft;
 import init;
+
+import unstd.io;
 
 import <optional>;
 import <string>;
@@ -20,7 +19,7 @@ double perft_benchmark(const std::string& name, U64 depth, U64 ntimes, const std
         return -1.0;
     }
 
-    const Game game = *maybe_game;
+    const Game& game = *maybe_game;
 
     double duration = 0.0;
     U64 node_count = 0;

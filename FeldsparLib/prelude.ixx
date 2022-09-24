@@ -1,7 +1,8 @@
 export module prelude;
-#include "unstd/macros.h"
 
-import unstd.core;
+#include "unstd/macros.h"
+export import unstd.core;
+export import <cassert>;
 
 import <cstring>;
 

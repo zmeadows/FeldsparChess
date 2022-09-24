@@ -1,15 +1,12 @@
 export module attacks.util;
+
 #include "../unstd/macros.h"
-
-import unstd.core;
-
 import prelude;
+
+import attacks;
 import bitboard;
 import board;
 import quad;
-
-import attacks.base;
-import attacks;
 
 // qsliders = {rq,rq,bq,bq}
 QuadBitboard quadfill_sliders1(QuadBitboard qsliders, Bitboard empty)

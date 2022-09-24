@@ -67,9 +67,6 @@
     <ClCompile Include="init.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="unstd\string_util.ixx">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="eval.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -87,6 +84,9 @@
     </ClCompile>
     <ClCompile Include="attacks.ixx">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="unstd\string_util.ixx">
+      <Filter>Source Files\unstd</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

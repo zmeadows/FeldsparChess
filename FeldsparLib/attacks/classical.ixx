@@ -1,7 +1,8 @@
 export module attacks.classical;
-#include "../unstd/macros.h"
 
+#include "../unstd/macros.h"
 import prelude;
+
 import bitboard;
 import board;
 import attacks.rays;

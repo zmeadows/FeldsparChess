@@ -1,9 +1,8 @@
 export module attacks.pext;
+
 #include "../unstd/macros.h"
-
-import unstd.core;
-
 import prelude;
+
 import bitboard;
 import attacks.classical;
 
