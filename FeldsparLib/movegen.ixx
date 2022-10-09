@@ -25,12 +25,10 @@ export struct MoveGenFlags {
     bool DEBUG_PRINT = false;
 };
 
-template <Color FRIENDLY_COLOR, MoveGenFlags FLAGS>
-__FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveBuffer& moves)
+template <Color FRIENDLY_COLOR, MoveGenFlags FLAGS, typename MoveCallback>
+__FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveCallback&& callback)
 {
     using enum PieceType;
-
-    moves.clear();
 
     constexpr Color OPPONENT_COLOR = !FRIENDLY_COLOR;
 
@@ -70,12 +68,12 @@ __FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveBuffer& moves
     const auto build_moves = [&](Square from, Bitboard to_mask, PieceType moved_ptype) {
         if constexpr (!FLAGS.CAPTURES_ONLY) {
             serialize(to_mask & quiet_mask, [&](Square to) {
-                moves.append(create_quiet_move(from, to, QUIET_FLAG, moved_ptype));
+                callback(create_quiet_move(from, to, QUIET_FLAG, moved_ptype));
             });
         }
 
         serialize(to_mask & capture_mask, [&](Square to) {
-            moves.append(create_capture_move(from, to, CAPTURE_FLAG, moved_ptype,
+            callback(create_capture_move(from, to, CAPTURE_FLAG, moved_ptype,
                                              opponent_piece_type_at(to)));
         });
     };
@@ -226,18 +224,18 @@ __FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveBuffer& moves
         serialize(singly_advanced_pawns, [&](Square to) {
             const Square from = to - pawn_move_delta;
             if (rank_of(to) == promotion_rank) [[unlikely]] {
-                moves.append(create_quiet_move(from, to, KNIGHT_PROMO_FLAG, Pawn));
-                moves.append(create_quiet_move(from, to, BISHOP_PROMO_FLAG, Pawn));
-                moves.append(create_quiet_move(from, to, ROOK_PROMO_FLAG, Pawn));
-                moves.append(create_quiet_move(from, to, QUEEN_PROMO_FLAG, Pawn));
+                callback(create_quiet_move(from, to, KNIGHT_PROMO_FLAG, Pawn));
+                callback(create_quiet_move(from, to, BISHOP_PROMO_FLAG, Pawn));
+                callback(create_quiet_move(from, to, ROOK_PROMO_FLAG, Pawn));
+                callback(create_quiet_move(from, to, QUEEN_PROMO_FLAG, Pawn));
             } else [[likely]] {
-                moves.append(create_quiet_move(from, to, QUIET_FLAG, Pawn));
+                callback(create_quiet_move(from, to, QUIET_FLAG, Pawn));
             }
         });
 
         serialize(doubly_advanced_pawns, [&](Square to) {
             const Square from = to - 2 * pawn_move_delta;
-            moves.append(create_quiet_move(from, to, DOUBLE_PAWN_PUSH_FLAG, Pawn));
+            callback(create_quiet_move(from, to, DOUBLE_PAWN_PUSH_FLAG, Pawn));
         });
     }
 
@@ -265,31 +263,30 @@ __FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveBuffer& moves
         serialize(singly_advanced_pawns, [&](Square to) {
             const Square from = to - pawn_move_delta;
             if (square_bitrep(to) & pins.nondiagonal_constraints[from]) {
-                moves.append(create_quiet_move(from, to, QUIET_FLAG, Pawn));
+                callback(create_quiet_move(from, to, QUIET_FLAG, Pawn));
             }
         });
 
         serialize(doubly_advanced_pawns, [&](Square to) {
             const Square from = to - 2 * pawn_move_delta;
             if (square_bitrep(to) & pins.nondiagonal_constraints[from]) {
-                moves.append(create_quiet_move(from, to, DOUBLE_PAWN_PUSH_FLAG, Pawn));
+                callback(create_quiet_move(from, to, DOUBLE_PAWN_PUSH_FLAG, Pawn));
             }
         });
     }
 
-    const auto append_pawn_capture = [&](Square from, Square to) {
+    const auto do_pawn_capture = [&](Square from, Square to) {
         if (rank_of(to) == promotion_rank) [[unlikely]] {
-            moves.append(create_capture_move(from, to, KNIGHT_PROMO_CAPTURE_FLAG, Pawn,
-                                             opponent_piece_type_at(to)));
-            moves.append(create_capture_move(from, to, BISHOP_PROMO_CAPTURE_FLAG, Pawn,
-                                             opponent_piece_type_at(to)));
-            moves.append(create_capture_move(from, to, ROOK_PROMO_CAPTURE_FLAG, Pawn,
-                                             opponent_piece_type_at(to)));
-            moves.append(create_capture_move(from, to, QUEEN_PROMO_CAPTURE_FLAG, Pawn,
-                                             opponent_piece_type_at(to)));
+            callback(create_capture_move(from, to, KNIGHT_PROMO_CAPTURE_FLAG, Pawn,
+                                         opponent_piece_type_at(to)));
+            callback(create_capture_move(from, to, BISHOP_PROMO_CAPTURE_FLAG, Pawn,
+                                         opponent_piece_type_at(to)));
+            callback(create_capture_move(from, to, ROOK_PROMO_CAPTURE_FLAG, Pawn,
+                                         opponent_piece_type_at(to)));
+            callback(create_capture_move(from, to, QUEEN_PROMO_CAPTURE_FLAG, Pawn,
+                                         opponent_piece_type_at(to)));
         } else [[likely]] {
-            moves.append(
-                create_capture_move(from, to, CAPTURE_FLAG, Pawn, opponent_piece_type_at(to)));
+            callback(create_capture_move(from, to, CAPTURE_FLAG, Pawn, opponent_piece_type_at(to)));
         }
     };
 
@@ -300,7 +297,7 @@ __FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveBuffer& moves
         serialize(pawns_that_can_capture, [&](Square from) {
             const Bitboard pawn_attack_pattern = get_pawn_attacks(from, FRIENDLY_COLOR);
             serialize(pawn_attack_pattern & capture_mask,
-                      [&](Square to) { append_pawn_capture(from, to); });
+                      [&](Square to) { do_pawn_capture(from, to); });
         });
     }
 
@@ -313,7 +310,7 @@ __FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveBuffer& moves
             const Bitboard constraint = pins.diagonal_constraints[from];
             serialize(pawn_attack_pattern & capture_mask, [&](Square to) {
                 if (square_bitrep(to) & constraint) [[likely]] {
-                    append_pawn_capture(from, to);
+                    do_pawn_capture(from, to);
                 }
             });
         });
@@ -345,7 +342,7 @@ __FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveBuffer& moves
             }
             //assert(captured_bit & get_pieces(game.board, Pawn, OPPONENT_COLOR));
 
-            // An en-passant capture removes two pieces from the board at once,
+            // An en-passant capture removes/relocates two pieces at once,
             // so we cannot rely on our previous pin calculations to account for the
             // rare case in which this move will expose an attack on the player's own king.
             // So we do a mini make_move here and re-calculate attacks on the king.
@@ -359,7 +356,7 @@ __FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveBuffer& moves
 
             const Bitboard king_attackers = attackers(board_copy, OPPONENT_COLOR, king_square);
             if (bitboard_is_empty(king_attackers)) {
-                moves.append(create_capture_move(from, to, EP_CAPTURE_FLAG, Pawn, Pawn));
+                callback(create_capture_move(from, to, EP_CAPTURE_FLAG, Pawn, Pawn));
             }
         });
     }
@@ -405,19 +402,27 @@ __FLATTEN_CALLS void generate_moves_internal(const Game& game, MoveBuffer& moves
             }
 
             if (can_kingside_castle) [[unlikely]] {
-                moves.append(
+                callback(
                     create_quiet_move(king_square, king_castle_square, KING_CASTLE_FLAG, King)
                 );
             }
 
             if (can_queenside_castle) [[unlikely]] {
-                moves.append(
+                callback(
                     create_quiet_move(king_square, queen_castle_square, QUEEN_CASTLE_FLAG, King)
                 );
             }
         }
     }
 }
+
+template <Color FRIENDLY_COLOR, MoveGenFlags FLAGS>
+__ALWAYS_INLINE void generate_moves_internal(const Game& game, MoveBuffer& moves)
+{
+    moves.clear();
+    generate_moves_internal<FRIENDLY_COLOR, FLAGS>(game, [&](const Move m) { moves.append(m); });
+}
+
 
 export template <MoveGenFlags FLAGS = MoveGenFlags()>
 void __ALWAYS_INLINE generate_moves(const Game& game, MoveBuffer& moves)
@@ -427,6 +432,17 @@ void __ALWAYS_INLINE generate_moves(const Game& game, MoveBuffer& moves)
         generate_moves_internal<White, FLAGS>(game, moves);
     } else {
         generate_moves_internal<Black, FLAGS>(game, moves);
+    }
+}
+
+export template <MoveGenFlags FLAGS = MoveGenFlags(), typename MoveCallback>
+void __ALWAYS_INLINE generate_moves(const Game& game, MoveCallback&& callback)
+{
+    using enum Color;
+    if (game.to_move == White) {
+        generate_moves_internal<White, FLAGS>(game, std::forward<MoveCallback>(callback));
+    } else {
+        generate_moves_internal<Black, FLAGS>(game, std::forward<MoveCallback>(callback));
     }
 }
 
@@ -440,7 +456,8 @@ export void debug_print_movegen(const Game& game)
     }
 }
 
-export bool make_moves_algebraic(
+export template <bool UPDATE_HASH = true>
+bool make_moves_algebraic(
     Game& game,
     std::vector<std::string>::const_iterator moves_begin,
     std::vector<std::string>::const_iterator moves_end)
@@ -448,16 +465,13 @@ export bool make_moves_algebraic(
 
     MoveBuffer moves;
     for (auto it = moves_begin; it != moves_end; it++) {
-        if (it->back() == 'r') {
-            int x = 1;
-        }
         generate_moves(game, moves);
         std::optional<Move> o_move = move_from_algebraic(moves, *it);
         if (!o_move.has_value()) {
             return false;
         }
         Move move = *o_move;
-        make_move<true>(game, move);
+        make_move<UPDATE_HASH>(game, move);
     }
 
     return true;

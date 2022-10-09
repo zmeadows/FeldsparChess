@@ -297,7 +297,7 @@ export __ALWAYS_INLINE MaybeSquare square_from_algebraic(const char* alg)
     }
 
     const S64 rank = static_cast<S64>(alg[1] - '0');
-    const S64 file = static_cast<S64>(1 + alg[0] - 'a');
+    const S64 file = static_cast<S64>(alg[0] - 'a' + 1);
 
     return from_rank_file(rank, file);
 }

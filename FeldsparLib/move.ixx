@@ -342,11 +342,20 @@ export std::string move_to_algebraic(Move m)
     alg_str += square_to_algebraic(from);
     alg_str += square_to_algebraic(to);
 
-    auto flag = move_flag(m);
-    if (flag == KNIGHT_PROMO_FLAG || flag == KNIGHT_PROMO_CAPTURE_FLAG) alg_str.push_back('n');
-    if (flag == QUEEN_PROMO_FLAG || flag == QUEEN_PROMO_CAPTURE_FLAG) alg_str.push_back('q');
-    if (flag == ROOK_PROMO_FLAG || flag == ROOK_PROMO_CAPTURE_FLAG) alg_str.push_back('r');
-    if (flag == BISHOP_PROMO_FLAG || flag == BISHOP_PROMO_CAPTURE_FLAG) alg_str.push_back('b');
+    switch (move_flag(m)) {
+        case KNIGHT_PROMO_FLAG:
+        case KNIGHT_PROMO_CAPTURE_FLAG:
+            alg_str.push_back('n');
+        case QUEEN_PROMO_FLAG:
+        case QUEEN_PROMO_CAPTURE_FLAG:
+            alg_str.push_back('q');
+        case ROOK_PROMO_FLAG:
+        case ROOK_PROMO_CAPTURE_FLAG:
+            alg_str.push_back('r');
+        case BISHOP_PROMO_FLAG:
+        case BISHOP_PROMO_CAPTURE_FLAG:
+            alg_str.push_back('b');
+    }
 
     return alg_str;
 }
@@ -354,27 +363,41 @@ export std::string move_to_algebraic(Move m)
 export __ALWAYS_INLINE std::optional<Move> move_from_algebraic(const MoveBuffer& moves,
                                                                const std::string& alg)
 {
-    if (alg.size() == 4) {
-        for (const Move m : moves) {
-            if (move_to_algebraic(m) == alg) return m;
+    switch (alg.size())
+    {
+        case 4: 
+        {
+            for (const Move m : moves)
+                if (move_to_algebraic(m) == alg)
+                    return m;
         }
-    } else if (alg.size() == 5) {
-        const char promo_char = alg[4];
 
-        for (const Move m : moves) {
-            if (move_to_algebraic(m) != alg) continue;
+        case 5:
+        {
+            const char promote_to = alg.back();
 
-            U32 flag = move_flag(m);
-            if (promo_char == 'n' && (flag == KNIGHT_PROMO_FLAG || flag == KNIGHT_PROMO_CAPTURE_FLAG))
-                return m;
-            else if (promo_char == 'q' && (flag == QUEEN_PROMO_FLAG || flag == QUEEN_PROMO_CAPTURE_FLAG))
-                return m;
-            else if (promo_char == 'b' && (flag == BISHOP_PROMO_FLAG || flag == BISHOP_PROMO_CAPTURE_FLAG))
-                return m;
-            else if (promo_char == 'r' && (flag == ROOK_PROMO_FLAG || flag == ROOK_PROMO_CAPTURE_FLAG))
-                return m;
+            for (const Move m : moves) {
+                if (move_to_algebraic(m) != alg) continue;
+
+                const U32 flag = move_flag(m);
+
+                switch (promote_to) {
+                    case 'n': {
+                        if (flag == KNIGHT_PROMO_FLAG || flag == KNIGHT_PROMO_CAPTURE_FLAG) return m;
+                    }
+                    case 'q': {
+                        if (flag == QUEEN_PROMO_FLAG || flag == QUEEN_PROMO_CAPTURE_FLAG) return m;
+                    }
+                    case 'b': {
+                        if (flag == BISHOP_PROMO_FLAG || flag == BISHOP_PROMO_CAPTURE_FLAG) return m;
+                    }
+                    case 'r': {
+                        if (flag == ROOK_PROMO_FLAG || flag == ROOK_PROMO_CAPTURE_FLAG) return m;
+                    }
+                }
+            }
         }
-    } 
+    }
 
     return {};
 }

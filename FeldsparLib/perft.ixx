@@ -30,22 +30,21 @@ void print_perft_stats(const std::vector<PerftStats>& stats)
 
 void perft_internal(Game& game, const U64 max_depth, U64 depth, std::vector<PerftStats>& stats)
 {
-    MoveBuffer moves;
-    generate_moves(game, moves);
-
     if (depth == 1) {
-        stats[max_depth - depth].node_count += moves.length();
+        U64 count = 0;
+        generate_moves(game, [&](const Move m) { count++; });
+        stats[max_depth - depth].node_count += count;
         return;
     }
 
     const Game game_premove_copy(game);
-    for (Move m : moves) {
+
+    generate_moves(game_premove_copy, [&](const Move m) {
         make_move<false>(game, m);
-        // TODO: record promotions, castles, etc...
         stats[max_depth - depth].node_count++;
         perft_internal(game, max_depth, depth - 1, stats);
         memcpy(&game, &game_premove_copy, sizeof(Game));
-    }
+    });
 }
 
 export std::vector<PerftStats> perft(const Game& game, U64 depth)

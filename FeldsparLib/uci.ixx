@@ -22,6 +22,7 @@ export struct EngineUCI {
     int run(void)
     {
         std::string line, first_word;
+        line.reserve(2048);
         std::vector<std::string> words;
 
         while (!_quitting && std::getline(std::cin, line)) {
@@ -64,6 +65,13 @@ export struct EngineUCI {
     void respondto_position(const std::vector<std::string>& words)
     {
         assert(words.size() >= 2);
+
+        // TODO: optimize for incremental updates
+        // if (!_game.has_value()) {
+        //     _parse_new_game(words);
+        // } else {
+        //     _update_game(words[words.size() - 1]);
+        // }
 
         std::optional<size_t> moves_start_idx = {};
 
@@ -110,6 +118,7 @@ export struct EngineUCI {
     }
 
     void respondto_ucinewgame(const std::vector<std::string>& words) { 
+        _game.reset();
     }
 
     static const inline std::unordered_map<std::string, DispatchFn> DISPATCH_TABLE = {
