@@ -138,8 +138,7 @@ void __FLATTEN_CALLS make_move_internal(Game& game, Move move)
             captured_bit = to_bit;
             captured_sq = to_sq;
         } else {
-            //assert(game.ep_square.has_value() &&
-            //       "En Passant capture move attempted when Game has no ep_square.");
+            assert(game.ep_square.has_value() && "En Passant capture move attempted when Game has no ep_square.");
 
             if constexpr (MOVING_COLOR == Color::White) {
                 captured_sq = (*game.ep_square) - 8;
@@ -257,21 +256,21 @@ void __FLATTEN_CALLS make_move_internal(Game& game, Move move)
 
                 if constexpr (MOVING_COLOR == Color::White) {
                     if (flag == KING_CASTLE_FLAG) [[unlikely]] {
-                        //assert(from_sq == e1);
+                        assert(from_sq == e1);
                         rook_from_sq = h1;
                         rook_to_sq = f1;
                     } else if (flag == QUEEN_CASTLE_FLAG) [[unlikely]] {
-                        //assert(from_sq == e1);
+                        assert(from_sq == e1);
                         rook_from_sq = a1;
                         rook_to_sq = d1;
                     }
                 } else {
                     if (flag == KING_CASTLE_FLAG) [[unlikely]] {
-                        //assert(from_sq == e8);
+                        assert(from_sq == e8);
                         rook_from_sq = h8;
                         rook_to_sq = f8;
                     } else if (flag == QUEEN_CASTLE_FLAG) [[unlikely]] {
-                        //assert(from_sq == e8);
+                        assert(from_sq == e8);
                         rook_from_sq = a8;
                         rook_to_sq = d8;
                     }

@@ -3,6 +3,7 @@ export module unstd.core;
 #pragma warning(disable : 5050)
 #include "macros.h"
 
+import <cassert>;
 import <cstdint>;
 
 export using U64 = uint64_t;
@@ -61,13 +62,13 @@ public:
 
     [[nodiscard]] __ALWAYS_INLINE T& operator*()
     {
-        //assert(m_data != SENTINEL);
+        assert(m_data != SENTINEL);
         return m_data;
     }
 
     [[nodiscard]] __ALWAYS_INLINE const T& operator*() const
     {
-        //assert(m_data != SENTINEL);
+        assert(m_data != SENTINEL);
         return m_data;
     }
 

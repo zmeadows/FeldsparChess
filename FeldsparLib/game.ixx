@@ -230,7 +230,7 @@ export std::string game_to_fen(const Game& game)
         const std::optional<Piece> maybe_piece = get_piece_at(game.board, sq);
 
         if ((maybe_piece.has_value() || wrapped_across_row) && empty_tally > 0) {
-            //assert(empty_tally <= 8);
+            assert(empty_tally <= 8);
             fen.push_back('0' + static_cast<char>(empty_tally));
             empty_tally = 0;
         }

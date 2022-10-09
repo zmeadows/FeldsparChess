@@ -75,7 +75,7 @@ export std::map<std::string, int> perft_divide(const std::string& fen, U64 depth
     std::map<std::string, int> result;
     auto ogame = game_from_fen(fen);
 
-    //assert(ogame.has_value());
+    assert(ogame.has_value());
 
     Game game = *ogame;
 
