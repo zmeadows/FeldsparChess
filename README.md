@@ -1,6 +1,6 @@
 ## Movegen Benchmark Results
 
-12th Gen Intel(R) Core(TM) i5-12600K (3.70 GHz))
+12th Gen Intel(R) Core(TM) i5-12600K (3.70 GHz)
 ```
 Starting Position: rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
         MNodes Traversed: 6640068792
